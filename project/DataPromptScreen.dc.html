@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/themes/rupa.css">
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/themes/modern-minimal.css">
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/themes/emerald.css">
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/tokens/base.css">
+<link rel="stylesheet" href="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/styles.css">
+<script src="_ds/design-system-a-ds-a-5714f552-f6da-4f44-9549-6256955e80ef/_ds_bundle.js"></script>
+<style>html,body{height:100%;margin:0}</style>
+</helmet>
+<div data-preset="{{ preset }}" data-theme="{{ theme }}" style="position:relative;display:flex;height:100vh;min-height:0;width:100%;overflow:hidden;background:var(--background);color:var(--foreground);font-family:var(--font-sans);transform:translateZ(0)">
+
+  <aside style="width:{{ sidebarW }};flex:none;display:flex;flex-direction:column;padding:14px 10px;border-right:var(--border-width) solid var(--border);background:var(--card);overflow:hidden;transition:width var(--motion) var(--ease)">
+    <div style="display:flex;align-items:center;gap:10px;padding:2px 4px 12px;justify-content:{{ sidebarJustify }}">
+      <div style="width:38px;height:38px;flex:none;border-radius:var(--radius-md);background:var(--primary);color:var(--primary-foreground);display:grid;place-items:center;font:700 16px var(--font-mono)">{{ brand.initial }}</div>
+      <sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;min-width:0">
+          <div style="font:800 14px var(--font-sans);color:var(--foreground);line-height:1.05">Camera Angle</div>
+          <div style="font:500 11px var(--font-mono);color:var(--muted-foreground)">Guide Pro</div>
+        </div>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;overflow-y:auto;overflow-x:hidden;flex:1;align-items:{{ sidebarItemAlign }}">
+      <sc-for list="{{ navMain }}" as="m" hint-placeholder-count="6">
+        <x-import component-from-global-scope="DesignSystem_5714f5.NavItem" orientation="{{ navOrient }}" icon="{{ m.icon }}" label="{{ m.label }}" active="{{ m.active }}" accent="{{ m.accent }}" crown="{{ m.crown }}" badge="{{ m.badgeShow }}" chevron="{{ m.chevronShow }}" onClick="{{ m.onClick }}" hint-size="100%,44px"></x-import>
+        <sc-if value="{{ m.showSubExpanded }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:2px;margin:2px 0 8px 19px;padding-left:12px;border-left:var(--border-width) solid var(--border)">
+            <sc-for list="{{ navSub }}" as="s" hint-placeholder-count="5">
+              <button onClick="{{ s.onClick }}" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;border-radius:var(--radius-sm);padding:6px 9px;cursor:pointer;background:{{ s.bg }};color:{{ s.color }};font:{{ s.weight }} 12px var(--font-sans)">
+                <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.label }}</span>
+                <span style="font:600 10px var(--font-mono);opacity:.7">{{ s.count }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;padding-top:8px;border-top:var(--border-width) solid var(--border);align-items:{{ sidebarItemAlign }}">
+      <sc-for list="{{ navDock }}" as="d" hint-placeholder-count="2">
+        <x-import component-from-global-scope="DesignSystem_5714f5.NavItem" orientation="{{ navOrient }}" icon="{{ d.icon }}" label="{{ d.label }}" avatar="{{ d.avatar }}" onClick="{{ d.onClick }}" hint-size="100%,44px"></x-import>
+      </sc-for>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="flex:none;display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:var(--border-width) solid var(--border);background:var(--card)">
+      <button onClick="{{ toggleSidebar }}" title="Buka/tutup sidebar" style="flex:none;width:34px;height:34px;border:var(--border-width) solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--muted-foreground);cursor:pointer;font:700 14px var(--font-mono);display:grid;place-items:center">&#9776;</button>
+      <span style="font:500 12px var(--font-mono);color:var(--muted-foreground);white-space:nowrap;flex:none">Camera Angle Guide Pro</span>
+      <span style="color:var(--subtle-foreground);flex:none">&rsaquo;</span>
+      <b style="font:700 14px var(--font-sans);color:var(--foreground);white-space:nowrap;flex:none">Data Prompt</b>
+      <div style="flex:1"></div>
+      <span style="font:600 11px var(--font-mono);color:var(--muted-foreground);border:var(--border-width) solid var(--border);border-radius:var(--radius-pill);padding:5px 11px;white-space:nowrap">{{ projStats }}</span>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" icon="{ }" onClick="{{ openSchema }}" hint-size="auto,34px">Skema</x-import>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ exportProject }}" hint-size="auto,34px">Ekspor proyek</x-import>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" icon="+" onClick="{{ openImport }}" hint-size="auto,34px">Impor</x-import>
+    </header>
+
+    <sc-if value="{{ isData }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+
+      <div style="flex:none;display:flex;align-items:center;gap:11px;padding:11px 20px;border-bottom:var(--border-width) solid var(--border);background:var(--background)">
+        <b style="font:700 15px var(--font-sans);color:var(--foreground)">Pustaka data prompt</b>
+        <span style="font:500 12px var(--font-mono);color:var(--muted-foreground)">{{ entriesCountText }}</span>
+        <sc-if value="{{ filterActive }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ clearFilter }}" title="Hapus filter" style="display:inline-flex;align-items:center;gap:6px;border:var(--border-width) solid var(--primary);background:var(--primary-soft);color:var(--foreground);border-radius:var(--radius-pill);padding:3px 10px;font:600 11px var(--font-mono);cursor:pointer">{{ filterLabel }} &times;</button>
+        </sc-if>
+        <div style="flex:1"></div>
+        <span style="font:600 10px var(--font-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--subtle-foreground)">Tampilan</span>
+        <div style="display:inline-flex;gap:3px;padding:3px;background:var(--muted);border-radius:var(--radius-pill)">
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ gridVariant }}" size="sm" onClick="{{ viewGrid }}" hint-size="auto,30px">Grid</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ tableVariant }}" size="sm" onClick="{{ viewTable }}" hint-size="auto,30px">Tabel</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ splitVariant }}" size="sm" onClick="{{ viewSplit }}" hint-size="auto,30px">Split</x-import>
+        </div>
+      </div>
+
+      <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:none;display:flex;align-items:center;gap:10px;padding:9px 20px;border-bottom:var(--border-width) solid var(--border);background:var(--primary-soft)">
+          <b style="font:700 12px var(--font-sans);color:var(--foreground)">{{ selectedCount }} dipilih &middot; selected</b>
+          <div style="flex:1"></div>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ bulkApply }}" hint-size="auto,32px">Terapkan &middot; Apply</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ bulkExport }}" hint-size="auto,32px">Ekspor</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ bulkDelete }}" hint-size="auto,32px">Hapus</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ clearSel }}" hint-size="auto,32px">Bersihkan</x-import>
+        </div>
+      </sc-if>
+
+      <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+        <sc-if value="{{ hasFiltered }}" hint-placeholder-val="{{ true }}">
+
+          <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;min-height:0;overflow:auto;padding:18px 20px 36px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px">
+              <sc-for list="{{ entries }}" as="e" hint-placeholder-count="3">
+                <div style="position:relative;background:var(--card);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column">
+                  <label style="position:absolute;top:10px;left:10px;z-index:2;display:grid;place-items:center;width:26px;height:26px;background:var(--card);border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);cursor:pointer">
+                    <input type="checkbox" checked="{{ e.selected }}" onChange="{{ e.onToggle }}" style="cursor:pointer;accent-color:var(--primary);width:15px;height:15px;margin:0">
+                  </label>
+                  <div style="position:absolute;top:11px;right:11px;z-index:2">
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Badge" tone="{{ e.sourceTone }}" hint-size="auto,18px">{{ e.sourceGlyph }} {{ e.sourceLabel }}</x-import>
+                  </div>
+                  <div style="height:116px;flex:none;border-bottom:var(--border-width) solid var(--border);background-color:var(--muted);background-image:repeating-linear-gradient(45deg,var(--stripe) 0 6px,transparent 6px 12px);display:grid;place-items:center;font:600 10px var(--font-mono);color:var(--subtle-foreground)">[ {{ e.thumbCaption }} ]</div>
+                  <div style="padding:12px 13px 13px;display:flex;flex-direction:column;gap:8px;flex:1">
+                    <div>
+                      <div style="font:700 14px var(--font-sans);color:var(--foreground)">{{ e.name }}</div>
+                      <div style="font:400 11px var(--font-sans);color:var(--muted-foreground)">{{ e.en }}</div>
+                    </div>
+                    <div style="font:600 10px var(--font-mono);color:var(--muted-foreground);letter-spacing:.02em">{{ e.angle }} &middot; {{ e.shot }} &middot; {{ e.lens }}</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <span style="font:600 10px var(--font-mono);color:var(--muted-foreground);background:var(--muted);border-radius:var(--radius-sm);padding:2px 7px">{{ e.sceneCount }} scene</span>
+                      <span style="font:600 10px var(--font-mono);color:var(--muted-foreground);background:var(--muted);border-radius:var(--radius-sm);padding:2px 7px">{{ e.frameCount }} shot</span>
+                      <span style="font:600 10px var(--font-mono);color:var(--muted-foreground);background:var(--muted);border-radius:var(--radius-sm);padding:2px 7px">{{ e.movement }}</span>
+                    </div>
+                    <div style="margin-top:2px">
+                      <div style="display:flex;justify-content:space-between;font:600 10px var(--font-mono);color:var(--muted-foreground);margin-bottom:4px"><span>Terisi AI &middot; AI-filled</span><span>{{ e.fillText }}</span></div>
+                      <div style="height:6px;border-radius:999px;background:var(--muted);overflow:hidden"><div style="height:100%;background:var(--primary);width:{{ e.fillPct }}%"></div></div>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-top:auto;padding-top:4px;flex-wrap:wrap">
+                      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ e.onApply }}" hint-size="auto,30px">Terapkan</x-import>
+                      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" icon="&#9727;" onClick="{{ e.on3d }}" hint-size="auto,30px">3D</x-import>
+                      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ e.onEdit }}" hint-size="auto,30px">Edit</x-import>
+                      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ e.onDelete }}" hint-size="auto,30px" title="Hapus &middot; Delete">&times;</x-import>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isTable }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;overflow:auto;padding:18px 20px 36px">
+            <div style="border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--card);min-width:812px">
+              <div style="display:grid;grid-template-columns:34px 1.7fr 92px 1.5fr 56px 1fr 92px 156px;align-items:center;gap:10px;padding:10px 14px;background:var(--muted);font:700 9.5px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted-foreground)">
+                <span></span><span>Nama &middot; Name</span><span>Sumber</span><span>Angle &middot; Shot</span><span>Lens</span><span>Gerakan</span><span>Terisi AI</span><span style="text-align:right">Aksi</span>
+              </div>
+              <sc-for list="{{ entries }}" as="e" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:34px 1.7fr 92px 1.5fr 56px 1fr 92px 156px;align-items:center;gap:10px;padding:11px 14px;border-top:var(--border-width) solid var(--border);background:{{ e.rowBg }}">
+                  <input type="checkbox" checked="{{ e.selected }}" onChange="{{ e.onToggle }}" style="cursor:pointer;accent-color:var(--primary);width:15px;height:15px;margin:0">
+                  <div style="min-width:0">
+                    <div style="font:700 13px var(--font-sans);color:var(--foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div>
+                    <div style="font:500 10px var(--font-mono);color:var(--muted-foreground)">{{ e.sceneCount }} scene &middot; {{ e.frameCount }} shot</div>
+                  </div>
+                  <x-import component-from-global-scope="DesignSystem_5714f5.Badge" tone="{{ e.sourceTone }}" hint-size="auto,18px">{{ e.sourceGlyph }} {{ e.sourceLabel }}</x-import>
+                  <span style="font:600 10px var(--font-mono);color:var(--foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.angle }} &middot; {{ e.shot }}</span>
+                  <span style="font:600 11px var(--font-mono);color:var(--muted-foreground)">{{ e.lens }}</span>
+                  <span style="font:500 10px var(--font-mono);color:var(--muted-foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.movement }}</span>
+                  <div style="display:flex;align-items:center;gap:7px">
+                    <div style="flex:1;height:5px;border-radius:999px;background:var(--muted);overflow:hidden"><div style="height:100%;background:var(--primary);width:{{ e.fillPct }}%"></div></div>
+                    <span style="font:600 9px var(--font-mono);color:var(--muted-foreground)">{{ e.fillText }}</span>
+                  </div>
+                  <div style="display:flex;gap:5px;justify-content:flex-end">
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ e.onApply }}" hint-size="auto,28px">Terapkan</x-import>
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ e.on3d }}" hint-size="auto,28px" title="Pratinjau 3D">3D</x-import>
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ e.onDelete }}" hint-size="auto,28px">&times;</x-import>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isSplit }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:flex">
+            <div style="width:288px;flex:none;border-right:var(--border-width) solid var(--border);overflow:auto;padding:12px;display:flex;flex-direction:column;gap:7px;background:var(--card)">
+              <sc-for list="{{ entries }}" as="e" hint-placeholder-count="4">
+                <div onClick="{{ e.onPick }}" style="cursor:pointer;border:var(--border-width) solid {{ e.listBorder }};border-radius:var(--radius-md);padding:9px 10px;background:{{ e.listBg }};display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <input type="checkbox" checked="{{ e.selected }}" onChange="{{ e.onToggle }}" style="cursor:pointer;accent-color:var(--primary);width:14px;height:14px;margin:0">
+                    <div style="font:700 12px var(--font-sans);color:var(--foreground);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div>
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Badge" tone="{{ e.sourceTone }}" hint-size="auto,16px">{{ e.sourceGlyph }}</x-import>
+                  </div>
+                  <div style="font:600 9.5px var(--font-mono);color:var(--muted-foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.angle }} &middot; {{ e.shot }} &middot; {{ e.fillText }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1;min-width:0;overflow:auto;padding:22px 26px 40px">
+              <sc-if value="{{ hasActive }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;flex-wrap:wrap">
+                  <div style="flex:none;display:flex;flex-direction:column;gap:4px">
+                    <x-import component-from-global-scope="cag-viewport" from="./cag-viewport.js" az="{{ activeEntry.pAz }}" el="{{ activeEntry.pEl }}" dist="{{ activeEntry.pDist }}" lens="{{ activeEntry.pLens }}" roll="{{ activeEntry.pRoll }}" subj="{{ activeEntry.pSubj }}" camview="orbit" hint-size="212px,148px" style="display:block;width:212px;height:148px;border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--muted)"></x-import>
+                    <span style="font:500 9px var(--font-mono);color:var(--subtle-foreground);text-align:center">seret untuk putar &middot; drag to orbit</span>
+                  </div>
+                  <div style="flex:1;min-width:190px">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                      <div style="font:800 20px/1.1 var(--font-sans);color:var(--foreground)">{{ activeEntry.name }}</div>
+                      <x-import component-from-global-scope="DesignSystem_5714f5.Badge" tone="{{ activeEntry.sourceTone }}" hint-size="auto,18px">{{ activeEntry.sourceGlyph }} {{ activeEntry.sourceLabel }}</x-import>
+                    </div>
+                    <div style="font:400 12px var(--font-sans);color:var(--muted-foreground);margin-top:3px">{{ activeEntry.en }}</div>
+                    <div style="font:500 10px var(--font-mono);color:var(--subtle-foreground);margin-top:5px">{{ activeEntry.ref }} &middot; {{ activeEntry.when }}</div>
+                  </div>
+                  <div style="display:flex;gap:6px;flex:none">
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ activeEntry.onApply }}" hint-size="auto,32px">Terapkan</x-import>
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" icon="&#9727;" onClick="{{ openView3d }}" hint-size="auto,32px">Perbesar 3D</x-import>
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ activeEntry.onEdit }}" hint-size="auto,32px">Edit</x-import>
+                    <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ activeEntry.onDelete }}" hint-size="auto,32px">Hapus</x-import>
+                  </div>
+                </div>
+                <div style="font:700 10px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted-foreground);margin:0 0 8px">Scene &amp; shot</div>
+                <div style="border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:20px">
+                  <sc-for list="{{ activeEntry.framesFlat }}" as="f" hint-placeholder-count="3">
+                    <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 60px 1fr;gap:10px;align-items:center;padding:9px 12px;border-top:var(--border-width) solid var(--border);font:500 11px var(--font-mono);color:var(--foreground)">
+                      <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:var(--subtle-foreground)">{{ f.scene }}</span> &middot; {{ f.name }}</span>
+                      <span>{{ f.angle }}</span>
+                      <span style="color:var(--muted-foreground)">{{ f.shot }}</span>
+                      <span style="color:var(--muted-foreground)">{{ f.lens }}</span>
+                      <span style="color:var(--muted-foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.movement }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:8px;margin:0 0 8px">
+                  <div style="font:700 10px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted-foreground)">Field terisi AI vs default</div>
+                  <span style="font:600 10px var(--font-mono);color:var(--primary)">{{ activeEntry.fillText }}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:20px">
+                  <sc-for list="{{ activeEntry.fillRows }}" as="r" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:8px;border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);padding:6px 9px">
+                      <span style="font:600 10px var(--font-mono);color:var(--muted-foreground);width:74px;flex:none">{{ r.label }}</span>
+                      <span style="font:500 11px var(--font-sans);color:var(--foreground);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.value }}</span>
+                      <x-import component-from-global-scope="DesignSystem_5714f5.Badge" tone="{{ r.tone }}" hint-size="auto,16px">{{ r.tag }}</x-import>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="font:700 10px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted-foreground);margin:0 0 8px">JSON &middot; camera-angle-guide/v2</div>
+                <pre style="margin:0;background:var(--muted);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:14px;max-height:260px;overflow:auto;font:400 11px/1.55 var(--font-mono);color:var(--foreground);white-space:pre">{{ activeEntry.jsonPreview }}</pre>
+              </sc-if>
+            </div>
+          </div>
+          </sc-if>
+
+        </sc-if>
+
+        <sc-if value="{{ noFiltered }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;overflow:auto;padding:30px 30px 40px">
+            <sc-if value="{{ trulyEmpty }}" hint-placeholder-val="{{ true }}">
+              <div style="max-width:760px;margin:0 auto">
+                <div style="font:700 17px var(--font-sans);color:var(--foreground);text-align:center;margin-bottom:6px">Impor data prompt pertama &middot; Import your first</div>
+                <p style="font:400 13px/1.6 var(--font-sans);color:var(--muted-foreground);text-align:center;margin:0 auto 22px;max-width:520px">Kirim foto atau tautan YouTube ke AI, minta JSON sesuai skema, lalu impor lewat salah satu sumber. &middot; Send a photo or YouTube link to your AI, then import via one of these sources.</p>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+                  <sc-for list="{{ sourceTiles }}" as="s" hint-placeholder-count="4">
+                    <div onClick="{{ s.onClick }}" style="cursor:pointer;background:var(--card);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);padding:15px;display:flex;flex-direction:column;gap:8px">
+                      <div style="width:38px;height:38px;border-radius:var(--radius-md);border:var(--border-width) solid var(--border);display:grid;place-items:center;font:700 16px var(--font-mono);color:var(--primary)">{{ s.glyph }}</div>
+                      <div>
+                        <div style="font:700 13px var(--font-sans);color:var(--foreground)">{{ s.label }}</div>
+                        <div style="font:400 11px var(--font-sans);color:var(--muted-foreground)">{{ s.sub }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ filterEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;padding:30px">
+                <div style="font:700 15px var(--font-sans);color:var(--foreground);margin-bottom:6px">Tidak ada hasil &middot; No results</div>
+                <p style="font:400 13px var(--font-sans);color:var(--muted-foreground);margin:0 auto 16px;max-width:320px">Tidak ada data prompt untuk filter {{ filterLabel }}.</p>
+                <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ clearFilter }}" hint-size="auto,34px">Hapus filter &middot; Clear</x-import>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ notData }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;display:grid;place-items:center;padding:40px">
+        <div style="text-align:center;max-width:340px">
+          <div style="width:64px;height:64px;border-radius:var(--radius-pill);border:var(--border-width) solid var(--border);background:var(--muted);display:grid;place-items:center;font:600 22px var(--font-mono);color:var(--subtle-foreground);margin:0 auto 16px">&#9677;</div>
+          <div style="font:700 16px var(--font-sans);color:var(--foreground);margin-bottom:6px">{{ placeholderTitle }}</div>
+          <p style="font:400 13px/1.5 var(--font-sans);color:var(--muted-foreground);margin:0 auto 18px">Layar contoh dalam shell platform. Demo lengkap ada di Data Prompt. &middot; Sample screen in the platform shell &mdash; the full demo lives in Data Prompt.</p>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ goData }}" hint-size="auto,34px">Ke Data Prompt &middot; Go to Data Prompt</x-import>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <x-import component-from-global-scope="DesignSystem_5714f5.ModalDialog" open="{{ importOpen }}" onClose="{{ closeImport }}" title="Impor data prompt &middot; Import" width="min(660px,94vw)" height="min(580px,88vh)" hint-size="1px,1px">
+    <x-import component-from-global-scope="DesignSystem_5714f5.Tabs" tabs="{{ importTabs }}" value="{{ importTab }}" onChange="{{ setImportTab }}" hint-size="100%,42px"></x-import>
+    <sc-if value="{{ isTabPaste }}" hint-placeholder-val="{{ true }}">
+      <div style="padding-top:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:400 12px/1.5 var(--font-sans);color:var(--muted-foreground)">Tempel JSON hasil dari AI Anda (skema camera-angle-guide/v2). &middot; Paste the JSON your AI returned.</div>
+        <textarea value="{{ pasteText }}" onChange="{{ onPasteInput }}" placeholder="{ &quot;scenes&quot;: [ { &quot;frames&quot;: [ ... ] } ] }" style="width:100%;height:210px;resize:vertical;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:12px;font:400 12px/1.5 var(--font-mono);color:var(--foreground);outline:none"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ doParsePaste }}" hint-size="auto,34px">Parse &amp; tambahkan &middot; Add</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ fillSamplePaste }}" hint-size="auto,34px">Isi contoh &middot; Sample</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ openSchema }}" hint-size="auto,34px">Lihat skema</x-import>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isTabFile }}" hint-placeholder-val="{{ false }}">
+      <div style="padding-top:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="font:400 12px/1.5 var(--font-sans);color:var(--muted-foreground)">Unggah file .json (ekspor dari Camera Angle Guide Pro atau hasil AI). &middot; Upload a .json file.</div>
+        <label style="border:var(--border-width) dashed var(--border);border-radius:var(--radius-md);padding:34px 20px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="width:44px;height:44px;border-radius:var(--radius-md);border:var(--border-width) solid var(--border);display:grid;place-items:center;font:700 18px var(--font-mono);color:var(--primary)">&equiv;</div>
+          <div style="font:700 13px var(--font-sans);color:var(--foreground)">Pilih file .json &middot; Choose a .json file</div>
+          <div style="font:400 11px var(--font-mono);color:var(--muted-foreground)">JSON &middot; camera-angle-guide/v2</div>
+          <input type="file" accept=".json,application/json" onChange="{{ onFileTab }}" style="display:none">
+        </label>
+        <sc-if value="{{ hasFileName }}" hint-placeholder-val="{{ false }}">
+          <div style="font:500 12px var(--font-mono);color:var(--foreground)">File: {{ fileName }}</div>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isTabYt }}" hint-placeholder-val="{{ false }}">
+      <div style="padding-top:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:400 12px/1.5 var(--font-sans);color:var(--muted-foreground)">AI menonton video, screenshot tiap perpindahan scene, lalu hasilkan JSON per scene. &middot; The AI watches the video, screenshots each scene cut, returns per-scene JSON.</div>
+        <input type="text" value="{{ ytUrl }}" onChange="{{ onYtInput }}" placeholder="https://youtu.be/…" style="width:100%;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:10px 12px;font:400 13px var(--font-sans);color:var(--foreground);outline:none">
+        <div><x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" icon="{ }" onClick="{{ copyYt }}" hint-size="auto,34px">Salin prompt + skema &middot; Copy prompt</x-import></div>
+        <div style="font:600 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground);margin-top:2px">Tempel JSON balikan AI &middot; Paste AI's JSON</div>
+        <textarea value="{{ ytJson }}" onChange="{{ onYtJsonInput }}" placeholder="{ &quot;scenes&quot;: [ ... ] }" style="width:100%;height:130px;resize:vertical;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:12px;font:400 12px/1.5 var(--font-mono);color:var(--foreground);outline:none"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ doParseYt }}" hint-size="auto,34px">Parse &amp; tambahkan</x-import>
+          <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ fillSampleYt }}" hint-size="auto,34px">Isi contoh</x-import>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isTabPhoto }}" hint-placeholder-val="{{ false }}">
+      <div style="padding-top:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:400 12px/1.5 var(--font-sans);color:var(--muted-foreground)">Kirim foto ke AI, minta JSON angle-nya, lalu tempel di bawah. &middot; Send the photo to your AI, ask for its angle JSON, paste below.</div>
+        <label style="border:var(--border-width) dashed var(--border);border-radius:var(--radius-md);padding:18px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px">
+          <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+            {{ photoPreview }}
+          </sc-if>
+          <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}">
+            <div style="width:44px;height:44px;border-radius:var(--radius-md);border:var(--border-width) solid var(--border);display:grid;place-items:center;font:700 18px var(--font-mono);color:var(--primary)">&#9638;</div>
+          </sc-if>
+          <div style="font:700 13px var(--font-sans);color:var(--foreground)">Pilih foto / gambar referensi &middot; Choose a reference image</div>
+          <input type="file" accept="image/*" onChange="{{ onPhotoTab }}" style="display:none">
+        </label>
+        <div><x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" icon="{ }" onClick="{{ copyPhoto }}" hint-size="auto,34px">Salin prompt + skema &middot; Copy prompt</x-import></div>
+        <div style="font:600 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground);margin-top:2px">Tempel JSON balikan AI &middot; Paste AI's JSON</div>
+        <textarea value="{{ photoJson }}" onChange="{{ onPhotoJsonInput }}" placeholder="{ &quot;frames&quot;: [ ... ] }" style="width:100%;height:110px;resize:vertical;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:12px;font:400 12px/1.5 var(--font-mono);color:var(--foreground);outline:none"></textarea>
+        <div><x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ doParsePhoto }}" hint-size="auto,34px">Parse &amp; tambahkan</x-import></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasIoMsg }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:14px;padding:9px 12px;border-radius:var(--radius-md);border:var(--border-width) solid {{ ioBorder }};background:var(--muted);font:600 11px var(--font-mono);color:{{ ioColor }}">{{ ioMsg }}</div>
+    </sc-if>
+  </x-import>
+
+  <x-import component-from-global-scope="DesignSystem_5714f5.ModalDialog" open="{{ schemaOpen }}" onClose="{{ closeSchema }}" title="Skema JSON &middot; Schema" width="min(660px,94vw)" height="min(600px,90vh)" hint-size="1px,1px">
+    <div style="font:400 12px/1.5 var(--font-sans);color:var(--muted-foreground);margin-bottom:12px">Berikan skema ini ke AI Anda bersama foto/video. Template lengkap &mdash; AI cukup mengisi field yang terlihat. &middot; Hand this schema to your AI with the photo/video; the template is complete, the AI fills only what it sees.</div>
+    <div style="display:inline-flex;gap:4px;padding:3px;background:var(--muted);border-radius:var(--radius-pill);margin-bottom:12px">
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ fullVariant }}" size="sm" onClick="{{ setFull }}" hint-size="auto,30px">Lengkap &middot; Full</x-import>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ simpleVariant }}" size="sm" onClick="{{ setSimple }}" hint-size="auto,30px">Ringkas &middot; Simplified</x-import>
+    </div>
+    <pre style="margin:0 0 14px;background:var(--muted);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:14px;height:300px;overflow:auto;font:400 11px/1.55 var(--font-mono);color:var(--foreground);white-space:pre">{{ schemaJson }}</pre>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ downloadSchema }}" hint-size="auto,34px">Unduh .json &middot; Download</x-import>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="outline" size="sm" onClick="{{ copySchemaPrompt }}" hint-size="auto,34px">Salin prompt + skema &middot; Copy prompt</x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="DesignSystem_5714f5.ModalDialog" open="{{ applyOpen }}" onClose="{{ closeApply }}" title="Terapkan ke proyek &middot; Apply" width="min(520px,94vw)" height="min(440px,86vh)" hint-size="1px,1px">
+    <div style="font:400 13px/1.5 var(--font-sans);color:var(--muted-foreground);margin-bottom:16px"><b style="color:var(--foreground)">{{ applyCount }}</b> data prompt akan diterapkan ke proyek Camera Angle Guide Pro. &middot; will be applied to your project.</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ mergeVariant }}" size="sm" onClick="{{ setMerge }}" hint-size="auto,34px">Gabung ke scene &middot; Merge</x-import>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="{{ newVariant }}" size="sm" onClick="{{ setNew }}" hint-size="auto,34px">Buat scene baru &middot; New</x-import>
+    </div>
+    <sc-if value="{{ applyMerge }}" hint-placeholder-val="{{ true }}">
+      <div style="font:600 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground);margin-bottom:6px">Scene tujuan &middot; Target scene</div>
+      <select value="{{ applySceneId }}" onChange="{{ onApplyScene }}" style="width:100%;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:10px 12px;font:400 13px var(--font-sans);color:var(--foreground);outline:none;margin-bottom:4px">
+        <sc-for list="{{ scenesForApply }}" as="s" hint-placeholder-count="2">
+          <option value="{{ s.id }}">{{ s.name }}</option>
+        </sc-for>
+      </select>
+    </sc-if>
+    <sc-if value="{{ applyNew }}" hint-placeholder-val="{{ false }}">
+      <div style="font:400 12px/1.5 var(--font-sans);color:var(--muted-foreground)">Setiap scene pada data prompt akan ditambahkan sebagai scene baru. &middot; Each data-prompt scene is appended as a new scene.</div>
+    </sc-if>
+    <div style="display:flex;gap:8px;margin-top:22px">
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ confirmApply }}" hint-size="auto,34px">Terapkan &middot; Apply</x-import>
+      <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ closeApply }}" hint-size="auto,34px">Batal &middot; Cancel</x-import>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="DesignSystem_5714f5.ModalDialog" open="{{ editOpen }}" onClose="{{ closeEdit }}" title="Edit data prompt" width="min(480px,94vw)" height="min(360px,82vh)" hint-size="1px,1px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <div style="font:600 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground);margin-bottom:6px">Nama &middot; Name</div>
+        <input type="text" value="{{ editName }}" onChange="{{ onEditName }}" style="width:100%;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:10px 12px;font:400 13px var(--font-sans);color:var(--foreground);outline:none">
+      </div>
+      <div>
+        <div style="font:600 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted-foreground);margin-bottom:6px">Label EN</div>
+        <input type="text" value="{{ editEn }}" onChange="{{ onEditEn }}" style="width:100%;background:var(--background);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);padding:10px 12px;font:400 13px var(--font-sans);color:var(--foreground);outline:none">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="primary" size="sm" onClick="{{ saveEdit }}" hint-size="auto,34px">Simpan &middot; Save</x-import>
+        <x-import component-from-global-scope="DesignSystem_5714f5.Button" variant="ghost" size="sm" onClick="{{ closeEdit }}" hint-size="auto,34px">Batal</x-import>
+      </div>
+    </div>
+  </x-import>
+
+  <x-import component-from-global-scope="DesignSystem_5714f5.ModalDialog" open="{{ view3dOpen }}" onClose="{{ closeView3d }}" title="Pratinjau 3D &middot; 3D preview" width="min(940px,95vw)" height="min(660px,90vh)" hint-size="1px,1px">
+    <sc-if value="{{ hasCur3d }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <span style="font:600 10px var(--font-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--subtle-foreground)">Frame</span>
+        <sc-for list="{{ view3dFrames }}" as="fr" hint-placeholder-count="2">
+          <button onClick="{{ fr.onClick }}" style="border:var(--border-width) solid {{ fr.border }};background:{{ fr.bg }};color:{{ fr.color }};border-radius:var(--radius-pill);padding:5px 12px;font:600 11px var(--font-sans);cursor:pointer">{{ fr.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:210px 210px;gap:10px">
+        <div style="position:relative;border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--muted)">
+          <span style="position:absolute;top:6px;left:8px;z-index:2;font:700 8px var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted-foreground);background:var(--card);border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);padding:2px 6px">Perspektif</span>
+          <x-import component-from-global-scope="cag-viewport" from="./cag-viewport.js" camview="orbit" az="{{ cur3d.az }}" el="{{ cur3d.el }}" dist="{{ cur3d.dist }}" lens="{{ cur3d.lens }}" roll="{{ cur3d.roll }}" subj="{{ cur3d.subj }}" hint-size="100%,100%" style="display:block;width:100%;height:100%"></x-import>
+        </div>
+        <div style="position:relative;border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--muted)">
+          <span style="position:absolute;top:6px;left:8px;z-index:2;font:700 8px var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted-foreground);background:var(--card);border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);padding:2px 6px">Atas &middot; Top</span>
+          <x-import component-from-global-scope="cag-viewport" from="./cag-viewport.js" camview="top" az="{{ cur3d.az }}" el="{{ cur3d.el }}" dist="{{ cur3d.dist }}" lens="{{ cur3d.lens }}" roll="{{ cur3d.roll }}" subj="{{ cur3d.subj }}" hint-size="100%,100%" style="display:block;width:100%;height:100%"></x-import>
+        </div>
+        <div style="position:relative;border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--muted)">
+          <span style="position:absolute;top:6px;left:8px;z-index:2;font:700 8px var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted-foreground);background:var(--card);border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);padding:2px 6px">Samping &middot; Side</span>
+          <x-import component-from-global-scope="cag-viewport" from="./cag-viewport.js" camview="side" az="{{ cur3d.az }}" el="{{ cur3d.el }}" dist="{{ cur3d.dist }}" lens="{{ cur3d.lens }}" roll="{{ cur3d.roll }}" subj="{{ cur3d.subj }}" hint-size="100%,100%" style="display:block;width:100%;height:100%"></x-import>
+        </div>
+        <div style="position:relative;border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--muted)">
+          <span style="position:absolute;top:6px;left:8px;z-index:2;font:700 8px var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--primary);background:var(--card);border:var(--border-width) solid var(--primary);border-radius:var(--radius-sm);padding:2px 6px">POV kamera</span>
+          <x-import component-from-global-scope="cag-viewport" from="./cag-viewport.js" camview="pov" az="{{ cur3d.az }}" el="{{ cur3d.el }}" dist="{{ cur3d.dist }}" lens="{{ cur3d.lens }}" roll="{{ cur3d.roll }}" subj="{{ cur3d.subj }}" hint-size="100%,100%" style="display:block;width:100%;height:100%"></x-import>
+        </div>
+      </div>
+      <div style="margin-top:12px;font:600 11px var(--font-mono);color:var(--muted-foreground)">{{ cur3d.angle }} &middot; {{ cur3d.shot }} &middot; {{ cur3d.lens }}mm &middot; {{ cur3d.movement }}</div>
+    </sc-if>
+  </x-import>
+
+  <sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--foreground);color:var(--card);padding:10px 18px;border-radius:var(--radius-pill);font:600 12px var(--font-sans);z-index:60;box-shadow:var(--elevation-modal);animation:ds-ovin var(--motion) var(--ease)">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1220, &quot;height&quot;: 860 },
+  &quot;variant&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;grid&quot;,&quot;table&quot;,&quot;split&quot;], &quot;default&quot;: &quot;grid&quot;, &quot;tsType&quot;: &quot;\&quot;grid\&quot; | \&quot;table\&quot; | \&quot;split\&quot;&quot;, &quot;section&quot;: &quot;Layout&quot; },
+  &quot;preset&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;rupa&quot;,&quot;modern-minimal&quot;,&quot;emerald&quot;], &quot;default&quot;: &quot;rupa&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Theme&quot; },
+  &quot;theme&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;light&quot;,&quot;dark&quot;], &quot;default&quot;: &quot;light&quot;, &quot;tsType&quot;: &quot;\&quot;light\&quot; | \&quot;dark\&quot;&quot;, &quot;section&quot;: &quot;Theme&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.D2R = Math.PI/180;
+    this.DEF = { intent:"", movement:"Static / Locked-off", action:"", lighting:"", style:"", audio:"", duration:2, transition:"Smooth" };
+    this.ANGLES = ["BIRD'S EYE","HIGH ANGLE","EYE LEVEL","LOW ANGLE","WORM'S EYE"];
+    this.SHOTS = ["EXTREME CLOSE-UP","CLOSE-UP","MEDIUM CLOSE-UP","MEDIUM SHOT","MEDIUM WIDE SHOT","WIDE SHOT","EXTREME WIDE SHOT"];
+    this.MOVES = ["Static / Locked-off","Handheld","Pan left","Pan right","Tilt up","Tilt down","Dolly in","Dolly out","Truck left","Truck right","Pedestal up","Pedestal down","Orbit / Arc","Crane / Jib"];
+    this.ARS = ["16:9","9:16","4:5","1:1","2.39:1"];
+    this.FPS = [24,25,30,60];
+    this.FIELDS = [
+      ["angle","Angle","EYE LEVEL","f"],["shot","Shot size","MEDIUM SHOT","f"],["lens","Lens (mm)",50,"f"],
+      ["az","Azimuth\u00b0",30,"f"],["el","Elevation\u00b0",4,"f"],["dist","Distance m",3,"f"],
+      ["intent","Intent","","m"],["movement","Movement","Static / Locked-off","m"],["action","Action","","m"],
+      ["lighting","Lighting","","m"],["style","Style","","m"],["audio","Audio","","m"]
+    ];
+    const entries = this.seed();
+    this.state = {
+      route:"data", view:(props.variant||"grid"), sidebarOpen:true, sourceFilter:"all", entries,
+      project:{ scenes:[
+        { id:"p1", name:"Scene 1 \u2014 Intro", frames:[ this.raw({name:"Establisher",angle:"WIDE SHOT",shot:"WIDE SHOT",lens:35,az:20,el:8,dist:5,meta:{intent:"Menetapkan lokasi"}}) ] },
+        { id:"p2", name:"Scene 2 \u2014 Dialog", frames:[ this.raw({name:"OTS",angle:"EYE LEVEL",shot:"MEDIUM SHOT",lens:50,az:35,el:2,dist:2.2}), this.raw({name:"CU",angle:"EYE LEVEL",shot:"CLOSE-UP",lens:85,az:25,el:2,dist:1.2}) ] }
+      ] },
+      selected:{}, activeId: entries[0] ? entries[0].id : null,
+      importOpen:false, importTab:"paste",
+      schemaOpen:false, schemaMode:"full",
+      applyOpen:false, applyMode:"merge", applySceneId:"p1", applyIds:[],
+      editOpen:false, editId:null, editName:"", editEn:"", view3dOpen:false, view3dFrame:0,
+      pasteText:"", ytUrl:"", ytJson:"", photoName:"", photoDataUrl:"", photoJson:"", fileName:"",
+      ioMsg:"", ioOk:true, toast:""
+    };
+  }
+
+  uid(){ return "e"+Math.random().toString(36).slice(2,9); }
+  raw(f){ f=f||{}; return { name:f.name||"Shot", angle:f.angle||"EYE LEVEL", shot:f.shot||"MEDIUM SHOT", lens:(f.lens==null?50:f.lens), az:(f.az==null?30:f.az), el:(f.el==null?4:f.el), dist:(f.dist==null?3:f.dist), roll:f.roll||0, fov:f.fov||40, subj:f.subj||"person", meta:Object.assign({}, this.DEF, f.meta||{}) }; }
+
+  seed(){
+    const t = Date.now();
+    return [
+      { id:this.uid(), name:"Wawancara duduk", en:"Seated interview", source:"photo", ref:"referensi_wawancara.jpg", created:t-1000*60*60*3,
+        data:{ scenes:[{ name:"Wawancara", frames:[
+          this.raw({name:"Master",angle:"EYE LEVEL",shot:"MEDIUM SHOT",lens:50,az:22,el:3,dist:2.4,meta:{intent:"Perkenalan narasumber",action:"Narasumber duduk menghadap kamera",movement:"Static / Locked-off"}}),
+          this.raw({name:"Insert CU",angle:"EYE LEVEL",shot:"CLOSE-UP",lens:85,az:18,el:2,dist:1.2,meta:{movement:"Handheld"}})
+        ]}]}},
+      { id:this.uid(), name:"Estab. drone kota", en:"City drone establisher", source:"youtube", ref:"youtu.be/aX3kR", created:t-1000*60*60*26,
+        data:{ scenes:[{ name:"Opening", frames:[
+          this.raw({name:"Wide top",angle:"BIRD'S EYE",shot:"EXTREME WIDE SHOT",lens:24,az:0,el:78,dist:12,meta:{intent:"Menetapkan skala kota",movement:"Crane / Jib"}}),
+          this.raw({name:"Orbit",angle:"HIGH ANGLE",shot:"WIDE SHOT",lens:35,az:60,el:35,dist:8,meta:{movement:"Orbit / Arc"}}),
+          this.raw({name:"Descend",angle:"EYE LEVEL",shot:"MEDIUM WIDE SHOT",lens:35,az:90,el:6,dist:5,meta:{movement:"Pedestal down"}})
+        ]}]}},
+      { id:this.uid(), name:"Produk hero", en:"Product hero low-angle", source:"photo", ref:"sepatu_hero.png", created:t-1000*60*60*49,
+        data:{ scenes:[{ name:"Produk", frames:[
+          this.raw({name:"Hero",angle:"LOW ANGLE",shot:"MEDIUM CLOSE-UP",lens:35,az:12,el:-30,dist:0.9,meta:{intent:"Kesan megah & premium",style:"Dramatic, high-contrast",movement:"Static / Locked-off"}})
+        ]}]}},
+      { id:this.uid(), name:"Aksi kejar", en:"Chase \u2014 dutch handheld", source:"file", ref:"chase_plan.json", created:t-1000*60*60*72,
+        data:{ scenes:[
+          { name:"Lorong", frames:[ this.raw({name:"Run",angle:"LOW ANGLE",shot:"MEDIUM SHOT",lens:28,az:10,el:-20,dist:1.8,roll:16,meta:{action:"Subjek berlari ke kamera",movement:"Handheld"}}) ]},
+          { name:"Tangga", frames:[ this.raw({name:"Down",angle:"HIGH ANGLE",shot:"WIDE SHOT",lens:24,az:200,el:42,dist:4,meta:{movement:"Tilt down"}}) ]}
+        ]}}
+    ];
+  }
+
+  synth(f){
+    const az=(f.az||0)*this.D2R, el=(f.el||0)*this.D2R, d=f.dist||3, ty=1.35;
+    return { camPos:{ x:+(Math.sin(az)*Math.cos(el)*d).toFixed(2), y:+(ty+Math.sin(el)*d).toFixed(2), z:+(Math.cos(az)*Math.cos(el)*d).toFixed(2) },
+      target:{x:0,y:ty,z:0}, subjPos:{x:0,z:0}, fov:f.fov||40, roll:f.roll||0, subj:f.subj||"person", subjRot:0, trackSubject:false };
+  }
+  projFrame(f){ return { id:this.uid(), name:f.name, notes:"", thumb:null, angle:f.angle, shot:f.shot, lens:f.lens, az:f.az, el:f.el, dist:f.dist, s:this.synth(f), meta:Object.assign({}, this.DEF, f.meta||{}) }; }
+  entryProject(en){
+    return { schema:"camera-angle-guide/v2", name:en.name, settings:{aspectRatio:"16:9",fps:24,sensor:"Full Frame"},
+      scenes: en.data.scenes.map((sc)=>({ id:this.uid(), name:sc.name, notes:"", frameSeq:sc.frames.length+1, collapsed:false, notesOpen:false, frames: sc.frames.map((fr)=>this.projFrame(fr)) })),
+      activeSceneId:null };
+  }
+
+  fillRows(en){
+    const f = en.data.scenes[0].frames[0];
+    return this.FIELDS.map((row)=>{
+      const k=row[0], label=row[1], def=row[2], loc=row[3];
+      let v = loc==="m" ? f.meta[k] : f[k];
+      const empty = v===undefined || v===null || String(v).trim()==="";
+      const filled = !empty && String(v)!==String(def);
+      return { label, value: empty ? "\u2014" : String(v), filled, tone: filled?"new":"outline", tag: filled?"AI":"default" };
+    });
+  }
+
+  showToast(m){ if(this._t) clearTimeout(this._t); this.setState({toast:m}); this._t=setTimeout(()=>this.setState({toast:""}),2600); }
+  download(name,text){ const b=new Blob([text],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),400); }
+  copy(text,msg){ try{ if(navigator.clipboard) navigator.clipboard.writeText(text); }catch(e){} this.showToast(msg||"Disalin \u00b7 Copied"); }
+
+  schemaObj(mode){
+    const frameFull = { name:"Shot 1", angle:"EYE LEVEL", shot:"MEDIUM SHOT", lens:50, az:30, el:4, dist:3.0,
+      s:{ camPos:{x:0,y:1.6,z:3}, target:{x:0,y:1.35,z:0}, subjPos:{x:0,z:0}, fov:40, roll:0, subj:"person", subjRot:0, trackSubject:false },
+      meta:{ intent:"", movement:"Static / Locked-off", action:"", lighting:"", style:"", audio:"", duration:2, transition:"Smooth" } };
+    const frameSimple = { name:"Shot 1", angle:"EYE LEVEL", shot:"MEDIUM SHOT", lens:50, meta:{ intent:"", action:"", movement:"Static / Locked-off" } };
+    const base = {
+      schema:"camera-angle-guide/v2",
+      _petunjuk:"Isi HANYA field yang bisa disimpulkan dari gambar/video. Sisakan field lain pada nilai default. Kembalikan JSON valid saja.",
+      _instructions:"Fill ONLY the fields you can infer from the image/video. Leave the rest at their defaults. Return valid JSON only.",
+      _enums:{ angle:this.ANGLES.concat(['(+ " \u00b7 DUTCH" jika horizon miring)']), shot:this.SHOTS, movement:this.MOVES, aspectRatio:this.ARS, fps:this.FPS, transition:["Smooth","Cut"], subject:["person","object"] }
+    };
+    if(mode==="simplified") return Object.assign({}, base, { scenes:[ {name:"Scene 1", frames:[frameSimple]} ] });
+    return Object.assign({}, base, { name:"", settings:{aspectRatio:"16:9",fps:24,sensor:"Full Frame"}, scenes:[ {name:"Scene 1", notes:"", frames:[frameFull]} ] });
+  }
+  schemaJson(mode){ return JSON.stringify(this.schemaObj(mode), null, 2); }
+  aiPrompt(src,mode){
+    const srcTxt = { photo:"Analisa FOTO terlampir", youtube:"Tonton VIDEO YouTube ini, screenshot tiap perpindahan scene, dan buat satu frame per scene", paste:"Analisa media berikut", file:"Analisa media berikut" }[src] || "Analisa media berikut";
+    return [
+      "Anda adalah asisten sinematografi. / You are a cinematography assistant.",
+      srcTxt+". Hasilkan JSON valid sesuai skema camera-angle-guide/v2 di bawah. / Produce valid JSON matching the schema below.",
+      "Fokus: angle, shot size, lens (mm), gerakan kamera. Isi hanya yang terlihat; sisanya biarkan default. Kembalikan HANYA JSON. / Focus on angle, shot size, lens, movement. Fill only what is visible; leave the rest at defaults. Return ONLY JSON.",
+      "", "SKEMA / SCHEMA ("+mode+"):", this.schemaJson(mode)
+    ].join("\n");
+  }
+
+  normFrame(f){
+    f=f||{};
+    const s=f.s||{};
+    const meta=Object.assign({}, this.DEF, f.meta||{});
+    return { name:f.name||"Shot", angle:f.angle||"EYE LEVEL", shot:f.shot||"MEDIUM SHOT",
+      lens:Number.isFinite(+f.lens)?+f.lens:50,
+      az:Number.isFinite(+f.az)?+f.az:30, el:Number.isFinite(+f.el)?+f.el:4, dist:Number.isFinite(+f.dist)?+f.dist:3,
+      roll:Number.isFinite(+s.roll)?+s.roll:(+f.roll||0), fov:Number.isFinite(+s.fov)?+s.fov:(+f.fov||40), subj:s.subj||f.subj||"person", meta };
+  }
+  toScenes(obj){
+    if(!obj || typeof obj!=="object") return null;
+    if(Array.isArray(obj.scenes)) return obj.scenes.map((sc,i)=>({ name:sc.name||("Scene "+(i+1)), frames:(sc.frames||[]).map((fr)=>this.normFrame(fr)) })).filter((sc)=>sc.frames.length);
+    if(Array.isArray(obj.frames)) return [{ name:obj.name||"Scene 1", frames:obj.frames.map((fr)=>this.normFrame(fr)) }];
+    if(obj.angle||obj.shot||obj.s||obj.meta||obj.lens) return [{ name:"Scene 1", frames:[this.normFrame(obj)] }];
+    return null;
+  }
+  parseIncoming(text, source, ref){
+    let obj; try{ obj=JSON.parse(text); }catch(e){ this.setState({ioMsg:"JSON tidak valid \u00b7 Invalid JSON",ioOk:false}); return; }
+    const scenes=this.toScenes(obj);
+    if(!scenes || !scenes.length){ this.setState({ioMsg:"Tidak ada scene/frame ditemukan \u00b7 No scenes or frames found",ioOk:false}); return; }
+    const labels={photo:"Impor foto",youtube:"Impor YouTube",file:"Impor file",paste:"Impor tempel"};
+    const nm=(obj.name && String(obj.name).trim()) || labels[source] || "Impor";
+    const en={ id:this.uid(), name:nm, en:(source.charAt(0).toUpperCase()+source.slice(1))+" import", source, ref:ref||"", created:Date.now(), data:{scenes} };
+    const fc=scenes.reduce((a,sc)=>a+sc.frames.length,0);
+    this.setState((s)=>({ entries:[en].concat(s.entries), activeId:en.id, sourceFilter:"all", ioMsg:"Ditambahkan \u00b7 added: "+scenes.length+" scene \u00b7 "+fc+" shot", ioOk:true, importOpen:false, pasteText:"", ytJson:"", photoJson:"" }));
+    this.showToast("Data prompt ditambahkan \u2014 "+scenes.length+" scene \u00b7 "+fc+" shot");
+  }
+
+  openImport(tab){ this.setState({importOpen:true, importTab:tab||"paste", ioMsg:""}); }
+  fillSamplePaste(){
+    const o={ schema:"camera-angle-guide/v2", name:"Contoh \u2014 Master + CU", scenes:[{ name:"Wawancara", frames:[
+      {name:"Master",angle:"EYE LEVEL",shot:"MEDIUM SHOT",lens:50,meta:{intent:"Perkenalan",action:"Duduk menghadap kamera",movement:"Static / Locked-off"}},
+      {name:"CU",angle:"EYE LEVEL",shot:"CLOSE-UP",lens:85,meta:{movement:"Handheld"}}
+    ]}]};
+    this.setState({pasteText:JSON.stringify(o,null,2), ioMsg:"Contoh diisi \u2014 klik Parse \u00b7 Sample filled", ioOk:true});
+  }
+  fillSampleYt(){
+    const o={ schema:"camera-angle-guide/v2", name:"Estab. + orbit", scenes:[
+      {name:"Wide", frames:[{name:"Estab",angle:"BIRD'S EYE",shot:"EXTREME WIDE SHOT",lens:24,meta:{movement:"Crane / Jib",intent:"Menetapkan lokasi"}}]},
+      {name:"Orbit", frames:[{name:"Arc",angle:"HIGH ANGLE",shot:"WIDE SHOT",lens:35,meta:{movement:"Orbit / Arc"}}]}
+    ]};
+    this.setState({ytJson:JSON.stringify(o,null,2), ioMsg:"Contoh diisi \u2014 klik Parse", ioOk:true});
+  }
+  onFileTab(e){ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ this.setState({fileName:f.name}); this.parseIncoming(String(r.result),"file",f.name); }; r.readAsText(f); e.target.value=""; }
+  onPhotoTab(e){ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>this.setState({photoName:f.name, photoDataUrl:String(r.result)}); r.readAsDataURL(f); e.target.value=""; }
+
+  openEdit(id){ const en=this.state.entries.find((e)=>e.id===id); if(!en) return; this.setState({editOpen:true, editId:id, editName:en.name, editEn:en.en||""}); }
+  saveEdit(){ this.setState((s)=>({ entries:s.entries.map((e)=>e.id===s.editId?Object.assign({},e,{name:s.editName,en:s.editEn}):e), editOpen:false })); this.showToast("Perubahan disimpan \u00b7 saved"); }
+  del(id){ this.setState((s)=>{ const sel=Object.assign({},s.selected); delete sel[id]; const rest=s.entries.filter((e)=>e.id!==id); return { entries:rest, selected:sel, activeId: s.activeId===id ? (rest[0]?rest[0].id:null) : s.activeId }; }); this.showToast("Data prompt dihapus \u00b7 deleted"); }
+  selectedIds(){ return this.state.entries.filter((e)=>this.state.selected[e.id]).map((e)=>e.id); }
+  openApply(ids){ const list=(ids&&ids.length)?ids:this.selectedIds(); if(!list.length){ this.showToast("Pilih dulu \u00b7 select first"); return; } this.setState({applyOpen:true, applyIds:list, applyMode:"merge", applySceneId:this.state.project.scenes[0].id}); }
+  confirmApply(){
+    this.setState((s)=>{
+      const chosen=s.entries.filter((e)=>s.applyIds.indexOf(e.id)>=0);
+      let scenes=s.project.scenes.map((sc)=>Object.assign({},sc,{frames:sc.frames.slice()}));
+      if(s.applyMode==="merge"){
+        let tgt=scenes.find((sc)=>sc.id===s.applySceneId)||scenes[0];
+        chosen.forEach((en)=>en.data.scenes.forEach((sc)=>sc.frames.forEach((fr)=>tgt.frames.push(this.raw(fr)))));
+      } else {
+        chosen.forEach((en)=>en.data.scenes.forEach((sc)=>scenes.push({ id:this.uid(), name:sc.name, frames:sc.frames.map((fr)=>this.raw(fr)) })));
+      }
+      return { project:Object.assign({},s.project,{scenes}), applyOpen:false, selected:{} };
+    });
+    this.showToast("Diterapkan ke proyek \u00b7 applied");
+  }
+  exportProject(){
+    const proj={ schema:"camera-angle-guide/v2", name:"Camera Angle Guide \u2014 Data Prompt", settings:{aspectRatio:"16:9",fps:24,sensor:"Full Frame"},
+      scenes:this.state.project.scenes.map((sc)=>({ id:this.uid(), name:sc.name, notes:"", frameSeq:sc.frames.length+1, collapsed:false, notesOpen:false, frames:sc.frames.map((fr)=>this.projFrame(fr)) })), activeSceneId:null };
+    this.download("camera-angle-guide-project.json", JSON.stringify(proj,null,2)); this.showToast("Proyek diekspor untuk Camera Angle Guide Pro");
+  }
+  exportLibrary(){ const ids=this.selectedIds(); const list=ids.length?this.state.entries.filter((e)=>ids.indexOf(e.id)>=0):this.state.entries; this.download("data-prompt-library.json", JSON.stringify({schema:"data-prompt-library/v1", entries:list},null,2)); this.showToast(list.length+" data prompt diekspor \u00b7 exported"); }
+  importLibrary(){ const inp=document.createElement("input"); inp.type="file"; inp.accept=".json,application/json"; inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(String(r.result)); if(o && Array.isArray(o.entries)){ this.setState((s)=>({ entries:o.entries.map((e)=>Object.assign({},e,{id:e.id||this.uid()})).concat(s.entries) })); this.showToast("Pustaka diimpor \u00b7 library imported"); } else { this.parseIncoming(String(r.result),"file",f.name); } }catch(err){ this.showToast("File tidak valid \u00b7 invalid file"); } }; r.readAsText(f); }; inp.click(); }
+
+  renderVals(){
+    const S=this.state, sel=S.selected, self=this;
+    const fmtWhen=(ts)=>{ const h=Math.round((Date.now()-ts)/3600000); if(h<1) return "baru saja"; if(h<24) return h+" jam lalu"; return Math.round(h/24)+" hari lalu"; };
+    const srcMeta={ photo:{glyph:"\u25a6",label:"Foto",tone:"new"}, youtube:{glyph:"\u25b7",label:"YouTube",tone:"highlight"}, file:{glyph:"\u2261",label:"File",tone:"outline"}, paste:{glyph:"\u25a7",label:"Tempel",tone:"default"} };
+    const view=(el)=>{
+      const en=el; const scenes=en.data.scenes, f=scenes[0].frames[0];
+      const frameCount=scenes.reduce((a,sc)=>a+sc.frames.length,0);
+      const rows=this.fillRows(en); const fc=rows.filter((r)=>r.filled).length;
+      const sm=srcMeta[en.source]||srcMeta.paste;
+      const isSel=!!sel[en.id], isActive=S.activeId===en.id;
+      const framesFlat=[]; scenes.forEach((sc)=>sc.frames.forEach((fr)=>framesFlat.push({ scene:sc.name, name:fr.name, angle:fr.angle, shot:fr.shot, lens:fr.lens+"mm", movement:fr.meta.movement })));
+      const framesRaw=[]; scenes.forEach((sc)=>sc.frames.forEach((fr)=>framesRaw.push({ label:sc.name+" \u00b7 "+fr.name, az:fr.az, el:fr.el, dist:fr.dist, roll:fr.roll||0, lens:fr.lens, subj:fr.subj||"person", angle:fr.angle, shot:fr.shot, movement:fr.meta.movement })));
+      const pf=framesRaw[0]||{az:30,el:4,dist:3,roll:0,lens:50,subj:"person"};
+      return {
+        id:en.id, source:en.source, name:en.name, en:en.en||"", ref:en.ref||"", when:fmtWhen(en.created),
+        sourceGlyph:sm.glyph, sourceLabel:sm.label, sourceTone:sm.tone, thumbCaption:sm.label.toLowerCase(),
+        sceneCount:scenes.length, frameCount, angle:f.angle, shot:f.shot, lens:f.lens+"mm", movement:f.meta.movement,
+        fillCount:fc, fillTotal:rows.length, fillText:fc+"/"+rows.length, fillPct:Math.round(fc/rows.length*100), fillRows:rows, framesFlat,
+        jsonPreview:JSON.stringify(this.entryProject(en),null,2),
+        framesRaw:framesRaw, pAz:pf.az, pEl:pf.el, pDist:pf.dist, pRoll:pf.roll, pLens:pf.lens, pSubj:pf.subj,
+        selected:isSel, active:isActive,
+        rowBg:isSel?"var(--primary-soft)":"transparent",
+        listBg:isActive?"var(--primary-soft)":"var(--card)", listBorder:isActive?"var(--primary)":"var(--border)",
+        onToggle:()=>self.setState((s)=>{ const m=Object.assign({},s.selected); m[en.id]=!m[en.id]; return {selected:m}; }),
+        onApply:()=>self.openApply([en.id]), onEdit:()=>self.openEdit(en.id), onDelete:()=>self.del(en.id), onPick:()=>self.setState({activeId:en.id}), on3d:()=>self.setState({activeId:en.id, view3dOpen:true, view3dFrame:0})
+      };
+    };
+    const entriesAll=S.entries.map(view);
+    const counts={ all:entriesAll.length, photo:0, youtube:0, file:0, paste:0 };
+    entriesAll.forEach((e)=>{ if(counts[e.source]!=null) counts[e.source]++; });
+    const filtered = S.sourceFilter==="all" ? entriesAll : entriesAll.filter((e)=>e.source===S.sourceFilter);
+    const activeEntry = filtered.find((e)=>e.id===S.activeId) || filtered[0] || null;
+    const v3idx = activeEntry ? Math.max(0, Math.min(S.view3dFrame, activeEntry.framesRaw.length-1)) : 0;
+    const v3f = activeEntry ? activeEntry.framesRaw[v3idx] : null;
+    const selectedCount=entriesAll.filter((e)=>e.selected).length;
+    const totalShots=S.project.scenes.reduce((a,sc)=>a+sc.frames.length,0);
+    const fLabels={ all:"Semua", photo:"Foto", youtube:"YouTube", file:"File", paste:"Tempel" };
+    const setFilter=(k)=>self.setState({sourceFilter:k});
+    const navSub=["all","photo","youtube","file","paste"].map((k)=>({ key:k, label:fLabels[k], count:counts[k], onClick:()=>setFilter(k),
+      bg:S.sourceFilter===k?"var(--primary-soft)":"transparent", color:S.sourceFilter===k?"var(--primary)":"var(--foreground)", weight:S.sourceFilter===k?600:400 }));
+    const open=S.sidebarOpen;
+    const navMain=[
+      { key:"create", icon:"+", label:"Buat", accent:true, active:false, onClick:()=>self.openImport("paste") },
+      { key:"home", icon:"\u2302", label:"Beranda", active:S.route==="home", onClick:()=>self.setState({route:"home"}) },
+      { key:"projects", icon:"\u25a4", label:"Proyek", active:S.route==="projects", onClick:()=>self.setState({route:"projects"}) },
+      { key:"data", icon:"\u25a7", label:"Data Prompt", crown:true, badge:"Baru", hasSub:true, showSub:S.route==="data", active:S.route==="data", onClick:()=>self.setState({route:"data"}) },
+      { key:"templates", icon:"\u25a6", label:"Template", active:S.route==="templates", onClick:()=>self.setState({route:"templates"}) },
+      { key:"guide", icon:"?", label:"Panduan", active:S.route==="guide", onClick:()=>self.setState({route:"guide"}) }
+    ].map((m)=>Object.assign({},m,{ badgeShow: open?(m.badge||null):null, chevronShow: open?!!m.hasSub:false, showSubExpanded: open&&!!m.showSub }));
+    const navDock=[
+      { key:"notif", icon:"\u25ce", label:"Notifikasi", avatar:false, onClick:()=>self.showToast("Notifikasi \u00b7 sample") },
+      { key:"acct", icon:"RF", label:"Akun", avatar:true, onClick:()=>self.showToast("Akun \u00b7 sample") }
+    ];
+    const names={home:["Beranda","Home"],projects:["Proyek","Projects"],templates:["Template","Templates"],guide:["Panduan","Guide"]};
+    const nm=names[S.route]||["Layar","Screen"];
+    const filterActive=S.sourceFilter!=="all";
+    return {
+      preset:this.props.preset||"rupa", theme:this.props.theme||"light",
+      brand:{ name:"CAG Pro", initial:"\u25c9" },
+      sidebarOpen:S.sidebarOpen, sidebarClosed:!S.sidebarOpen, toggleSidebar:()=>self.setState((s)=>({sidebarOpen:!s.sidebarOpen})),
+      sidebarW:open?"246px":"72px", sidebarJustify:open?"flex-start":"center", sidebarItemAlign:open?"stretch":"center", navOrient:open?"horizontal":"vertical",
+      navMain, navSub, navDock,
+      isData:S.route==="data", notData:S.route!=="data", goData:()=>self.setState({route:"data"}), placeholderTitle:nm[0]+" \u00b7 "+nm[1],
+      projStats:S.project.scenes.length+" scene \u00b7 "+totalShots+" shot",
+      isGrid:S.view==="grid", isTable:S.view==="table", isSplit:S.view==="split",
+      viewGrid:()=>self.setState({view:"grid"}), viewTable:()=>self.setState({view:"table"}), viewSplit:()=>self.setState({view:"split"}),
+      gridVariant:S.view==="grid"?"primary":"ghost", tableVariant:S.view==="table"?"primary":"ghost", splitVariant:S.view==="split"?"primary":"ghost",
+      entries:filtered, hasFiltered:filtered.length>0, noFiltered:filtered.length===0, trulyEmpty:entriesAll.length===0, filterEmpty:entriesAll.length>0&&filtered.length===0,
+      entriesCountText: filterActive ? (filtered.length+" dari "+entriesAll.length+" item") : (entriesAll.length+" item"),
+      filterActive, filterLabel:fLabels[S.sourceFilter], clearFilter:()=>self.setState({sourceFilter:"all"}),
+      selectedCount, hasSelection:selectedCount>0,
+      sourceTiles:[
+        { glyph:"\u25a6", label:"Foto \u00b7 Photo", sub:"AI baca angle dari gambar", onClick:()=>self.openImport("photo") },
+        { glyph:"\u25b7", label:"YouTube", sub:"Screenshot per scene", onClick:()=>self.openImport("youtube") },
+        { glyph:"\u2261", label:"Unggah .json", sub:"File ekspor / hasil AI", onClick:()=>self.openImport("file") },
+        { glyph:"\u25a7", label:"Tempel JSON", sub:"Paste hasil AI", onClick:()=>self.openImport("paste") }
+      ],
+      bulkApply:()=>self.openApply(), bulkExport:()=>self.exportLibrary(), bulkDelete:()=>{ self.selectedIds().forEach((id)=>self.del(id)); }, clearSel:()=>self.setState({selected:{}}),
+      openImport:()=>self.openImport("paste"), openSchema:()=>self.setState({schemaOpen:true}), exportProject:()=>self.exportProject(), importLibrary:()=>self.importLibrary(),
+      importOpen:S.importOpen, closeImport:()=>self.setState({importOpen:false}),
+      importTabs:[{key:"paste",label:"Tempel JSON"},{key:"file",label:"Unggah .json"},{key:"youtube",label:"YouTube"},{key:"photo",label:"Foto"}],
+      importTab:S.importTab, setImportTab:(k)=>self.setState({importTab:k, ioMsg:""}),
+      isTabPaste:S.importTab==="paste", isTabFile:S.importTab==="file", isTabYt:S.importTab==="youtube", isTabPhoto:S.importTab==="photo",
+      pasteText:S.pasteText, onPasteInput:(e)=>self.setState({pasteText:e.target.value}), doParsePaste:()=>self.parseIncoming(S.pasteText,"paste",""), fillSamplePaste:()=>self.fillSamplePaste(),
+      fileName:S.fileName, hasFileName:!!S.fileName, onFileTab:(e)=>self.onFileTab(e),
+      ytUrl:S.ytUrl, onYtInput:(e)=>self.setState({ytUrl:e.target.value}), copyYt:()=>self.copy(self.aiPrompt("youtube",S.schemaMode),"Prompt YouTube disalin \u00b7 copied"), ytJson:S.ytJson, onYtJsonInput:(e)=>self.setState({ytJson:e.target.value}), doParseYt:()=>self.parseIncoming(S.ytJson,"youtube",S.ytUrl), fillSampleYt:()=>self.fillSampleYt(),
+      photoName:S.photoName, photoDataUrl:S.photoDataUrl, photoPreview:(S.photoDataUrl?React.createElement("img",{src:S.photoDataUrl,style:{maxHeight:"120px",maxWidth:"100%",borderRadius:"var(--radius-sm)",border:"var(--border-width) solid var(--border)"}}):null), hasPhoto:!!S.photoDataUrl, noPhoto:!S.photoDataUrl, onPhotoTab:(e)=>self.onPhotoTab(e), copyPhoto:()=>self.copy(self.aiPrompt("photo",S.schemaMode),"Prompt foto disalin \u00b7 copied"), photoJson:S.photoJson, onPhotoJsonInput:(e)=>self.setState({photoJson:e.target.value}), doParsePhoto:()=>self.parseIncoming(S.photoJson,"photo",S.photoName),
+      ioMsg:S.ioMsg, hasIoMsg:!!S.ioMsg, ioBorder:S.ioOk?"var(--border)":"var(--destructive)", ioColor:S.ioOk?"var(--foreground)":"var(--destructive)",
+      schemaOpen:S.schemaOpen, closeSchema:()=>self.setState({schemaOpen:false}), schemaMode:S.schemaMode,
+      fullVariant:S.schemaMode==="full"?"primary":"ghost", simpleVariant:S.schemaMode==="simplified"?"primary":"ghost",
+      setFull:()=>self.setState({schemaMode:"full"}), setSimple:()=>self.setState({schemaMode:"simplified"}), schemaJson:this.schemaJson(S.schemaMode), downloadSchema:()=>{ self.download("camera-angle-guide."+S.schemaMode+".schema.json", self.schemaJson(S.schemaMode)); self.showToast("Skema JSON diunduh \u00b7 downloaded"); }, copySchemaPrompt:()=>self.copy(self.aiPrompt("photo",S.schemaMode),"Prompt + skema disalin \u00b7 copied"),
+      applyOpen:S.applyOpen, closeApply:()=>self.setState({applyOpen:false}), applyCount:S.applyIds.length, applyMerge:S.applyMode==="merge", applyNew:S.applyMode==="new",
+      mergeVariant:S.applyMode==="merge"?"primary":"outline", newVariant:S.applyMode==="new"?"primary":"outline",
+      setMerge:()=>self.setState({applyMode:"merge"}), setNew:()=>self.setState({applyMode:"new"}), scenesForApply:S.project.scenes.map((sc)=>({id:sc.id,name:sc.name+" ("+sc.frames.length+" shot)"})), applySceneId:S.applySceneId, onApplyScene:(e)=>self.setState({applySceneId:e.target.value}), confirmApply:()=>self.confirmApply(),
+      editOpen:S.editOpen, closeEdit:()=>self.setState({editOpen:false}), editName:S.editName, onEditName:(e)=>self.setState({editName:e.target.value}), editEn:S.editEn, onEditEn:(e)=>self.setState({editEn:e.target.value}), saveEdit:()=>self.saveEdit(),
+      activeEntry, hasActive:!!activeEntry, noActive:!activeEntry,
+      view3dOpen:S.view3dOpen, openView3d:()=>self.setState({view3dOpen:true, view3dFrame:0}), closeView3d:()=>self.setState({view3dOpen:false}), hasCur3d:!!v3f,
+      cur3d:v3f||{az:30,el:4,dist:3,roll:0,lens:50,subj:"person",angle:"\u2014",shot:"\u2014",movement:"\u2014",label:"\u2014"},
+      view3dFrames:(activeEntry?activeEntry.framesRaw:[]).map((fr,i)=>({ label:fr.label, onClick:()=>self.setState({view3dFrame:i}), border:i===v3idx?"var(--primary)":"var(--border)", bg:i===v3idx?"var(--primary-soft)":"transparent", color:i===v3idx?"var(--primary)":"var(--foreground)" })),
+      toast:S.toast, toastVisible:!!S.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
