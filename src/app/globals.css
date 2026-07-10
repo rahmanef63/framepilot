@@ -1,0 +1,173 @@
+/* ============================================================
+   Camera Angle Guide Pro — Data Prompt
+   Design tokens ported from the ds-a design system (Rupa preset).
+   SSOT: this file is the only place raw color/font/shadow values live.
+   Everything downstream references var(--token).
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap");
+
+/* ---------- THEME PRESET — Rupa (warm ivory + Claude terracotta) ---------- */
+:root {
+  --background: #F0EEE6;
+  --foreground: #1A1915;
+  --card: #FAF9F5;
+  --card-foreground: #1A1915;
+  --popover: #FAF9F5;
+  --popover-foreground: #1A1915;
+  --primary: #D97757;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E7E4D9;
+  --secondary-foreground: #33302B;
+  --muted: #E7E4D9;
+  --muted-foreground: #6B665C;
+  --accent: #EAE6DC;
+  --accent-foreground: #33302B;
+  --destructive: #BF4D3A;
+  --destructive-foreground: #FFFFFF;
+  --border: #DBD7CB;
+  --input: #DBD7CB;
+  --ring: #D97757;
+
+  --border-strong: #1A1915;
+  --highlight: #EFD4AC;
+
+  --sidebar: #FAF9F5;
+  --sidebar-foreground: #1A1915;
+  --sidebar-primary: #D97757;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EAE6DC;
+  --sidebar-accent-foreground: #33302B;
+  --sidebar-border: #DBD7CB;
+  --sidebar-ring: #D97757;
+
+  --chart-1: #D97757;
+  --chart-2: #C79A6B;
+  --chart-3: #8FA68E;
+  --chart-4: #B0885F;
+  --chart-5: #6E6A62;
+
+  --radius: 10px;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Plus Jakarta Sans", Georgia, serif;
+  --font-mono: "Plus Jakarta Sans", ui-monospace, "JetBrains Mono", monospace;
+  --tracking-normal: 0em;
+
+  --shadow-2xs: 0 1px 2px rgba(26, 25, 21, .04);
+  --shadow-xs:  0 1px 2px rgba(26, 25, 21, .05);
+  --shadow-sm:  0 1px 2px rgba(26, 25, 21, .06);
+  --shadow:     0 1px 3px rgba(26, 25, 21, .08);
+  --shadow-md:  0 4px 12px rgba(26, 25, 21, .10);
+  --shadow-lg:  0 8px 24px rgba(26, 25, 21, .12);
+  --shadow-xl:  0 16px 40px rgba(26, 25, 21, .16);
+  --shadow-2xl: 0 20px 60px rgba(26, 25, 21, .28);
+
+  /* --- derived signal tokens --- */
+  --primary-soft: color-mix(in srgb, var(--primary) 15%, transparent);
+  --subtle-foreground: color-mix(in srgb, var(--muted-foreground) 60%, var(--background));
+  --stripe: color-mix(in srgb, var(--foreground) 6%, transparent);
+
+  /* --- radius scale --- */
+  --radius-sm: max(0px, calc(var(--radius) - 4px));
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 6px);
+  --radius-pill: 999px;
+
+  /* --- borders --- */
+  --border-width: 1.5px;
+  --border-width-strong: 2px;
+
+  /* --- elevation --- */
+  --elevation-overlay: var(--shadow-lg);
+  --elevation-modal: var(--shadow-2xl);
+
+  /* --- motion --- */
+  --motion-fast: 120ms;
+  --motion: 160ms;
+  --ease: ease;
+
+  /* --- focus + hit target --- */
+  --focus-ring: 0 0 0 2px var(--ring);
+  --hit-min: 44px;
+
+  /* --- type scale --- */
+  --fs-display: 34px;  --lh-display: 42px;
+  --fs-h1: 25px;       --lh-h1: 32px;
+  --fs-h2: 19px;       --lh-h2: 26px;
+  --fs-body: 15px;     --lh-body: 22px;
+  --fs-label: 13px;    --lh-label: 18px;
+  --fs-caption: 12px;  --lh-caption: 16px;
+
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700; --fw-black: 800;
+}
+
+/* ---------- Dark variant (kept for parity; app defaults to light) ---------- */
+:root[data-theme="dark"] {
+  --background: #262624;
+  --foreground: #F4F3EE;
+  --card: #30302E;
+  --card-foreground: #F4F3EE;
+  --popover: #30302E;
+  --popover-foreground: #F4F3EE;
+  --primary: #D97757;
+  --primary-foreground: #FFFFFF;
+  --secondary: #3B3A37;
+  --secondary-foreground: #F4F3EE;
+  --muted: #3B3A37;
+  --muted-foreground: #B7B3AA;
+  --accent: #3B3A37;
+  --accent-foreground: #F4F3EE;
+  --destructive: #E06A50;
+  --destructive-foreground: #FFFFFF;
+  --border: #45443F;
+  --input: #45443F;
+  --ring: #D97757;
+  --border-strong: #6E6A62;
+  --highlight: #EFD4AC;
+  --sidebar: #30302E;
+  --sidebar-border: #45443F;
+  --shadow-2xl: 0 20px 60px rgba(0, 0, 0, .60);
+}
+
+/* ---------- resets ---------- */
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  letter-spacing: var(--tracking-normal, 0em);
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--foreground); }
+
+button { font-family: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-track { background: transparent; }
+
+.ds-hatch {
+  background-color: var(--muted);
+  background-image: repeating-linear-gradient(45deg, var(--stripe) 0 6px, transparent 6px 12px);
+}
+
+@keyframes ds-ovin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes ds-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

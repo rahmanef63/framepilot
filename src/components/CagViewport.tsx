@@ -1,0 +1,423 @@
+"use client";
+import React, { CSSProperties, useEffect, useRef } from "react";
+
+// cag-viewport — a self-contained 3D shot-angle viewport, ported from the
+// prototype's cag-viewport.js. Three.js is lazy-loaded (dynamic import) only
+// when a viewport mounts, and the renderer is disposed on unmount. Reads the
+// ds-a CSS tokens for theming.
+
+const D2R = Math.PI / 180;
+
+export type CamView = "orbit" | "top" | "side" | "pov";
+
+export interface CagViewportProps {
+  az?: number;
+  el?: number;
+  dist?: number;
+  lens?: number;
+  roll?: number;
+  subj?: string;
+  camview?: CamView;
+  style?: CSSProperties;
+  className?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type THREE = any;
+
+class Controller {
+  host: HTMLElement;
+  T: THREE;
+  props: Required<Omit<CagViewportProps, "style" | "className">>;
+  _r: THREE;
+  _scene: THREE;
+  _subjGroup: THREE;
+  _shotGroup: THREE;
+  _subjMat: THREE;
+  _persp: THREE;
+  _ortho: THREE;
+  _shotCam: THREE;
+  _viewAz = 42;
+  _viewEl = 24;
+  _viewDist = 6;
+  _userZoomed = false;
+  _ty = 1.0;
+  _lastSubj = "";
+  _camPos: THREE;
+  _target: THREE;
+  _dist = 3;
+  _ro: ResizeObserver | null = null;
+  _disposed = false;
+  _cleanupDrag: (() => void) | null = null;
+
+  constructor(host: HTMLElement, T: THREE, props: Required<Omit<CagViewportProps, "style" | "className">>) {
+    this.host = host;
+    this.T = T;
+    this.props = props;
+    this._build();
+    this._update();
+    this._resize();
+    this._render();
+    this._ro = new ResizeObserver(() => {
+      this._resize();
+      this._render();
+    });
+    this._ro.observe(host);
+  }
+
+  _rgb(name: string, fb: string): string {
+    try {
+      const rawv = getComputedStyle(this.host).getPropertyValue(name).trim();
+      if (!rawv) return fb;
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = 1;
+      const ctx = cv.getContext("2d");
+      if (!ctx) return fb;
+      ctx.fillStyle = "rgb(0,0,0)";
+      ctx.fillStyle = rawv;
+      ctx.fillRect(0, 0, 1, 1);
+      const d = ctx.getImageData(0, 0, 1, 1).data;
+      return "rgb(" + d[0] + "," + d[1] + "," + d[2] + ")";
+    } catch {
+      return fb;
+    }
+  }
+
+  _build() {
+    const T = this.T;
+    const bg = this._rgb("--card", "rgb(250,249,245)");
+    const gridc = this._rgb("--muted-foreground", "rgb(120,116,106)");
+    const fg = this._rgb("--foreground", "rgb(26,25,21)");
+    const r = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.host.appendChild(r.domElement);
+    r.domElement.style.display = "block";
+    r.domElement.style.width = "100%";
+    r.domElement.style.height = "100%";
+    r.setClearColor(new T.Color(bg), 1);
+    this._r = r;
+    const scene = new T.Scene();
+    this._scene = scene;
+    scene.add(new T.AmbientLight(0xffffff, 0.7));
+    const dl = new T.DirectionalLight(0xffffff, 0.5);
+    dl.position.set(4, 9, 6);
+    scene.add(dl);
+    const grid = new T.GridHelper(8, 8, new T.Color(gridc), new T.Color(gridc));
+    grid.material.opacity = 0.32;
+    grid.material.transparent = true;
+    scene.add(grid);
+    this._subjMat = new T.MeshStandardMaterial({ color: new T.Color(fg), roughness: 0.85, metalness: 0.0 });
+    this._subjGroup = new T.Group();
+    scene.add(this._subjGroup);
+    this._shotGroup = new T.Group();
+    scene.add(this._shotGroup);
+    this._persp = new T.PerspectiveCamera(45, 1, 0.1, 200);
+    this._ortho = new T.OrthographicCamera(-4, 4, 4, -4, 0.01, 200);
+    this._shotCam = new T.PerspectiveCamera(40, 16 / 9, 0.05, 200);
+    this._bindDrag();
+  }
+
+  _buildSubject() {
+    const T = this.T;
+    const g = this._subjGroup;
+    while (g.children.length) g.remove(g.children[0]);
+    const subj = this.props.subj || "person";
+    if (subj === "object") {
+      const ped = new T.Mesh(
+        new T.CylinderGeometry(0.42, 0.5, 0.3, 24),
+        new T.MeshStandardMaterial({ color: new T.Color(this._rgb("--border", "rgb(219,215,203)")), roughness: 1 })
+      );
+      ped.position.y = 0.15;
+      g.add(ped);
+      const box = new T.Mesh(new T.BoxGeometry(0.6, 0.7, 0.6), this._subjMat);
+      box.position.y = 0.65;
+      g.add(box);
+      this._ty = 0.7;
+    } else {
+      const body = new T.Mesh(new T.CylinderGeometry(0.16, 0.22, 1.05, 20), this._subjMat);
+      body.position.y = 0.85;
+      g.add(body);
+      const head = new T.Mesh(new T.SphereGeometry(0.18, 20, 16), this._subjMat);
+      head.position.y = 1.6;
+      g.add(head);
+      this._ty = 1.0;
+    }
+  }
+
+  _update() {
+    const T = this.T;
+    if (!T) return;
+    if (this.props.subj !== this._lastSubj) {
+      this._buildSubject();
+      this._lastSubj = this.props.subj;
+    }
+    const az = this.props.az,
+      el = this.props.el,
+      dist = Math.max(0.5, this.props.dist),
+      lens = Math.max(8, this.props.lens),
+      roll = this.props.roll;
+    const ty = this._ty || 1.0,
+      target = new T.Vector3(0, ty, 0);
+    const azR = az * D2R,
+      elR = el * D2R;
+    const camPos = new T.Vector3(
+      Math.sin(azR) * Math.cos(elR) * dist,
+      ty + Math.sin(elR) * dist,
+      Math.cos(azR) * Math.cos(elR) * dist
+    );
+    this._camPos = camPos;
+    this._target = target;
+    this._dist = dist;
+    if (!this._userZoomed) this._viewDist = Math.max(4.8, dist * 1.4 + 1.8);
+    const vfovR = 2 * Math.atan(24 / (2 * lens));
+    const accent = new T.Color(this._rgb("--primary", "rgb(217,119,87)"));
+
+    const g = this._shotGroup;
+    while (g.children.length) g.remove(g.children[0]);
+    const marker = new T.Mesh(new T.SphereGeometry(0.1, 14, 12), new T.MeshBasicMaterial({ color: accent }));
+    marker.position.copy(camPos);
+    g.add(marker);
+
+    const fwd = target.clone().sub(camPos).normalize();
+    const wup = Math.abs(fwd.y) > 0.95 ? new T.Vector3(0, 0, 1) : new T.Vector3(0, 1, 0);
+    let right = new T.Vector3().crossVectors(fwd, wup).normalize();
+    let up = new T.Vector3().crossVectors(right, fwd).normalize();
+    if (roll) {
+      const rr = roll * D2R,
+        ca = Math.cos(rr),
+        sa = Math.sin(rr);
+      const nr = right.clone().multiplyScalar(ca).add(up.clone().multiplyScalar(sa));
+      const nu = up.clone().multiplyScalar(ca).sub(right.clone().multiplyScalar(sa));
+      right = nr;
+      up = nu;
+    }
+    const L = dist * 0.9,
+      hh = Math.tan(vfovR / 2) * L,
+      hw = hh * (16 / 9);
+    const center = camPos.clone().add(fwd.clone().multiplyScalar(L));
+    const c1 = center.clone().add(right.clone().multiplyScalar(hw)).add(up.clone().multiplyScalar(hh));
+    const c2 = center.clone().add(right.clone().multiplyScalar(hw)).add(up.clone().multiplyScalar(-hh));
+    const c3 = center.clone().add(right.clone().multiplyScalar(-hw)).add(up.clone().multiplyScalar(-hh));
+    const c4 = center.clone().add(right.clone().multiplyScalar(-hw)).add(up.clone().multiplyScalar(hh));
+    const pts = [camPos, c1, camPos, c2, camPos, c3, camPos, c4, c1, c2, c2, c3, c3, c4, c4, c1];
+    g.add(new T.LineSegments(new T.BufferGeometry().setFromPoints(pts), new T.LineBasicMaterial({ color: accent })));
+
+    const R = Math.max(0.001, Math.cos(elR) * dist);
+    const rp = [];
+    for (let i = 0; i <= 64; i++) {
+      const a = (i / 64) * Math.PI * 2;
+      rp.push(new T.Vector3(Math.sin(a) * R, 0.02, Math.cos(a) * R));
+    }
+    const ringMat = new T.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.4 });
+    g.add(new T.Line(new T.BufferGeometry().setFromPoints(rp), ringMat));
+    g.add(
+      new T.Line(
+        new T.BufferGeometry().setFromPoints([new T.Vector3(0, 0.02, 0), new T.Vector3(camPos.x, 0.02, camPos.z)]),
+        ringMat
+      )
+    );
+
+    this._shotCam.fov = (vfovR * 180) / Math.PI;
+    this._shotCam.position.copy(camPos);
+    this._shotCam.up.copy(up);
+    this._shotCam.lookAt(target);
+    this._shotCam.updateProjectionMatrix();
+  }
+
+  _setOrtho(H: number) {
+    const w = this.host.clientWidth || 300,
+      h = this.host.clientHeight || 200,
+      as = w / Math.max(1, h);
+    this._ortho.left = -H * as;
+    this._ortho.right = H * as;
+    this._ortho.top = H;
+    this._ortho.bottom = -H;
+    this._ortho.near = 0.01;
+    this._ortho.far = 200;
+    this._ortho.updateProjectionMatrix();
+  }
+
+  _viewCam() {
+    const T = this.T;
+    const cv = this.props.camview || "orbit";
+    const t = this._target || new T.Vector3(0, 1, 0);
+    const dist = this._dist || 3;
+    if (cv === "pov") return this._shotCam;
+    if (cv === "top") {
+      this._ortho.position.set(0, 12, 0);
+      this._ortho.up.set(0, 0, -1);
+      this._ortho.lookAt(0, 0, 0);
+      this._setOrtho(Math.max(3.8, dist * 0.75));
+      return this._ortho;
+    }
+    if (cv === "side") {
+      this._ortho.position.set(11, t.y, 0.001);
+      this._ortho.up.set(0, 1, 0);
+      this._ortho.lookAt(t);
+      this._setOrtho(Math.max(3.2, dist * 0.72));
+      return this._ortho;
+    }
+    const azR = this._viewAz * D2R,
+      elR = this._viewEl * D2R,
+      d = this._viewDist;
+    this._persp.position.set(
+      t.x + Math.sin(azR) * Math.cos(elR) * d,
+      t.y + Math.sin(elR) * d,
+      t.z + Math.cos(azR) * Math.cos(elR) * d
+    );
+    this._persp.up.set(0, 1, 0);
+    this._persp.lookAt(t);
+    return this._persp;
+  }
+
+  _resize() {
+    if (!this._r) return;
+    const w = this.host.clientWidth || 300,
+      h = this.host.clientHeight || 200;
+    this._r.setSize(w, h, false);
+    this._persp.aspect = w / Math.max(1, h);
+    this._persp.updateProjectionMatrix();
+  }
+
+  _render() {
+    if (this._r && this._scene) this._r.render(this._scene, this._viewCam());
+  }
+
+  _bindDrag() {
+    const self = this;
+    const el = this._r.domElement as HTMLCanvasElement;
+    let drag = false,
+      px = 0,
+      py = 0;
+    el.style.touchAction = "none";
+    const isOrbit = () => (self.props.camview || "orbit") === "orbit";
+    el.style.cursor = isOrbit() ? "grab" : "default";
+    const onDown = (e: PointerEvent) => {
+      if (!isOrbit()) return;
+      drag = true;
+      px = e.clientX;
+      py = e.clientY;
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+      el.style.cursor = "grabbing";
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!drag) return;
+      const dx = e.clientX - px,
+        dy = e.clientY - py;
+      px = e.clientX;
+      py = e.clientY;
+      self._viewAz -= dx * 0.4;
+      self._viewEl = Math.max(-80, Math.min(82, self._viewEl + dy * 0.35));
+      self._render();
+    };
+    const onUp = () => {
+      drag = false;
+      el.style.cursor = isOrbit() ? "grab" : "default";
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (!isOrbit()) return;
+      e.preventDefault();
+      self._userZoomed = true;
+      self._viewDist = Math.max(2.6, Math.min(18, self._viewDist * (1 + e.deltaY * 0.001)));
+      self._render();
+    };
+    el.addEventListener("pointerdown", onDown);
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerup", onUp);
+    el.addEventListener("wheel", onWheel, { passive: false });
+    this._cleanupDrag = () => {
+      el.removeEventListener("pointerdown", onDown);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerup", onUp);
+      el.removeEventListener("wheel", onWheel);
+    };
+  }
+
+  setProps(props: Required<Omit<CagViewportProps, "style" | "className">>) {
+    this.props = props;
+    if (this._T() && this._scene) {
+      this._update();
+      this._render();
+    }
+  }
+  _T() {
+    return this.T;
+  }
+
+  dispose() {
+    this._disposed = true;
+    try {
+      if (this._cleanupDrag) this._cleanupDrag();
+      if (this._ro) this._ro.disconnect();
+      if (this._r) {
+        this._r.dispose();
+        if (this._r.forceContextLoss) this._r.forceContextLoss();
+        if (this._r.domElement && this._r.domElement.parentNode)
+          this._r.domElement.parentNode.removeChild(this._r.domElement);
+      }
+    } catch {
+      /* ignore */
+    }
+    this._scene = null;
+    this._r = null;
+  }
+}
+
+export function CagViewport({
+  az = 30,
+  el = 4,
+  dist = 3,
+  lens = 50,
+  roll = 0,
+  subj = "person",
+  camview = "orbit",
+  style,
+  className,
+}: CagViewportProps) {
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const ctrlRef = useRef<Controller | null>(null);
+  const propsRef = useRef({ az, el, dist, lens, roll, subj, camview });
+  propsRef.current = { az, el, dist, lens, roll, subj, camview };
+
+  // build once on mount (lazy-load three)
+  useEffect(() => {
+    let alive = true;
+    const host = hostRef.current;
+    if (!host) return;
+    import("three")
+      .then((T) => {
+        if (!alive || !host) return;
+        ctrlRef.current = new Controller(host, T, propsRef.current);
+      })
+      .catch(() => {
+        if (host)
+          host.innerHTML =
+            '<div style="width:100%;height:100%;display:grid;place-items:center;font:600 10px monospace;color:#999">3D tak tersedia</div>';
+      });
+    return () => {
+      alive = false;
+      if (ctrlRef.current) {
+        ctrlRef.current.dispose();
+        ctrlRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // push prop changes to the live controller
+  useEffect(() => {
+    if (ctrlRef.current) ctrlRef.current.setProps({ az, el, dist, lens, roll, subj, camview });
+  }, [az, el, dist, lens, roll, subj, camview]);
+
+  return (
+    <div
+      ref={hostRef}
+      className={className}
+      style={{ display: "block", position: "relative", overflow: "hidden", ...style }}
+    />
+  );
+}
