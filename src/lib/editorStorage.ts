@@ -5,7 +5,6 @@ import { EditorProject, ensureProjectShape, newProject, deepCopy } from "./edito
 
 export const AUTOKEY = "camguide-pro-autosave";
 export const LISTKEY = "camguide-pro-projects";
-export const OLDKEY = "camguide-pro-scenes"; // legacy scenes key (read-only migration)
 
 // Fired whenever the saved-projects list changes (save/delete). The Pustaka
 // (AppState) listens for this so an anonymous Studio 3D save shows up live —

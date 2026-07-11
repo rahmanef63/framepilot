@@ -44,13 +44,13 @@ export function Sidebar() {
 
   // The two REAL tools — kept prominent at the top of the rail.
   const navCore: MainNav[] = [
-    { key: "data", icon: "▧", label: "Data Prompt", crown: true, badge: "Baru", hasSub: true, href: "/" },
+    { key: "data", icon: "▧", label: "Data Prompt", crown: true, badge: "Baru", hasSub: true, href: "/pustaka" },
     { key: "editor", icon: "◈", label: "Studio 3D", href: "/editor" },
   ];
 
   // Meaningful supporting routes — kept top-level reachable.
   const navExplore: MainNav[] = [
-    { key: "home", icon: "⌂", label: "Beranda", href: "/beranda" },
+    { key: "home", icon: "⌂", label: "Beranda", href: "/" },
     { key: "guide", icon: "?", label: "Panduan", href: "/panduan" },
   ];
 
@@ -61,7 +61,7 @@ export function Sidebar() {
   ];
 
   const isActive = (n: MainNav) => (n.href ? pathname === n.href : false);
-  const onDataRoute = pathname === "/";
+  const onDataRoute = pathname === "/pustaka";
 
   const navSub = ["all", "studio", "photo", "youtube", "file", "paste"].map((k) => ({
     key: k,

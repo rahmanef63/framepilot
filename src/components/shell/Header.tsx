@@ -5,8 +5,7 @@ import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
 
 const SCREEN_NAMES: Record<string, string> = {
-  "/": "Data Prompt",
-  "/beranda": "Beranda · Home",
+  "/pustaka": "Data Prompt",
   "/proyek": "Proyek · Projects",
   "/template": "Template · Templates",
   "/editor": "Studio 3D · Editor",
@@ -17,7 +16,7 @@ export function Header() {
   const app = useApp();
   const pathname = usePathname();
   const crumb = SCREEN_NAMES[pathname] || "Data Prompt";
-  const onData = pathname === "/";
+  const onData = pathname === "/pustaka";
 
   return (
     <header

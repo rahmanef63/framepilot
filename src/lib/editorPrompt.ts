@@ -11,7 +11,7 @@ export type PromptSettings = EditorProject["settings"];
 // ============================================================
 // EN maps (concept ~2303)
 // ============================================================
-export const angleEN: Record<string, string> = {
+const angleEN: Record<string, string> = {
   "BIRD'S EYE": "bird's-eye view",
   "HIGH ANGLE": "high angle",
   "EYE LEVEL": "eye-level shot",
@@ -21,7 +21,7 @@ export const angleEN: Record<string, string> = {
 
 // rel = norm180(az - subjRot): <=22 front / <=67 3q-front / <=112 side /
 // <=157 3q-back / else back (concept ~2311-2318).
-export function viewEN(az: number, subjRot: number): string {
+function viewEN(az: number, subjRot: number): string {
   const abs = Math.abs(norm180(az - subjRot));
   if (abs <= 22) return "front view";
   if (abs <= 67) return "three-quarter front view";
@@ -31,14 +31,14 @@ export function viewEN(az: number, subjRot: number): string {
 }
 
 // person -> a standing person / object -> a sculptural object on a pedestal.
-export function subjEN(subj: string): string {
+function subjEN(subj: string): string {
   return subj === "person" ? "a standing person" : "a sculptural object on a pedestal";
 }
 
 // ============================================================
 // framePrompt (concept ~2307)
 // ============================================================
-export function framePrompt(f: EditorFrame, i: number, settings: PromptSettings): string {
+function framePrompt(f: EditorFrame, i: number, settings: PromptSettings): string {
   const s = f.s;
   const m = { ...defaultShotMeta(), ...(f.meta || {}) };
   const baseAngle = (f.angle || "EYE LEVEL").replace(" · DUTCH", "");

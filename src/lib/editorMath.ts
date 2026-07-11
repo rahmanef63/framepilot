@@ -10,7 +10,7 @@ export interface Pt3 {
 
 // ---- primitive helpers (concept module-globals) ----
 export const deg2rad = (d: number): number => (d * Math.PI) / 180;
-export const rad2deg = (r: number): number => (r * 180) / Math.PI;
+const rad2deg = (r: number): number => (r * 180) / Math.PI;
 export const clamp = (v: number, a: number, b: number): number => Math.min(b, Math.max(a, v));
 export const norm360 = (a: number): number => ((a % 360) + 360) % 360;
 export const norm180 = (a: number): number => {

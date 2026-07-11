@@ -100,7 +100,7 @@ export const ARS = ["16:9", "9:16", "4:5", "1:1", "2.39:1"];
 export const FPS = [24, 25, 30, 60];
 
 // [key, label, default, location ("f" = frame field, "m" = meta field)]
-export const FIELDS: [string, string, string | number, "f" | "m"][] = [
+const FIELDS: [string, string, string | number, "f" | "m"][] = [
   ["angle", "Angle", "EYE LEVEL", "f"],
   ["shot", "Shot size", "MEDIUM SHOT", "f"],
   ["lens", "Lens (mm)", 50, "f"],
@@ -434,7 +434,7 @@ export function fillRows(en: Entry): FillRow[] {
 
 export type SchemaMode = "full" | "simplified";
 
-export function schemaObj(mode: SchemaMode) {
+function schemaObj(mode: SchemaMode) {
   const frameFull = {
     name: "Shot 1",
     angle: "EYE LEVEL",
