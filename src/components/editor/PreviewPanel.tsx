@@ -8,6 +8,7 @@
 
 import React, { useState } from "react";
 import { useEditor } from "@/state/EditorState";
+import { Button } from "@/components/ds/Button";
 import { activeScene } from "@/lib/editorModel";
 import { projectPrompt } from "@/lib/editorPrompt";
 
@@ -73,12 +74,12 @@ export function PreviewPanel() {
           ))}
         </select>
         <div className="pbar">
-          <button onClick={ctx.prevFrame}>Prev</button>
-          <button className="pbPlay" onClick={ctx.togglePlay}>
+          <Button variant="outline" size="sm" onClick={ctx.prevFrame}>Prev</Button>
+          <Button variant="outline" size="sm" onClick={ctx.togglePlay}>
             {playback.playing ? "Pause" : "Play"}
-          </button>
-          <button onClick={ctx.nextFrame}>Next</button>
-          <button onClick={ctx.stopPlayback}>Stop</button>
+          </Button>
+          <Button variant="outline" size="sm" onClick={ctx.nextFrame}>Next</Button>
+          <Button variant="outline" size="sm" onClick={ctx.stopPlayback}>Stop</Button>
           <span className="ind pbInd">{ind}</span>
         </div>
         <button
@@ -111,9 +112,9 @@ export function PreviewPanel() {
           placeholder="Tambahkan frame di tab Editor, lalu info prompt per shot akan muncul di sini."
         />
         <div className="row">
-          <button className="primary" style={{ flex: 1 }} onClick={copyPrompt}>
+          <Button variant="primary" size="sm" style={{ flex: 1 }} onClick={copyPrompt}>
             {copied ? "Tersalin ✓" : "Salin Prompt"}
-          </button>
+          </Button>
         </div>
         <p className="storage-note">
           Teks ini bisa ditempel sebagai konteks shot untuk prompt AI (image/video generation)

@@ -8,6 +8,7 @@
 import React, { useEffect, useRef } from "react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
+import { Button } from "@/components/ds/Button";
 import {
   exportJSON,
   exportCSV,
@@ -129,15 +130,16 @@ export function SavedProjects() {
                 <span className="meta">
                   {scs}s·{frs}f · {new Date(item.updated).toLocaleDateString("id-ID")}
                 </span>
-                <button
-                  className="small"
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => {
                     ctx.loadSavedProject(item.id);
                     showToast(`Proyek “${item.name}” dimuat`);
                   }}
                 >
                   Muat
-                </button>
+                </Button>
                 <ArmDelete
                   title="Hapus proyek (klik 2×)"
                   onConfirm={() => ctx.deleteSavedProject(item.id)}
@@ -148,24 +150,24 @@ export function SavedProjects() {
         )}
       </div>
       <div className="io-row">
-        <button className="small" onClick={doJSON}>
+        <Button variant="outline" size="sm" onClick={doJSON}>
           Ekspor JSON
-        </button>
-        <button className="small" onClick={doCSV}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={doCSV}>
           Shot List CSV
-        </button>
-        <button className="small" onClick={doTxt}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={doTxt}>
           Prompt TXT
-        </button>
-        <button className="small" onClick={doBoard}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={doBoard}>
           Storyboard PNG
-        </button>
-        <button className="small" onClick={() => fileRef.current?.click()}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
           Impor JSON
-        </button>
-        <button className="small" onClick={doImportLibrary}>
+        </Button>
+        <Button variant="outline" size="sm" onClick={doImportLibrary}>
           Impor dari Pustaka
-        </button>
+        </Button>
         <input ref={fileRef} type="file" accept=".json" hidden onChange={onImportFile} />
       </div>
       <p className="storage-note">

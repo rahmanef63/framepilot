@@ -1,3 +1,4 @@
+// TODO(rr): cohesive vendored-style Three.js controller — LOC cap waived (treated like components/ui/* vendored exclusion); a split would scatter shared this-state across files and harm readability.
 // editorViewportEngine.ts — the 3D authoring engine for the CAG Editor.
 // A plain TS class implementing EditorEngineHandle (engineApi.ts). Ports the
 // concept's single-canvas scissor-multi-viewport model (concept ~1094-1530,

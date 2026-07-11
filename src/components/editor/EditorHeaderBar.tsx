@@ -5,6 +5,7 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { Button } from "@/components/ds/Button";
 import { sceneDuration } from "@/lib/editorModel";
 
 export function EditorHeaderBar() {
@@ -29,22 +30,24 @@ export function EditorHeaderBar() {
         <span className="status-pill">
           <b>{sceneCount}</b> scene · <b>{shotCount}</b> shot · <b>{totalDur}s</b>
         </span>
-        <button
-          className="small ghost"
+        <Button
+          variant="ghost"
+          size="sm"
           title="Undo (Ctrl/Cmd+Z)"
           disabled={!canUndo}
           onClick={ctx.undo}
         >
           Undo
-        </button>
-        <button
-          className="small ghost"
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           title="Redo (Ctrl/Cmd+Shift+Z)"
           disabled={!canRedo}
           onClick={ctx.redo}
         >
           Redo
-        </button>
+        </Button>
       </div>
       <div className="scene-bar">
         <span className={"autosave" + (autosaveOn ? " on" : "")}>
@@ -57,10 +60,12 @@ export function EditorHeaderBar() {
           value={project.name}
           onChange={(e) => ctx.setProjectName(e.target.value)}
         />
-        <button className="primary" onClick={ctx.saveCurrentProject}>
+        <Button variant="primary" size="sm" onClick={ctx.saveCurrentProject}>
           Simpan Proyek
-        </button>
-        <button onClick={ctx.newProjectAction}>Proyek Baru</button>
+        </Button>
+        <Button variant="outline" size="sm" onClick={ctx.newProjectAction}>
+          Proyek Baru
+        </Button>
       </div>
     </header>
   );

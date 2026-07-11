@@ -10,6 +10,7 @@ import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { Slider } from "./ui/Slider";
 import { FrameCard } from "./FrameCard";
+import { Button } from "@/components/ds/Button";
 
 export function FramesSection() {
   const ctx = useEditor();
@@ -48,24 +49,24 @@ export function FramesSection() {
             </option>
           ))}
         </select>
-        <button className="small" title="Tambah scene" onClick={ctx.addScene}>
+        <Button variant="outline" size="sm" title="Tambah scene" onClick={ctx.addScene}>
           +
-        </button>
+        </Button>
         <span className="count frameCount">{frames.length} frame</span>
 
         <div className="pbar">
-          <button data-pb="prev" title="Frame sebelumnya" onClick={ctx.prevFrame}>
+          <Button variant="outline" size="sm" title="Frame sebelumnya" onClick={ctx.prevFrame}>
             Prev
-          </button>
-          <button data-pb="play" className="pbPlay" title="Play / pause (Space)" onClick={ctx.togglePlay}>
+          </Button>
+          <Button variant="outline" size="sm" title="Play / pause (Space)" onClick={ctx.togglePlay}>
             {playback.playing ? "Pause" : "Play"}
-          </button>
-          <button data-pb="next" title="Frame berikutnya" onClick={ctx.nextFrame}>
+          </Button>
+          <Button variant="outline" size="sm" title="Frame berikutnya" onClick={ctx.nextFrame}>
             Next
-          </button>
-          <button data-pb="stop" title="Stop" onClick={ctx.stopPlayback}>
+          </Button>
+          <Button variant="outline" size="sm" title="Stop" onClick={ctx.stopPlayback}>
             Stop
-          </button>
+          </Button>
           <span className="ind pbInd">{ind}</span>
         </div>
 
@@ -98,16 +99,17 @@ export function FramesSection() {
 
         <div className="spacer" style={{ flex: 1 }} />
 
-        <button
-          className={current && dirty ? "small on" : "small"}
+        <Button
+          variant={current && dirty ? "primary" : "outline"}
+          size="sm"
           disabled={!current}
           onClick={ctx.updateFrame}
         >
           {updateLabel}
-        </button>
-        <button className="primary" onClick={ctx.addFrame}>
+        </Button>
+        <Button variant="primary" size="sm" onClick={ctx.addFrame}>
           + Tambah Frame
-        </button>
+        </Button>
       </div>
 
       <div className="frames-strip">

@@ -2,6 +2,7 @@
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { NavItem } from "@/components/ds/NavItem";
+import { ThemePresetSwitcher } from "@/components/shell/ThemePresetSwitcher";
 import { useApp } from "@/state/AppState";
 
 const F_LABELS: Record<string, string> = {
@@ -196,6 +197,7 @@ export function Sidebar() {
           alignItems: itemAlign,
         }}
       >
+        <ThemePresetSwitcher orientation={orient} />
         {navDock.map((d) => (
           <NavItem
             key={d.key}

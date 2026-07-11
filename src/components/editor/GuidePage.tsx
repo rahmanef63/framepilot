@@ -5,142 +5,12 @@
 // Each "Coba di Editor" CTA applies its preset to the live rig then jumps to the Editor tab.
 // Rendered inside EditorScreen's `.page.guide-page` wrapper (that div owns .active toggling),
 // so this component only emits the inner `.guide-shell`. Reuses editor.css classes 1:1.
+// Static reference tables live in ./guide-content (pure data, excluded from the LOC cap).
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
-
-// concept data-guide-el / data-guide-roll (concept DOM lines 933-938)
-const ANGLE_CARDS: {
-  kicker: string;
-  title: string;
-  desc: string;
-  use: string;
-  useRest: string;
-  el: number;
-  roll: number;
-}[] = [
-  {
-    kicker: "Netral · 0°",
-    title: "Eye Level",
-    desc: "Kamera sejajar mata. Terasa jujur, dekat, dan tidak memaksakan penilaian pada subjek.",
-    use: "Pakai untuk:",
-    useRest: "dialog, interview, tutorial.",
-    el: 0,
-    roll: 0,
-  },
-  {
-    kicker: "Dominan · +35°",
-    title: "High Angle",
-    desc: "Kamera melihat ke bawah. Subjek terasa lebih kecil, rentan, tertekan, atau sedang diamati.",
-    use: "Pakai untuk:",
-    useRest: "vulnerability, reveal ruang.",
-    el: 35,
-    roll: 0,
-  },
-  {
-    kicker: "Power · −25°",
-    title: "Low Angle",
-    desc: "Kamera melihat ke atas. Menambah skala, kekuatan, ancaman, atau rasa heroik.",
-    use: "Pakai untuk:",
-    useRest: "hero shot, authority, product.",
-    el: -25,
-    roll: 0,
-  },
-  {
-    kicker: "Top-down · +80°",
-    title: "Bird’s Eye",
-    desc: "Pandangan hampir tegak dari atas. Membaca pola, blocking, dan hubungan antarobjek dengan jelas.",
-    use: "Pakai untuk:",
-    useRest: "layout, food, choreography.",
-    el: 80,
-    roll: 0,
-  },
-  {
-    kicker: "Extreme low · −55°",
-    title: "Worm’s Eye",
-    desc: "Sudut sangat rendah yang mendramatisasi tinggi dan membuat lingkungan terasa monumental.",
-    use: "Pakai untuk:",
-    useRest: "spectacle, architecture, tension.",
-    el: -55,
-    roll: 0,
-  },
-  {
-    kicker: "Unstable · roll 18°",
-    title: "Dutch Angle",
-    desc: "Horizon dimiringkan. Memberi rasa tidak stabil, aneh, panik, atau dunia yang mulai “salah”.",
-    use: "Hindari:",
-    useRest: "pemakaian dekoratif tanpa alasan.",
-    el: 5,
-    roll: 18,
-  },
-];
-
-// concept data-guide-r (concept DOM lines 945-950)
-const SHOT_CARDS: {
-  kicker: string;
-  title: string;
-  desc: string;
-  use: string;
-  useRest: string;
-  r: number;
-}[] = [
-  {
-    kicker: "ECU",
-    title: "Extreme Close-Up",
-    desc: "Detail sangat kecil—mata, tangan, tekstur produk. Intens dan sangat spesifik.",
-    use: "Fungsi:",
-    useRest: "detail penting, sensory cue.",
-    r: 0.22,
-  },
-  {
-    kicker: "CU",
-    title: "Close-Up",
-    desc: "Wajah atau detail utama mengisi frame. Prioritasnya emosi, reaksi, atau kualitas produk.",
-    use: "Fungsi:",
-    useRest: "emosi dan emphasis.",
-    r: 0.45,
-  },
-  {
-    kicker: "MCU",
-    title: "Medium Close-Up",
-    desc: "Kompromi antara ekspresi dan bahasa tubuh. Sangat efektif untuk talking-head.",
-    use: "Fungsi:",
-    useRest: "dialog, edukasi, testimonial.",
-    r: 0.75,
-  },
-  {
-    kicker: "MS",
-    title: "Medium Shot",
-    desc: "Menampilkan gestur dan interaksi tanpa kehilangan wajah. Ini “default” yang fleksibel.",
-    use: "Fungsi:",
-    useRest: "presentasi, aksi ringan.",
-    r: 1.15,
-  },
-  {
-    kicker: "FS",
-    title: "Full Shot",
-    desc: "Seluruh tubuh terlihat. Blocking, pose, kostum, dan relasi dengan lantai menjadi penting.",
-    use: "Fungsi:",
-    useRest: "fashion, movement, choreography.",
-    r: 1.8,
-  },
-  {
-    kicker: "WS",
-    title: "Wide Shot",
-    desc: "Lingkungan ikut bercerita. Subjek menjadi bagian dari ruang, bukan satu-satunya informasi.",
-    use: "Fungsi:",
-    useRest: "establishing, scale, geography.",
-    r: 3,
-  },
-];
-
-// concept DOM lines 957-960
-const WORKFLOW: { step: string; title: string; desc: string }[] = [
-  { step: "STEP 1", title: "Block", desc: "Posisikan subjek dan kamera dari Top/Left/Right/Isometric." },
-  { step: "STEP 2", title: "Frame", desc: "Pilih angle, shot size, lensa, aspect ratio, dan komposisi." },
-  { step: "STEP 3", title: "Describe", desc: "Isi tujuan, aksi, movement, lighting, style, dan audio." },
-  { step: "STEP 4", title: "Deliver", desc: "Preview scene lalu ekspor JSON, CSV, prompt, atau storyboard." },
-];
+import { Button } from "@/components/ds/Button";
+import { ANGLE_CARDS, SHOT_CARDS, WORKFLOW } from "./guide-content";
 
 export function GuidePage() {
   const { applyAnglePreset, applyShotPreset, setMainTab } = useEditor();
@@ -206,9 +76,9 @@ export function GuidePage() {
               <div className="use">
                 <b>{c.use}</b> {c.useRest}
               </div>
-              <button type="button" onClick={() => tryAngle(c.el, c.roll)}>
+              <Button variant="outline" size="sm" onClick={() => tryAngle(c.el, c.roll)}>
                 Coba di Editor
-              </button>
+              </Button>
             </article>
           ))}
         </div>
@@ -232,9 +102,9 @@ export function GuidePage() {
               <div className="use">
                 <b>{c.use}</b> {c.useRest}
               </div>
-              <button type="button" onClick={() => tryShot(c.r)}>
+              <Button variant="outline" size="sm" onClick={() => tryShot(c.r)}>
                 Coba di Editor
-              </button>
+              </Button>
             </article>
           ))}
         </div>

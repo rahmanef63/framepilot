@@ -7,6 +7,7 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { Button } from "@/components/ds/Button";
 import { EditorFrame, frameDuration } from "@/lib/editorModel";
 
 export function FrameCard({ frame, index }: { frame: EditorFrame; index: number }) {
@@ -36,14 +37,14 @@ export function FrameCard({ frame, index }: { frame: EditorFrame; index: number 
           onChange={(e) => ctx.setFrameNotes(frame.id, e.target.value)}
         />
         <div className="frame-actions">
-          <button
-            className="small"
-            data-act="dup"
+          <Button
+            variant="outline"
+            size="sm"
             title="Duplikat"
             onClick={() => ctx.dupFrame(frame.id)}
           >
             Copy
-          </button>
+          </Button>
           <button
             className="small danger"
             data-act="del"

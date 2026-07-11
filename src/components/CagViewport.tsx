@@ -221,6 +221,10 @@ class Controller {
 
     const g = this._shotGroup;
     while (g.children.length) g.remove(g.children[0]);
+    // POV renders what the camera captures — hide the camera-viz aids (gizmo, frustum,
+    // ring, target dot) which sit at camPos and would otherwise fill the POV frame with
+    // the orange camera object. Mirrors the editor engine's layer discipline.
+    g.visible = (this.props.camview || "orbit") !== "pov";
 
     const fwd = target.clone().sub(camPos).normalize();
     const wup = Math.abs(fwd.y) > 0.95 ? new T.Vector3(0, 0, 1) : new T.Vector3(0, 1, 0);
