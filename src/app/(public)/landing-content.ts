@@ -16,7 +16,7 @@ export const hero = {
     "Camera Angle Guide Pro untuk sineas, kreator konten, dan storyboard artist: rancang tiap angle di studio 3D interaktif — ukuran shot, sudut, subjek, lensa, satu gerakan kamera, dan speed — lalu pilih platform video-AI dan salin Prompt Kamera yang tinggal ditempel ke Runway, Kling, Luma, Sora, Veo, atau Hailuo. Punya referensi? Impor foto · YouTube · teks · JSON di Pustaka Data untuk mengekstrak data sudut kamera lebih dulu.",
   ctas: [
     { label: "Buka Studio 3D", href: "/editor", variant: "primary" as const, arrow: true },
-    { label: "Impor referensi", href: "/pustaka", variant: "outline" as const, arrow: false },
+    { label: "Impor referensi", href: "/library", variant: "outline" as const, arrow: false },
     { label: "Baca Panduan", href: "/panduan", variant: "ghost" as const, arrow: false },
   ],
 };
@@ -45,7 +45,7 @@ export const screens: Screen[] = [
     tag: "Impor",
     title: "Pustaka Data",
     desc: "Punya referensi? Tempel foto, link YouTube, teks, atau JSON — framepilot mengekstraknya jadi data sudut kamera terstruktur yang bisa diterapkan ke scene.",
-    href: "/pustaka",
+    href: "/library",
     cta: "Buka Pustaka Data",
     glyph: "▤",
     tone: "outline",

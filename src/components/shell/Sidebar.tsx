@@ -4,20 +4,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { NavItem } from "@/components/ds/NavItem";
 import { CreateMenu } from "@/components/shell/CreateMenu";
-import { ThemePresetSwitcher } from "@/components/shell/ThemePresetSwitcher";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
 import { useIsAdmin } from "@/components/admin/useIsAdmin";
 import { useApp } from "@/state/AppState";
-
-const F_LABELS: Record<string, string> = {
-  all: "Semua",
-  studio: "Studio 3D",
-  photo: "Foto",
-  youtube: "YouTube",
-  file: "File",
-  paste: "Tempel",
-};
 
 interface MainNav {
   key: string;
@@ -27,7 +17,6 @@ interface MainNav {
   accent?: boolean;
   crown?: boolean;
   badge?: string;
-  hasSub?: boolean;
   onClick?: () => void;
 }
 
@@ -43,37 +32,16 @@ export function Sidebar() {
   const itemAlign = open ? "stretch" : "center";
 
   // The two REAL tools. Studio 3D is the app home (it produces the Prompt
-  // Kamera — the hero output), so it leads with the crown; the import/library
-  // flow that only feeds it is demoted to secondary.
+  // Kamera — the hero output), so it leads with the crown; Pustaka is the one
+  // merged project list (localStorage + Convex, SSOT) that feeds it.
   const navCore: MainNav[] = [
     { key: "editor", icon: "◈", label: "Studio 3D", crown: true, badge: "Prompt Kamera", href: "/editor" },
-    { key: "data", icon: "▧", label: "Pustaka Data", hasSub: true, href: "/pustaka" },
-  ];
-
-  // Meaningful supporting routes — kept top-level reachable.
-  const navExplore: MainNav[] = [
-    { key: "home", icon: "⌂", label: "Beranda", href: "/" },
-    { key: "guide", icon: "?", label: "Panduan", href: "/panduan" },
-  ];
-
-  // Genuinely-minor routes — tucked inside a collapsed-by-default accordion.
-  const navMinor: MainNav[] = [
-    { key: "projects", icon: "▤", label: "Proyek", href: "/proyek" },
-    { key: "templates", icon: "▦", label: "Template", href: "/template" },
+    { key: "library", icon: "▧", label: "Pustaka", href: "/library" },
   ];
 
   const isActive = (n: MainNav) => (n.href ? pathname === n.href : false);
-  const onDataRoute = pathname === "/pustaka";
 
-  const navSub = ["all", "studio", "photo", "youtube", "file", "paste"].map((k) => ({
-    key: k,
-    label: F_LABELS[k],
-    count: app.counts[k] ?? 0,
-    onClick: () => app.setSourceFilter(k),
-    activeSub: app.sourceFilter === k,
-  }));
-
-  const renderNav = (m: MainNav, dim = false) => (
+  const renderNav = (m: MainNav) => (
     <NavItem
       orientation={orient}
       icon={m.icon}
@@ -82,16 +50,11 @@ export function Sidebar() {
       accent={m.accent}
       crown={m.crown}
       badge={open ? m.badge : undefined}
-      chevron={open ? !!m.hasSub : false}
       onClick={() => (m.onClick ? m.onClick() : m.href && router.push(m.href))}
-      style={{
-        ...(orient === "horizontal" ? { width: "100%" } : {}),
-        ...(dim && !isActive(m) ? { opacity: 0.62 } : {}),
-      }}
+      style={orient === "horizontal" ? { width: "100%" } : undefined}
     />
   );
 
-  const notifItem = { key: "notif", icon: "◎", label: "Notifikasi", avatar: false, onClick: () => app.showToast("Notifikasi · sample") };
   const acctProps = { orientation: orient, avatar: true, onClick: () => setAcctOpen(true), style: orient === "horizontal" ? { width: "100%" } : undefined } as const;
 
   return (
@@ -117,7 +80,13 @@ export function Sidebar() {
           justifyContent: open ? "flex-start" : "center",
         }}
       >
-        <div
+        <a
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/");
+          }}
+          title="Beranda"
           style={{
             width: "38px",
             height: "38px",
@@ -128,10 +97,11 @@ export function Sidebar() {
             display: "grid",
             placeItems: "center",
             font: "700 16px var(--font-mono)",
+            textDecoration: "none",
           }}
         >
           ◉
-        </div>
+        </a>
         {open ? (
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ font: "800 14px var(--font-sans)", color: "var(--foreground)", lineHeight: 1.05 }}>
@@ -157,80 +127,13 @@ export function Sidebar() {
           orientation={orient}
           onNew3D={() => router.push("/editor")}
           onFromImage={() => app.openImport("photo")}
+          onFromTemplate={() => router.push("/template")}
         />
 
         {open ? <SectionLabel>Alat</SectionLabel> : <SectionDivider />}
         {navCore.map((m) => (
-          <React.Fragment key={m.key}>
-            {renderNav(m)}
-            {open && m.hasSub && onDataRoute ? (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "2px",
-                  margin: "2px 0 8px 19px",
-                  paddingLeft: "12px",
-                  borderLeft: "var(--border-width) solid var(--border)",
-                }}
-              >
-                {navSub.map((s) => (
-                  <button
-                    key={s.key}
-                    onClick={s.onClick}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      width: "100%",
-                      textAlign: "left",
-                      border: 0,
-                      borderRadius: "var(--radius-sm)",
-                      padding: "6px 9px",
-                      cursor: "pointer",
-                      background: s.activeSub ? "var(--primary-soft)" : "transparent",
-                      color: s.activeSub ? "var(--primary)" : "var(--foreground)",
-                      font: `${s.activeSub ? 600 : 400} 12px var(--font-sans)`,
-                    }}
-                  >
-                    <span
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {s.label}
-                    </span>
-                    <span style={{ font: "600 10px var(--font-mono)", opacity: 0.7 }}>{s.count}</span>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </React.Fragment>
-        ))}
-
-        {open ? <SectionLabel>Jelajah</SectionLabel> : <SectionDivider />}
-        {navExplore.map((m) => (
           <React.Fragment key={m.key}>{renderNav(m)}</React.Fragment>
         ))}
-
-        {open ? (
-          <Collapsible label="Lainnya">
-            {navMinor.map((m) => (
-              <React.Fragment key={m.key}>{renderNav(m, true)}</React.Fragment>
-            ))}
-          </Collapsible>
-        ) : (
-          <>
-            <SectionDivider />
-            {navMinor.map((m) => (
-              <React.Fragment key={m.key}>{renderNav(m, true)}</React.Fragment>
-            ))}
-          </>
-        )}
       </div>
 
       <div
@@ -244,7 +147,14 @@ export function Sidebar() {
         }}
       >
         <ThemeModeToggle orientation={orient} />
-        <ThemePresetSwitcher orientation={orient} />
+        <NavItem
+          orientation={orient}
+          icon="?"
+          label="Panduan"
+          active={pathname === "/panduan"}
+          onClick={() => router.push("/panduan")}
+          style={orient === "horizontal" ? { width: "100%" } : undefined}
+        />
         {isAdmin ? (
           <NavItem
             orientation={orient}
@@ -255,14 +165,6 @@ export function Sidebar() {
             style={orient === "horizontal" ? { width: "100%" } : undefined}
           />
         ) : null}
-        <NavItem
-          orientation={orient}
-          icon={notifItem.icon}
-          label={notifItem.label}
-          avatar={notifItem.avatar}
-          onClick={notifItem.onClick}
-          style={orient === "horizontal" ? { width: "100%" } : undefined}
-        />
         <AuthLoading>
           <NavItem {...acctProps} icon="RF" label="Akun" />
         </AuthLoading>
@@ -291,66 +193,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </div>
-  );
-}
-
-function Collapsible({ label, children }: { label: string; children: React.ReactNode }) {
-  const storageKey = `fp.sidebar.${label.toLowerCase()}`;
-  const [expanded, setExpanded] = React.useState(false);
-
-  // Rehydrate persisted open/closed state after mount (SSR-safe, defaults closed).
-  React.useEffect(() => {
-    try {
-      if (window.localStorage.getItem(storageKey) === "1") setExpanded(true);
-    } catch {}
-  }, [storageKey]);
-
-  const toggle = () => {
-    setExpanded((v) => {
-      const next = !v;
-      try {
-        window.localStorage.setItem(storageKey, next ? "1" : "0");
-      } catch {}
-      return next;
-    });
-  };
-
-  return (
-    <div>
-      <button
-        onClick={toggle}
-        aria-expanded={expanded}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          width: "100%",
-          border: 0,
-          background: "transparent",
-          cursor: "pointer",
-          font: "700 9.5px var(--font-mono)",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--muted-foreground)",
-          padding: "12px 10px 4px",
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            fontFamily: "var(--font-mono)",
-            transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
-            transition: "transform var(--motion) var(--ease)",
-          }}
-        >
-          {"›"}
-        </span>
-        <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
-      </button>
-      {expanded ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>{children}</div>
-      ) : null}
     </div>
   );
 }

@@ -5,9 +5,7 @@ import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
 
 const SCREEN_NAMES: Record<string, string> = {
-  "/pustaka": "Pustaka Data · Impor",
-  "/proyek": "Proyek · Projects",
-  "/template": "Template · Templates",
+  "/library": "Pustaka",
   "/editor": "Studio 3D · Prompt Kamera",
   "/panduan": "Panduan · Guide",
 };
@@ -16,7 +14,7 @@ export function Header() {
   const app = useApp();
   const pathname = usePathname();
   const crumb = SCREEN_NAMES[pathname] || "Studio 3D · Prompt Kamera";
-  const onData = pathname === "/pustaka";
+  const onData = pathname === "/library";
 
   return (
     <header

@@ -161,20 +161,88 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     tip: "Kalau transisi terasa janggal, ubah urutan atau sunting frame di antaranya, lalu putar ulang.",
   },
   {
-    id: "guide-belajar",
-    kicker: "06 · Resep fitur",
-    title: "Guide Belajar",
+    id: "sudut",
+    kicker: "06 · Tata bahasa",
+    title: "Sudut kamera: pilih dari relasi kuasa & informasi",
     intro:
-      "Guide Belajar adalah panduan sinematografi bawaan di dalam Studio — penjelasan singkat tiap sudut, jenis shot, dan efek lensa sambil kamu bekerja.",
-    bullets: [
-      "Buka Guide Belajar saat ragu memilih preset — ada penjelasan kapan tiap sudut/shot dipakai.",
-      "Pakai sebagai referensi cepat tanpa keluar dari Studio 3D.",
-      "Cocok untuk belajar bahasa sinematografi sambil langsung mempraktikkannya di rig.",
+      "Elevasi kamera relatif terhadap titik fokus mengubah makna sebuah shot. Pilih sudut dari informasi yang perlu dipahami penonton dan emosi yang perlu dirasakan — bukan karena \"terlihat keren\". Terapkan tiap contoh lewat preset sudut di Studio 3D untuk melihat bedanya langsung, bukan hanya membacanya.",
+    steps: [
+      {
+        title: "Eye Level · netral 0°",
+        detail:
+          "Kamera sejajar mata. Terasa jujur, dekat, dan tidak memaksakan penilaian pada subjek. Pakai untuk: dialog, interview, tutorial.",
+      },
+      {
+        title: "High Angle · dominan +35°",
+        detail:
+          "Kamera melihat ke bawah. Subjek terasa lebih kecil, rentan, tertekan, atau sedang diamati. Pakai untuk: vulnerability, reveal ruang.",
+      },
+      {
+        title: "Low Angle · power −25°",
+        detail:
+          "Kamera melihat ke atas. Menambah skala, kekuatan, ancaman, atau rasa heroik. Pakai untuk: hero shot, authority, product.",
+      },
+      {
+        title: "Bird's Eye · top-down +80°",
+        detail:
+          "Pandangan hampir tegak dari atas. Membaca pola, blocking, dan hubungan antarobjek dengan jelas. Pakai untuk: layout, food, choreography.",
+      },
+      {
+        title: "Worm's Eye · extreme low −55°",
+        detail:
+          "Sudut sangat rendah yang mendramatisasi tinggi dan membuat lingkungan terasa monumental. Pakai untuk: spectacle, architecture, tension.",
+      },
+      {
+        title: "Dutch Angle · roll 18°",
+        detail:
+          "Horizon dimiringkan. Memberi rasa tidak stabil, aneh, panik, atau dunia yang mulai \"salah\". Hindari pemakaian dekoratif tanpa alasan.",
+      },
     ],
+    tip: "Buka Studio 3D dan pakai preset sudut untuk mencoba tiap contoh pada rig — perbedaannya jauh lebih mudah dipahami saat dilihat langsung.",
+  },
+  {
+    id: "shot-size",
+    kicker: "07 · Tata bahasa",
+    title: "Ukuran shot: atur seberapa banyak informasi yang masuk",
+    intro:
+      "Shot size dihitung dari tinggi subjek, jarak kamera, dan FOV lensa. Makin dekat, makin intim dan spesifik; makin lebar, makin banyak konteks ruang yang ikut bercerita.",
+    steps: [
+      {
+        title: "Extreme Close-Up (ECU)",
+        detail:
+          "Detail sangat kecil — mata, tangan, tekstur produk. Intens dan sangat spesifik. Fungsi: detail penting, sensory cue.",
+      },
+      {
+        title: "Close-Up (CU)",
+        detail:
+          "Wajah atau detail utama mengisi frame. Prioritasnya emosi, reaksi, atau kualitas produk. Fungsi: emosi dan emphasis.",
+      },
+      {
+        title: "Medium Close-Up (MCU)",
+        detail:
+          "Kompromi antara ekspresi dan bahasa tubuh. Sangat efektif untuk talking-head. Fungsi: dialog, edukasi, testimonial.",
+      },
+      {
+        title: "Medium Shot (MS)",
+        detail:
+          "Menampilkan gestur dan interaksi tanpa kehilangan wajah. Ini \"default\" yang fleksibel. Fungsi: presentasi, aksi ringan.",
+      },
+      {
+        title: "Full Shot (FS)",
+        detail:
+          "Seluruh tubuh terlihat. Blocking, pose, kostum, dan relasi dengan lantai jadi penting. Fungsi: fashion, movement, choreography.",
+      },
+      {
+        title: "Wide Shot (WS)",
+        detail:
+          "Lingkungan ikut bercerita. Subjek jadi bagian dari ruang, bukan satu-satunya informasi. Fungsi: establishing, scale, geography.",
+      },
+    ],
+    tip: "Prinsip inti: mulai dari informasi apa yang perlu dipahami penonton dan emosi apa yang perlu dirasakan, lalu pilih shot size + sudut yang paling jujur menyampaikan keduanya. Pakai preset shot di Studio 3D untuk mengatur jaraknya.",
   },
   {
     id: "tema",
-    kicker: "07 · Resep fitur",
+    kicker: "08 · Resep fitur",
     title: "Tema tampilan",
     intro:
       "Sesuaikan tampilan lewat pemilih mode dan preset. Semua warna mengikuti token, jadi konsisten di terang maupun gelap.",
@@ -194,7 +262,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "simpan",
-    kicker: "08 · Resep fitur",
+    kicker: "09 · Resep fitur",
     title: "Simpan proyek",
     intro:
       "Cara penyimpanan tergantung status login. Keduanya menyimpan pekerjaanmu, tapi jangkauannya beda.",

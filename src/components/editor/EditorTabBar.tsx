@@ -1,7 +1,8 @@
 "use client";
-// EditorTabBar.tsx — the concept .tabbar: main tab router (Editor/Full Preview/
-// Guide Belajar) + drag-tool mode Seg + view focus bar (QUAD/CAM/TOP/LEFT/RIGHT/
-// ISO) + keyboard hint. Uses editor.css classes for dark-studio fidelity.
+// EditorTabBar.tsx — the concept .tabbar: main tab router (Editor / Full Preview)
+// + drag-tool mode Seg + view focus bar (QUAD/CAM/TOP/LEFT/RIGHT/ISO) + keyboard
+// hint. Uses editor.css classes for dark-studio fidelity. (The old Guide Belajar
+// tab was folded into the /panduan cookbook — Ship B slim.)
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
@@ -11,7 +12,6 @@ import type { DragMode, MainTab, ViewId } from "./viewport/engineApi";
 const MAIN_TABS: { key: MainTab; label: string }[] = [
   { key: "editor", label: "Editor" },
   { key: "preview", label: "Full Preview" },
-  { key: "guide", label: "Guide Belajar" },
 ];
 
 const DRAG_OPTIONS: { value: DragMode; label: string }[] = [

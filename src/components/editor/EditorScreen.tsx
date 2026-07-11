@@ -1,10 +1,11 @@
 "use client";
 // EditorScreen.tsx — the CAG editor shell (concept body). One persistent
 // <EditorViewport/> mounted inside the always-rendered editor page; tab switching
-// only toggles the .active/display of the three .page containers (plan §7.3.1) so
-// React never unmounts the viewport and the three engine keeps its rAF loop /
-// WebGL context alive across tabs. Preview + Guide are placeholders for this stage
-// (Workflow B reflows the shared canvas into the preview stage + builds the guide).
+// only toggles the .active/display of the two .page containers (Editor + Full
+// Preview) so React never unmounts the viewport and the three engine keeps its
+// rAF loop / WebGL context alive across tabs. The camera-grammar cookbook lives
+// at /panduan (Shell sidebar → "Panduan"); the old in-editor Guide tab was folded
+// into it (Ship B slim).
 
 import React from "react";
 import "./editor.css";
@@ -17,7 +18,6 @@ import { Hud } from "./viewport/Hud";
 import { FramesSection } from "./FramesSection";
 import { CameraPromptDock } from "./CameraPromptDock";
 import { PreviewPanel } from "./PreviewPanel";
-import { GuidePage } from "./GuidePage";
 
 export function EditorScreen() {
   const ctx = useEditor();
@@ -47,11 +47,6 @@ export function EditorScreen() {
           </div>
         </div>
         <PreviewPanel />
-      </div>
-
-      {/* ---- Guide Belajar page ---- */}
-      <div className={"page guide-page" + (tab === "guide" ? " active" : "")}>
-        <GuidePage />
       </div>
     </div>
   );

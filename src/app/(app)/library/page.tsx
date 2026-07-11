@@ -1,5 +1,5 @@
 import { DataPromptScreen } from "@/components/dataprompt/DataPromptScreen";
 
-export default function DataPromptPage() {
+export default function LibraryPage() {
   return <DataPromptScreen />;
 }

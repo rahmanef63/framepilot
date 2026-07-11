@@ -55,7 +55,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               Panduan
             </Button>
           </Link>
-          <Link href="/pustaka" style={{ textDecoration: "none" }}>
+          <Link href="/library" style={{ textDecoration: "none" }}>
             <Button variant="primary" size="sm">
               Buka Aplikasi →
             </Button>

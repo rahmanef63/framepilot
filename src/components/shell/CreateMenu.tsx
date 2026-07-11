@@ -6,17 +6,20 @@ import { NavItem } from "@/components/ds/NavItem";
  * CreateMenu — the "Buat" (create) affordance rendered as a dropdown.
  * Trigger reuses the ds NavItem (so it matches the rest of the rail in both
  * orientations); the menu is a lightweight token-styled popover that closes on
- * outside-click and Esc. Two options: start a new Studio 3D project, or start
- * from an uploaded image (opens the import flow on the photo tab).
+ * outside-click and Esc. Three options: start a new Studio 3D project, start
+ * from an uploaded image (opens the import flow on the photo tab), or start
+ * from a template (routes to /template).
  */
 export function CreateMenu({
   orientation,
   onNew3D,
   onFromImage,
+  onFromTemplate,
 }: {
   orientation: "horizontal" | "vertical";
   onNew3D: () => void;
   onFromImage: () => void;
+  onFromTemplate: () => void;
 }) {
   const [open, setOpen] = React.useState(false);
   const wrapRef = React.useRef<HTMLDivElement>(null);
@@ -97,6 +100,12 @@ export function CreateMenu({
             title="Impor dari Gambar"
             desc="Foto → ekstrak data kamera"
             onClick={() => pick(onFromImage)}
+          />
+          <MenuOption
+            icon="▦"
+            title="Dari template"
+            desc="Mulai dari preset scene siap pakai"
+            onClick={() => pick(onFromTemplate)}
           />
         </div>
       ) : null}
