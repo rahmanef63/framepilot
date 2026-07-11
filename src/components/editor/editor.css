@@ -1,26 +1,30 @@
 /* editor.css — scoped port of concept/camera-angle-guides-pro.html (lines 16-503).
-   All rules live under .cag-editor so the dark studio chrome never leaks into the
-   light Rupa app shell. The one bridge to the app tokens: --accent -> var(--primary).
+   All rules live under .cag-editor. The local palette vars below are now pure
+   aliases onto the app's semantic tokens (globals.css :root + [data-theme=dark]),
+   so the editor renders LIGHT to match the Rupa app shell and follows the app
+   theme dynamically — "theme tokens, not hex" + "dynamic over hardcoded". Every
+   HUD/letterbox/badge value is derived from a token (color-mix on a token where a
+   translucent frosted chip is needed over the light 3D viewport).
    Class names mirror the concept DOM so components port 1:1. Imported once by EditorScreen. */
 
 .cag-editor {
-  /* studio palette (dark, required for a 3D HUD) — accent bridges to Rupa primary */
-  --bg: #0c0f12;
-  --panel: #14191e;
-  --panel-2: #1a2026;
-  --panel-3: #20272f;
-  --line: #29323b;
-  --line-strong: #3b4652;
-  --ink: #eef2f5;
-  --muted: #8d99a5;
-  --accent: var(--primary, #ffb23f);
-  --accent-ink: #1a1204;
-  --rec: #e5484d;
-  --ok: #4cc38a;
-  --info: #6ea8fe;
-  --e-mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  /* local palette = aliases onto the app semantic tokens (light, theme-following) */
+  --bg: var(--background);
+  --panel: var(--card);
+  --panel-2: var(--secondary);
+  --panel-3: var(--accent);
+  --line: var(--border);
+  --line-strong: var(--border-strong);
+  --ink: var(--foreground);
+  --muted: var(--muted-foreground);
+  --accent: var(--primary, #D97757);
+  --accent-ink: var(--primary-foreground);
+  --rec: var(--destructive);
+  --ok: var(--chart-3);
+  --info: var(--chart-2);
+  --e-mono: var(--font-mono, ui-monospace, "SFMono-Regular", Consolas, monospace);
   --e-sans: var(--font-sans, Inter, "Segoe UI", Roboto, system-ui, sans-serif);
-  --e-r: 10px;
+  --e-r: var(--radius-md);
 
   position: relative;
   display: flex;
@@ -44,7 +48,7 @@
   padding: 9px 16px;
   border-bottom: 1px solid var(--line);
   flex: 0 0 auto;
-  background: #0f1317;
+  background: color-mix(in srgb, var(--foreground) 4%, var(--card));
 }
 .cag-editor .logo {
   display: flex;
@@ -143,15 +147,15 @@
   font-weight: 500;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
   padding: 7px 12px;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
 .cag-editor button:hover {
-  background: #232b34;
-  border-color: #33404c;
+  background: var(--accent);
+  border-color: var(--muted-foreground);
 }
 .cag-editor button:focus-visible {
   outline: 2px solid var(--accent);
@@ -173,7 +177,7 @@
 .cag-editor button.small {
   padding: 4px 8px;
   font-size: 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 .cag-editor button.on {
   background: var(--accent);
@@ -184,7 +188,7 @@
 .cag-editor button.arm {
   background: var(--rec) !important;
   border-color: var(--rec) !important;
-  color: #fff !important;
+  color: var(--destructive-foreground) !important;
 }
 .cag-editor button:disabled {
   opacity: 0.38;
@@ -199,8 +203,8 @@
   font-size: 13px;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
   padding: 6px 8px;
   cursor: pointer;
   max-width: 180px;
@@ -268,9 +272,9 @@
   border-radius: 6px;
 }
 .cag-editor .viewbar button.active {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 .cag-editor[data-tab="guide"] .modebar,
 .cag-editor[data-tab="guide"] .viewbar,
@@ -357,7 +361,7 @@
   cursor: grabbing;
 }
 .cag-editor .cell[data-view="cam"] {
-  border-color: #39434e;
+  border-color: color-mix(in srgb, var(--border-strong) 35%, var(--border));
 }
 .cag-editor .quad[data-focus] .cell {
   display: none;
@@ -392,15 +396,15 @@
   font-family: var(--e-mono);
   font-size: 10px;
   letter-spacing: 0.14em;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
   padding: 3px 9px;
   border-radius: 999px;
   color: var(--muted);
 }
 .cag-editor .cell[data-view="cam"] .cell-head .vname {
   color: var(--accent);
-  border-color: rgba(242, 169, 59, 0.45);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
 }
 .cag-editor .cell-head .vspace {
   flex: 1;
@@ -410,8 +414,8 @@
   padding: 2px 8px;
   font-size: 12px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
 }
 
 /* ---------- viewfinder HUD ---------- */
@@ -426,7 +430,7 @@
   position: absolute;
   width: 24px;
   height: 24px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid color-mix(in srgb, var(--foreground) 50%, transparent);
 }
 .cag-editor .hud .tl {
   top: calc(var(--frame-top, 0px) + 10px);
@@ -466,7 +470,7 @@
 }
 .cag-editor .thirds i {
   position: absolute;
-  background: rgba(255, 255, 255, 0.7);
+  background: color-mix(in srgb, var(--foreground) 70%, transparent);
 }
 .cag-editor .thirds .v1 {
   left: 33.33%;
@@ -502,8 +506,8 @@
   align-items: center;
 }
 .cag-editor .badge {
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
   padding: 3px 10px;
   border-radius: 999px;
   font-size: 10px;
@@ -512,11 +516,11 @@
 }
 .cag-editor .badge.angleBadge {
   color: var(--accent);
-  border-color: rgba(242, 169, 59, 0.5);
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
 }
 .cag-editor .badge.playBadge {
   color: var(--rec);
-  border-color: rgba(229, 72, 77, 0.6);
+  border-color: color-mix(in srgb, var(--destructive) 60%, transparent);
   display: none;
 }
 .cag-editor.playing .badge.playBadge {
@@ -528,15 +532,15 @@
   right: 0;
   bottom: 0;
   height: 30px;
-  background: rgba(0, 0, 0, 0.6);
+  background: color-mix(in srgb, var(--card) 82%, transparent);
   backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 0 12px;
   font-size: 10px;
-  color: #cfd6dd;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--foreground);
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
   overflow-x: hidden;
   white-space: nowrap;
 }
@@ -551,7 +555,7 @@
   top: var(--frame-top, 0);
   width: var(--frame-width, 100%);
   height: var(--frame-height, 100%);
-  border: 1px solid rgba(255, 178, 63, 0.3);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
   pointer-events: none;
   z-index: 1;
 }
@@ -562,15 +566,15 @@
   font-family: var(--e-mono);
   font-size: 9px;
   color: var(--accent);
-  background: rgba(0, 0, 0, 0.68);
-  border: 1px solid rgba(255, 178, 63, 0.35);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
   border-radius: 999px;
   padding: 2px 7px;
 }
 .cag-editor .flash {
   position: absolute;
   inset: 0;
-  background: #fff;
+  background: var(--primary-foreground);
   opacity: 0;
   pointer-events: none;
   z-index: 3;
@@ -661,7 +665,7 @@
 .cag-editor .chips button {
   padding: 5px 10px;
   font-size: 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 /* ---------- fields ---------- */
@@ -676,7 +680,7 @@
 }
 .cag-editor .field label {
   font-size: 11px;
-  color: #c5cdd5;
+  color: var(--foreground);
   font-weight: 500;
 }
 .cag-editor .field small {
@@ -735,7 +739,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #c3ccd5;
+  color: var(--foreground);
   margin-bottom: 4px;
 }
 .cag-editor .slider label output {
@@ -749,7 +753,7 @@
   appearance: none;
   height: 4px;
   border-radius: 2px;
-  background: linear-gradient(to right, var(--accent) var(--fill, 50%), #2a323c var(--fill, 50%));
+  background: linear-gradient(to right, var(--accent) var(--fill, 50%), var(--muted) var(--fill, 50%));
   cursor: pointer;
 }
 .cag-editor input[type="range"]::-webkit-slider-thumb {
@@ -805,7 +809,7 @@
   line-height: 1.5;
 }
 .cag-editor .storage-note.warn {
-  color: #e0b25a;
+  color: var(--chart-2);
 }
 .cag-editor .io-row {
   display: flex;
@@ -878,7 +882,7 @@
   height: 25px;
   border-radius: 4px;
   object-fit: cover;
-  background: #000;
+  background: var(--secondary);
   border: 1px solid var(--line);
   display: block;
 }
@@ -887,7 +891,7 @@
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: #40505f;
+  color: var(--muted-foreground);
 }
 .cag-editor .srow input.sname {
   flex: 1;
@@ -945,7 +949,7 @@
   line-height: 1.45;
 }
 .cag-editor .snotes::placeholder {
-  color: #5b6773;
+  color: var(--muted-foreground);
 }
 .cag-editor .snotes:focus {
   outline: 1px solid var(--accent);
@@ -980,7 +984,7 @@
   height: 25px;
   border-radius: 4px;
   object-fit: cover;
-  background: #000;
+  background: var(--secondary);
 }
 .cag-editor .frow .fidx {
   font-family: var(--e-mono);
@@ -1097,12 +1101,12 @@
   box-shadow: 0 0 0 1px var(--accent);
 }
 .cag-editor .frame-card.dirty {
-  border-color: #d9903c;
+  border-color: var(--chart-2);
 }
 .cag-editor .frame-thumb {
   position: relative;
   cursor: pointer;
-  background: #07090b;
+  background: var(--secondary);
   height: 119px;
   display: flex;
   align-items: center;
@@ -1120,8 +1124,8 @@
   left: 6px;
   font-family: var(--e-mono);
   font-size: 10px;
-  background: rgba(0, 0, 0, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
   padding: 2px 7px;
   border-radius: 999px;
   color: var(--accent);
@@ -1133,10 +1137,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.45);
+  background: color-mix(in srgb, var(--foreground) 45%, transparent);
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
+  color: var(--background);
 }
 .cag-editor .frame-body {
   padding: 7px 9px 9px;
@@ -1181,7 +1185,7 @@
   line-height: 1.4;
 }
 .cag-editor .frame-body textarea::placeholder {
-  color: #5b6773;
+  color: var(--muted-foreground);
 }
 .cag-editor .frame-body textarea:focus {
   outline: 1px solid var(--accent);
@@ -1226,7 +1230,7 @@
 .cag-editor .pv-viewport {
   position: absolute;
   inset: 0;
-  background: #000;
+  background: var(--secondary);
   border: 1px solid var(--line);
   border-radius: var(--e-r);
   overflow: hidden;
@@ -1311,7 +1315,7 @@
   gap: 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: linear-gradient(135deg, #171c21, #101419);
+  background: linear-gradient(135deg, var(--card), var(--secondary));
   padding: 22px;
   overflow: hidden;
   position: relative;
@@ -1321,7 +1325,7 @@
   position: absolute;
   width: 240px;
   height: 240px;
-  border: 1px solid rgba(255, 178, 63, 0.18);
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
   border-radius: 50%;
   right: -60px;
   top: -120px;
@@ -1342,7 +1346,7 @@
 }
 .cag-editor .guide-hero p {
   font-size: 13px;
-  color: #b7c0c8;
+  color: var(--muted-foreground);
   line-height: 1.65;
   max-width: 720px;
 }
@@ -1353,7 +1357,7 @@
   align-self: center;
 }
 .cag-editor .guide-score div {
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--stripe);
   border: 1px solid var(--line);
   border-radius: 9px;
   padding: 11px;
@@ -1418,7 +1422,7 @@
 }
 .cag-editor .learn-card p {
   font-size: 12px;
-  color: #adb7c0;
+  color: var(--muted-foreground);
   line-height: 1.55;
   flex: 1;
 }
@@ -1469,7 +1473,7 @@
   padding: 12px 14px;
   font-size: 12px;
   line-height: 1.6;
-  color: #b9c2ca;
+  color: var(--muted-foreground);
 }
 
 /* ---------- toast ---------- */

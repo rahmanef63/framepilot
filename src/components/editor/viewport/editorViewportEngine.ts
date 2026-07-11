@@ -47,9 +47,10 @@ interface OrthoView {
   w: number;
 }
 
-const POV_BG = 0x14181d;
-const ORTHO_BG = 0x101418;
-const CLEAR_BG = 0x0a0d10;
+// Scene colors are LIGHT + theme-token-driven, sampled at build() off the mounted
+// canvas (mirrors CagViewport._rgb). No hardcoded dark palette — the scene follows
+// the app's [data-theme] via the semantic tokens (--card / --background / --secondary /
+// --border / --muted-foreground / --foreground / --primary). Fallbacks below are LIGHT.
 
 function defaultRig(): RigState {
   // az30/el4/dist3, fov40, roll0, targetY1.35, person (matches editorModel).
@@ -81,6 +82,8 @@ export class EditorViewportEngine implements EditorEngineHandle {
   private povFog: any = null;
   private povBg: any = null;
   private orthoBg: any = null;
+  private clearColor: any = null;
+  private subjMat: any = null;
   private povCam: any = null;
   private camHelper: any = null;
   private camBody: any = null;
@@ -153,6 +156,29 @@ export class EditorViewportEngine implements EditorEngineHandle {
     this.updateFormatGuides();
   }
 
+  // Read an app CSS token off the mounted canvas and resolve it to an "rgb(r,g,b)"
+  // string via a 1x1 canvas (mirrors CagViewport._rgb). Falls back to a LIGHT value
+  // so the scene never reverts to the old dark palette when a token is missing.
+  private rgb(name: string, fb: string): string {
+    try {
+      const el = this.canvas || (typeof document !== "undefined" ? document.documentElement : null);
+      if (!el) return fb;
+      const rawv = getComputedStyle(el).getPropertyValue(name).trim();
+      if (!rawv) return fb;
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = 1;
+      const ctx = cv.getContext("2d");
+      if (!ctx) return fb;
+      ctx.fillStyle = "rgb(0,0,0)";
+      ctx.fillStyle = rawv;
+      ctx.fillRect(0, 0, 1, 1);
+      const d = ctx.getImageData(0, 0, 1, 1).data;
+      return "rgb(" + d[0] + "," + d[1] + "," + d[2] + ")";
+    } catch {
+      return fb;
+    }
+  }
+
   private build(): void {
     const T = this.T;
     const canvas = this.canvas;
@@ -170,24 +196,45 @@ export class EditorViewportEngine implements EditorEngineHandle {
 
     const scene = new T.Scene();
     this.scene = scene;
-    this.povBg = new T.Color(POV_BG);
-    this.orthoBg = new T.Color(ORTHO_BG);
-    this.povFog = new T.Fog(POV_BG, 16, 36);
+
+    // --- theme-token sampling (mirrors CagViewport._rgb): read the app's LIGHT
+    // semantic tokens off the mounted canvas so the whole scene follows [data-theme]. ---
+    const cardRgb = this.rgb("--card", "rgb(250,249,245)"); // panel/viewport bg
+    const bgRgb = this.rgb("--background", "rgb(240,238,230)"); // page bg -> gutter clear
+    const secondaryRgb = this.rgb("--secondary", "rgb(231,228,217)"); // floor
+    const gridCenterRgb = this.rgb("--muted-foreground", "rgb(107,102,92)"); // grid center line
+    const gridLineRgb = this.rgb("--border", "rgb(219,215,203)"); // grid lines
+    const fgRgb = this.rgb("--foreground", "rgb(26,25,21)"); // subject silhouette
+    const primaryRgb = this.rgb("--primary", "rgb(217,119,87)"); // camera gizmo / frustum / dot / facing
+
+    this.povBg = new T.Color(cardRgb);
+    this.orthoBg = new T.Color(cardRgb);
+    this.clearColor = new T.Color(bgRgb);
+    // fog color matches the light --card bg so depth SOFTENS (never darkens) the scene.
+    this.povFog = new T.Fog(cardRgb, 16, 36);
     scene.background = this.povBg;
     scene.fog = this.povFog;
 
-    scene.add(new T.HemisphereLight(0xbdd0e4, 0x2a2320, 0.9));
-    const key = new T.DirectionalLight(0xffe0b0, 0.9);
+    // Neutral white-ish lighting so the dark --foreground subject reads as a clean
+    // silhouette on the light --card bg (mirrors CagViewport ambient 0.7 + directional 0.5).
+    scene.add(new T.HemisphereLight(0xffffff, 0xffffff, 0.7));
+    const key = new T.DirectionalLight(0xffffff, 0.5);
     key.position.set(4, 6, 3);
     scene.add(key);
-    const rim = new T.DirectionalLight(0x88aaff, 0.35);
+    const rim = new T.DirectionalLight(0xffffff, 0.25);
     rim.position.set(-5, 4, -4);
     scene.add(rim);
 
-    scene.add(new T.GridHelper(20, 20, 0x3a4550, 0x232a32));
+    // shared subject material: dark --foreground silhouette on the light scene.
+    this.subjMat = new T.MeshStandardMaterial({ color: new T.Color(fgRgb), roughness: 0.85, metalness: 0 });
+
+    const grid = new T.GridHelper(20, 20, new T.Color(gridCenterRgb), new T.Color(gridLineRgb));
+    grid.material.opacity = 0.5;
+    grid.material.transparent = true; // soften the grid on the light bg
+    scene.add(grid);
     const floor = new T.Mesh(
       new T.CircleGeometry(10, 48),
-      new T.MeshStandardMaterial({ color: 0x1a2027, roughness: 1 })
+      new T.MeshStandardMaterial({ color: new T.Color(secondaryRgb), roughness: 1 })
     );
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = -0.001;
@@ -199,7 +246,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
     scene.add(this.person, this.objectSubj);
 
     this.facingGroup = new T.Group();
-    const facing = new T.Mesh(new T.ConeGeometry(0.08, 0.25, 4), new T.MeshBasicMaterial({ color: 0xf2a93b }));
+    const facing = new T.Mesh(new T.ConeGeometry(0.08, 0.25, 4), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
     facing.rotation.x = Math.PI / 2;
     facing.position.set(0, 0.02, 0.55);
     this.facingGroup.add(facing);
@@ -212,12 +259,19 @@ export class EditorViewportEngine implements EditorEngineHandle {
     const camHelper = new T.CameraHelper(povCam);
     camHelper.layers.set(1);
     camHelper.traverse((o: any) => o.layers.set(1));
+    // frustum -> --primary accent (CameraHelper defaults to multicolor vertex colors;
+    // force a single accent line color to match CagViewport's accent frustum).
+    if (camHelper.material) {
+      camHelper.material.vertexColors = false;
+      camHelper.material.color = new T.Color(primaryRgb);
+      camHelper.material.needsUpdate = true;
+    }
     scene.add(camHelper);
     this.camHelper = camHelper;
 
     const camBody = new T.Group();
-    const box = new T.Mesh(new T.BoxGeometry(0.22, 0.18, 0.3), new T.MeshBasicMaterial({ color: 0xe5484d }));
-    const lens = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 0.14, 12), new T.MeshBasicMaterial({ color: 0xff8a8e }));
+    const box = new T.Mesh(new T.BoxGeometry(0.22, 0.18, 0.3), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
+    const lens = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 0.14, 12), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
     lens.rotation.x = Math.PI / 2;
     lens.position.z = -0.2;
     camBody.add(box, lens);
@@ -225,7 +279,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
     scene.add(camBody);
     this.camBody = camBody;
 
-    const targetDot = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), new T.MeshBasicMaterial({ color: 0xf2a93b }));
+    const targetDot = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
     targetDot.layers.set(1);
     scene.add(targetDot);
     this.targetDot = targetDot;
@@ -257,32 +311,31 @@ export class EditorViewportEngine implements EditorEngineHandle {
   private makePerson(): any {
     const T = this.T;
     const g = new T.Group();
-    const skin = new T.MeshStandardMaterial({ color: 0xd9a066, roughness: 0.8 });
-    const shirt = new T.MeshStandardMaterial({ color: 0x3e6b8f, roughness: 0.85 });
-    const pants = new T.MeshStandardMaterial({ color: 0x2c333c, roughness: 0.9 });
+    // single dark --foreground silhouette material for every part (CagViewport parity).
+    const mat = this.subjMat;
     const legG = new T.CylinderGeometry(0.075, 0.07, 0.82, 10);
-    const l1 = new T.Mesh(legG, pants);
+    const l1 = new T.Mesh(legG, mat);
     l1.position.set(-0.11, 0.41, 0);
-    const l2 = new T.Mesh(legG, pants);
+    const l2 = new T.Mesh(legG, mat);
     l2.position.set(0.11, 0.41, 0);
-    const torso = new T.Mesh(new T.BoxGeometry(0.38, 0.56, 0.22), shirt);
+    const torso = new T.Mesh(new T.BoxGeometry(0.38, 0.56, 0.22), mat);
     torso.position.y = 1.1;
     const armG = new T.CylinderGeometry(0.05, 0.045, 0.58, 10);
-    const a1 = new T.Mesh(armG, shirt);
+    const a1 = new T.Mesh(armG, mat);
     a1.position.set(-0.25, 1.06, 0);
     a1.rotation.z = 0.08;
-    const a2 = new T.Mesh(armG, shirt);
+    const a2 = new T.Mesh(armG, mat);
     a2.position.set(0.25, 1.06, 0);
     a2.rotation.z = -0.08;
-    const neck = new T.Mesh(new T.CylinderGeometry(0.055, 0.055, 0.09, 10), skin);
+    const neck = new T.Mesh(new T.CylinderGeometry(0.055, 0.055, 0.09, 10), mat);
     neck.position.y = 1.43;
-    const head = new T.Mesh(new T.SphereGeometry(0.125, 20, 16), skin);
+    const head = new T.Mesh(new T.SphereGeometry(0.125, 20, 16), mat);
     head.position.y = 1.58;
-    const nose = new T.Mesh(new T.BoxGeometry(0.04, 0.04, 0.05), skin);
+    const nose = new T.Mesh(new T.BoxGeometry(0.04, 0.04, 0.05), mat);
     nose.position.set(0, 1.58, 0.125);
     const hair = new T.Mesh(
       new T.SphereGeometry(0.128, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2.4),
-      new T.MeshStandardMaterial({ color: 0x25201c, roughness: 1 })
+      mat
     );
     hair.position.y = 1.6;
     g.add(l1, l2, torso, a1, a2, neck, head, nose, hair);
@@ -292,15 +345,15 @@ export class EditorViewportEngine implements EditorEngineHandle {
   private makeObject(): any {
     const T = this.T;
     const g = new T.Group();
-    const stone = new T.MeshStandardMaterial({ color: 0x9aa4ad, roughness: 0.6, metalness: 0.1 });
-    const brass = new T.MeshStandardMaterial({ color: 0xd8a24a, roughness: 0.35, metalness: 0.7 });
-    const base = new T.Mesh(new T.CylinderGeometry(0.32, 0.38, 0.12, 24), stone);
+    // single dark --foreground silhouette material for every part (CagViewport parity).
+    const mat = this.subjMat;
+    const base = new T.Mesh(new T.CylinderGeometry(0.32, 0.38, 0.12, 24), mat);
     base.position.y = 0.06;
-    const column = new T.Mesh(new T.CylinderGeometry(0.16, 0.2, 0.78, 20), stone);
+    const column = new T.Mesh(new T.CylinderGeometry(0.16, 0.2, 0.78, 20), mat);
     column.position.y = 0.51;
-    const cap = new T.Mesh(new T.CylinderGeometry(0.26, 0.18, 0.08, 24), stone);
+    const cap = new T.Mesh(new T.CylinderGeometry(0.26, 0.18, 0.08, 24), mat);
     cap.position.y = 0.94;
-    const art = new T.Mesh(new T.TorusKnotGeometry(0.17, 0.055, 120, 16), brass);
+    const art = new T.Mesh(new T.TorusKnotGeometry(0.17, 0.055, 120, 16), mat);
     art.position.y = 1.28;
     g.add(base, column, cap, art);
     return g;
@@ -1076,7 +1129,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
 
     this.ensureSize();
     this.renderer.setScissorTest(false);
-    this.renderer.setClearColor(CLEAR_BG);
+    this.renderer.setClearColor(this.clearColor);
     this.renderer.clear();
     this.renderer.setScissorTest(true);
 
