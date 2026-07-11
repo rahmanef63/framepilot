@@ -1,11 +1,13 @@
 "use client";
 // PanelTabs.tsx — the right-panel sub-tabs (concept .panel-tabs): Kontrol / Data
-// Shot / Outline. Renders ControlPanel for "control"; shot + outline are simple
-// placeholders here (Workflow B fills the brief editor + outline tree).
+// Shot / Outline. Renders ControlPanel for "control", ShotPanel for "shot",
+// OutlineTree for "outline".
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { ControlPanel } from "./ControlPanel";
+import { ShotPanel } from "./ShotPanel";
+import { OutlineTree } from "./OutlineTree";
 import type { EditorUi } from "@/state/EditorState";
 
 const SUB_TABS: { key: EditorUi["panelTab"]; label: string }[] = [
@@ -33,22 +35,8 @@ export function PanelTabs() {
       </div>
 
       {tab === "control" ? <ControlPanel /> : null}
-      {tab === "shot" ? (
-        <div className="panel-page active">
-          <div className="group">
-            <h3>Data Shot</h3>
-            <div className="storage-note">Editor brief data-shot menyusul (Workflow B).</div>
-          </div>
-        </div>
-      ) : null}
-      {tab === "outline" ? (
-        <div className="panel-page active">
-          <div className="group">
-            <h3>Outline</h3>
-            <div className="storage-note">Pohon scene / frame menyusul (Workflow B).</div>
-          </div>
-        </div>
-      ) : null}
+      {tab === "shot" ? <ShotPanel /> : null}
+      {tab === "outline" ? <OutlineTree /> : null}
     </>
   );
 }

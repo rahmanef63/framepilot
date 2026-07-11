@@ -3,7 +3,7 @@
 // Owns the v2 document, a mutable rig ref, ui/playback/history — all non-3D logic.
 // The 3D engine is injected via a ref typed EditorEngineHandle (null before mount).
 
-import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Meta, uid } from "@/lib/dataPrompt";
 import {
   EditorProject,
@@ -41,9 +41,11 @@ import type {
   DragMode,
   FocusView,
   MainTab,
+  ViewId,
 } from "@/components/editor/viewport/engineApi";
 import {
   autosave,
+  loadAutosave,
   saveProject,
   loadProject,
   deleteProject,
@@ -560,7 +562,9 @@ export function EditorStateProvider({
     (t: MainTab) => {
       uiRef.current.mainTab = t;
       engineRef.current?.setActiveTab(t);
-      if (t === "preview") engineRef.current?.applyFocus("cam");
+      // Preview forces the single POV; returning to Editor restores the tracked
+      // quad/focus state so the engine's focusView never gets stuck on "cam".
+      engineRef.current?.applyFocus(t === "preview" ? "cam" : uiRef.current.focusView);
       bump();
     },
     [bump]
@@ -1047,6 +1051,88 @@ export function EditorStateProvider({
     },
     [importProjectObject]
   );
+
+  // ---------- restore autosave on mount (concept: continue last session) ----------
+  // React fires child effects before parent effects, so the viewport has already
+  // registered the engine by the time this runs — setAspect/updateHud take effect.
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (hydratedRef.current) return;
+    hydratedRef.current = true;
+    const auto = loadAutosave();
+    if (!auto) return;
+    projectRef.current = auto;
+    currentFrameIdRef.current = null;
+    historyRef.current = { entries: [], index: -1, busy: false, max: 30 };
+    engineRef.current?.setAspect(auto.settings.aspectRatio);
+    engineRef.current?.updateHud();
+    commitHistory("Pulihkan autosave");
+    bump();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ---------- keyboard (concept ~1532-1564) ----------
+  // Populates the shared keysHeld Set that the engine's rAF handleKeys() reads for
+  // fly/orbit navigation, and dispatches the discrete shortcuts. typing() guards
+  // form fields so shortcuts never fire while editing a brief.
+  useEffect(() => {
+    const typing = () => {
+      const t = document.activeElement as HTMLElement | null;
+      return !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT");
+    };
+    const FLY = [
+      "w", "a", "s", "d", "q", "e", "shift",
+      "arrowup", "arrowdown", "arrowleft", "arrowright",
+    ];
+    const VIEW_KEYS: Record<string, ViewId> = {
+      "1": "cam",
+      "2": "top",
+      "3": "left",
+      "4": "right",
+      "5": "iso",
+    };
+    const onDown = (e: KeyboardEvent) => {
+      if (typing()) return;
+      const k = e.key.toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && k === "z") {
+        e.preventDefault();
+        if (e.shiftKey) redo();
+        else undo();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && k === "y") {
+        e.preventDefault();
+        redo();
+        return;
+      }
+      if (FLY.includes(k)) {
+        keysHeldRef.current.add(k);
+        e.preventDefault();
+      }
+      if (k === " ") {
+        e.preventDefault();
+        togglePlay();
+      }
+      if (k === "f") focusOnSubject();
+      if (k === "escape") setFocusView(null);
+      if (k in VIEW_KEYS) {
+        const v = VIEW_KEYS[k];
+        setFocusView(uiRef.current.focusView === v ? null : v);
+      }
+    };
+    const onUp = (e: KeyboardEvent) => {
+      keysHeldRef.current.delete(e.key.toLowerCase());
+    };
+    const onBlur = () => keysHeldRef.current.clear();
+    window.addEventListener("keydown", onDown);
+    window.addEventListener("keyup", onUp);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onDown);
+      window.removeEventListener("keyup", onUp);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, [undo, redo, togglePlay, focusOnSubject, setFocusView]);
 
   // ---------- value ----------
   const value = useMemo<EditorContextValue>(

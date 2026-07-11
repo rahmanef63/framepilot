@@ -13,6 +13,10 @@ import { EditorHeaderBar } from "./EditorHeaderBar";
 import { EditorTabBar } from "./EditorTabBar";
 import { PanelTabs } from "./panel/PanelTabs";
 import { EditorViewport } from "./viewport/EditorViewport";
+import { Hud } from "./viewport/Hud";
+import { FramesSection } from "./FramesSection";
+import { PreviewPanel } from "./PreviewPanel";
+import { GuidePage } from "./GuidePage";
 
 export function EditorScreen() {
   const ctx = useEditor();
@@ -30,25 +34,22 @@ export function EditorScreen() {
         <div className="panel">
           <PanelTabs />
         </div>
-        <div className="frames-section">
-          <div className="storage-note" style={{ padding: "10px 4px" }}>
-            Filmstrip &amp; transport menyusul (Workflow B).
+        <FramesSection />
+      </div>
+
+      {/* ---- Full Preview page: the ONE canvas reflows into .pv-viewport ---- */}
+      <div className={"page preview-page" + (tab === "preview" ? " active" : "")}>
+        <div className="pv-stage">
+          <div className="pv-viewport" data-view="cam">
+            <Hud thirdsOn={ui.thirdsOn} />
           </div>
         </div>
+        <PreviewPanel />
       </div>
 
-      {/* ---- Full Preview page (placeholder) ---- */}
-      <div className={"page preview-page" + (tab === "preview" ? " active" : "")}>
-        <div className="pv-stage" style={{ display: "grid", placeItems: "center" }}>
-          <div className="storage-note">Full Preview menyusul (Workflow B).</div>
-        </div>
-      </div>
-
-      {/* ---- Guide Belajar page (placeholder) ---- */}
+      {/* ---- Guide Belajar page ---- */}
       <div className={"page guide-page" + (tab === "guide" ? " active" : "")}>
-        <div className="storage-note" style={{ padding: 24 }}>
-          Guide Belajar menyusul (Workflow B).
-        </div>
+        <GuidePage />
       </div>
     </div>
   );

@@ -101,6 +101,8 @@ interface AppContextValue {
   activeEntry: EntryView | null;
   selectedCount: number;
   projStats: string;
+  /** DataPrompt library staging project — read-only, for the one-way editor handoff. */
+  project: Project;
   filterActive: boolean;
   filterLabel: string;
   entriesCountText: string;
@@ -663,6 +665,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     activeEntry,
     selectedCount,
     projStats,
+    project,
     filterActive,
     filterLabel,
     entriesCountText,

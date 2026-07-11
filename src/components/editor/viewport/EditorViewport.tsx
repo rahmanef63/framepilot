@@ -51,16 +51,19 @@ export function EditorViewport() {
           const engine = new EditorViewportEngine(THREE);
           engineRef.current = engine;
 
+          // Scope HUD text targets to the whole editor root so the Full-Preview
+          // stage's badges/readout also update; the scissor cells stay the quad's.
+          const root = (quad.closest(".cag-editor") as HTMLElement | null) ?? quad;
           const cells: Partial<Record<ViewId, HTMLElement>> = {};
           (["cam", "top", "left", "right", "iso"] as ViewId[]).forEach((v) => {
             const c = quad.querySelector<HTMLElement>(`.cell[data-view="${v}"]`);
             if (c) cells[v] = c;
           });
           const hud: EngineHudRefs = {
-            angleBadges: Array.from(quad.querySelectorAll<HTMLElement>(".angleBadge")),
-            shotBadges: Array.from(quad.querySelectorAll<HTMLElement>(".shotBadge")),
-            readouts: Array.from(quad.querySelectorAll<HTMLElement>(".readout")),
-            formatLabels: Array.from(quad.querySelectorAll<HTMLElement>(".formatLabel")),
+            angleBadges: Array.from(root.querySelectorAll<HTMLElement>(".angleBadge")),
+            shotBadges: Array.from(root.querySelectorAll<HTMLElement>(".shotBadge")),
+            readouts: Array.from(root.querySelectorAll<HTMLElement>(".readout")),
+            formatLabels: Array.from(root.querySelectorAll<HTMLElement>(".formatLabel")),
             cells,
           };
 
@@ -73,6 +76,9 @@ export function EditorViewport() {
             keysHeld,
             aspect: ctx.project.settings.aspectRatio,
           });
+          // Full-Preview stage = a second "cam" pointer/wheel surface (concept ~1506).
+          const pv = root.querySelector<HTMLElement>(".pv-viewport");
+          if (pv) engine.attachSurface(pv, "cam");
           registerRef.current(engine);
           engine.startLoop();
         });
@@ -90,6 +96,8 @@ export function EditorViewport() {
     return () => {
       alive = false;
       registerRef.current(null);
+      // Return the canvas to its React-owned parent so unmount removal is clean.
+      if (canvas && quad && canvas.parentElement !== quad) quad.appendChild(canvas);
       if (engineRef.current) {
         engineRef.current.dispose();
         engineRef.current = null;
@@ -98,6 +106,23 @@ export function EditorViewport() {
     // mount once — three + engine live for the lifetime of the screen.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reflow the ONE canvas into the Full-Preview stage on the preview tab, back to
+  // the quad otherwise (concept switchTab moves the canvas node; setActiveTab in
+  // the engine resets lastW so ensureSize re-measures the new parent).
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const quad = quadRef.current;
+    if (!canvas || !quad) return;
+    if (ui.mainTab === "preview") {
+      const pv = (quad.closest(".cag-editor") as HTMLElement | null)?.querySelector<HTMLElement>(
+        ".pv-viewport"
+      );
+      if (pv && canvas.parentElement !== pv) pv.insertBefore(canvas, pv.firstChild);
+    } else if (canvas.parentElement !== quad) {
+      quad.insertBefore(canvas, quad.firstChild);
+    }
+  }, [ui.mainTab]);
 
   const toggleFocus = (v: ViewId) => setFocusView(ui.focusView === v ? null : v);
 

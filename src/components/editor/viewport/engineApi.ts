@@ -69,6 +69,9 @@ export interface EditorEngineHandle {
   applyFocus(view: FocusView): void;
   setActiveTab(tab: MainTab): void; // gates which scissor rects the loop draws
   setDragMode(mode: DragMode): void;
+  // Bind an extra pointer/wheel interaction surface for a view (concept binds the
+  // Full-Preview stage as a second "cam" surface, line ~1506). Cleaned up on dispose.
+  attachSurface(el: HTMLElement, viewId: ViewId): void;
   setThirds(on: boolean): void;
   setFrustum(on: boolean): void;
   setAspect(aspect: string): void; // real POV aspect + letterbox

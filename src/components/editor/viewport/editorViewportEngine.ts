@@ -461,6 +461,12 @@ export class EditorViewportEngine implements EditorEngineHandle {
     this.dragMode = mode;
   }
 
+  // Public wrapper so the React layer can register the Full-Preview stage as an
+  // extra interaction surface (concept attachViewInteraction($('pvViewport'))).
+  attachSurface(el: HTMLElement, viewId: ViewId): void {
+    this.attachViewInteraction(el, viewId);
+  }
+
   setThirds(on: boolean): void {
     this.thirdsOn = on; // visual overlay is React-driven; stored for parity
   }

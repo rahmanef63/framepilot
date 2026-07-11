@@ -13,6 +13,7 @@ import { Seg } from "../ui/Seg";
 import { Chip, Chips } from "../ui/Chip";
 import { getOrbit, focalLength } from "@/lib/editorMath";
 import { ARS, FPS } from "@/lib/dataPrompt";
+import { SavedProjects } from "./SavedProjects";
 
 // G7 · angle presets [el, roll]
 const ANGLE_PRESETS: { label: string; el: number; roll: number }[] = [
@@ -235,6 +236,9 @@ export function ControlPanel() {
           </div>
         </div>
       </div>
+
+      {/* ---- saved projects + export/import (G22/G23) ---- */}
+      <SavedProjects />
     </div>
   );
 }
