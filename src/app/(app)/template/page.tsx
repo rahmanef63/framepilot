@@ -14,7 +14,7 @@
 //   4. router.push("/editor") — Studio 3D mount ulang & memuat dokumen tadi.
 
 import { useRouter } from "next/navigation";
-import { CagViewport } from "@/components/CagViewport";
+import { CagCardPreview } from "@/components/CagCardPreview";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { toEditorProject } from "@/lib/editorModel";
@@ -76,23 +76,24 @@ export default function TemplatePage() {
               >
                 <div
                   style={{
-                    height: 168,
                     borderBottom: "1px solid var(--border)",
                     background: "var(--muted)",
                     position: "relative",
                   }}
                 >
-                  <CagViewport
+                  {/* Shared lazy preview: mounts ONE WebGL context only while near
+                      the viewport, freeing it when scrolled away — same context
+                      discipline as the library grid (no eager all-6-at-once). */}
+                  <CagCardPreview
                     az={f0.az}
                     el={f0.el}
                     dist={f0.dist}
                     lens={f0.lens}
                     roll={f0.roll}
                     subj={f0.subj}
-                    camview="orbit"
-                    style={{ width: "100%", height: "100%" }}
+                    height={168}
                   />
-                  <div style={{ position: "absolute", top: 8, right: 8 }}>
+                  <div style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}>
                     <Badge tone="outline">{t.aspectRatio}</Badge>
                   </div>
                 </div>

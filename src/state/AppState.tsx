@@ -68,12 +68,18 @@ export interface EntryView {
   onDelete: () => void;
 }
 
+/** Library layout the user picked: card grid, dense table, or list+inspector split. */
+export type LibraryView = "grid" | "table" | "split";
+
 interface AppContextValue {
   // shell
   sidebarOpen: boolean;
   toggleSidebar: () => void;
   // library list (single view of the SSOT store)
   entriesAll: EntryView[];
+  /** chosen library layout + its setter (grid default). */
+  view: LibraryView;
+  setView: (v: LibraryView) => void;
   entriesCountText: string;
   projStats: string;
   /** DataPrompt library staging project — read-only, for export + the header stat. */
@@ -144,6 +150,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // the projects-changed event that editorStorage dispatches on every save.
   const [localSaved, setLocalSaved] = useState<SavedEntry[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Below the tablet breakpoint the 246px open sidebar eats the viewport and the
+  // content column gets clipped by the Shell's overflow:hidden root. Auto-collapse
+  // once on mount when narrow (SSR renders open → hydration matches → then collapses).
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth <= 768) setSidebarOpen(false);
+  }, []);
+  const [view, setView] = useState<LibraryView>("grid");
 
   const [importOpen, setImportOpen] = useState(false);
   const [schemaOpen, setSchemaOpen] = useState(false);
@@ -478,6 +491,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     sidebarOpen,
     toggleSidebar: () => setSidebarOpen((o) => !o),
     entriesAll,
+    view,
+    setView,
     entriesCountText,
     projStats,
     project,

@@ -13,6 +13,10 @@ const SCREEN_NAMES: Record<string, string> = {
 export function Header() {
   const app = useApp();
   const pathname = usePathname();
+  // On /editor the Studio supplies its own single consolidated header
+  // (EditorHeaderBar), so the app shell header suppresses itself to avoid a
+  // double-stacked bar. Every other route keeps this header.
+  if (pathname === "/editor") return null;
   const crumb = SCREEN_NAMES[pathname] || "Studio 3D · Prompt Kamera";
   const onData = pathname === "/library";
 

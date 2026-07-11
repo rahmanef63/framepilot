@@ -126,6 +126,8 @@
   font-family: var(--e-sans);
   font-size: 13px;
   width: 180px;
+  min-width: 0;
+  max-width: 100%;
 }
 .cag-editor .scene-bar input[type="text"]:focus {
   outline: 2px solid var(--accent);
@@ -1647,6 +1649,13 @@
 
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
+  /* Stacked layout can be taller than its flex box; without this the tail
+     (right panel) is clipped by the shell's overflow:hidden and unreachable. */
+  .cag-editor .editor-page,
+  .cag-editor .preview-page {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   .cag-editor .editor-page {
     grid-template-columns: 1fr;
     grid-template-rows: 60vh auto auto;
@@ -1713,8 +1722,23 @@
     padding: 2px 6px;
     font-size: 8px;
   }
-  .cag-editor .quad:not([data-focus]) .cell[data-view="cam"] .readout {
+  /* Phone: a 2x2 quad is unreadably small — collapse to a single full CAM view
+     (mirrors the data-focus="cam" behaviour; engine already skips 0-rect cells). */
+  .cag-editor .quad:not([data-focus]) .cell:not([data-view="cam"]) {
     display: none;
+  }
+  .cag-editor .quad:not([data-focus]) .cell[data-view="cam"] {
+    display: block;
+    grid-area: 1 / 1 / 3 / 3;
+  }
+  /* Header: give the project name + actions their own full-width row and let the
+     name input flex instead of pinning 180px. */
+  .cag-editor .scene-bar {
+    flex: 1 1 100%;
+  }
+  .cag-editor .scene-bar input[type="text"] {
+    flex: 1 1 140px;
+    width: auto;
   }
   .cag-editor .frames-head {
     gap: 6px;

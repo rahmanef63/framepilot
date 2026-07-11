@@ -176,3 +176,17 @@ button { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+
+/* ---------- responsive: Library SplitView ---------- */
+/* SplitView is inline-styled (a fixed 288px list beside the inspector). On
+   tablet/phone stack the two panes vertically. !important is needed only where
+   an inline style (width, border-right) has to be overridden. */
+@media (max-width: 768px) {
+  .fp-split { flex-direction: column; }
+  .fp-split-list {
+    width: 100% !important;
+    max-height: 38vh;
+    border-right: none !important;
+    border-bottom: var(--border-width) solid var(--border) !important;
+  }
+}

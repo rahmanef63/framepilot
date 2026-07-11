@@ -1,16 +1,22 @@
 "use client";
-// EditorHeaderBar.tsx — the editor's own action bar (concept <header>). Project
-// name + live stats + undo/redo + save/new + autosave indicator. Lives inside the
-// .cag-editor content slot (dark studio chrome), separate from the app Header.
+// EditorHeaderBar.tsx — the SINGLE consolidated Studio header (on /editor the app
+// shell Header suppresses itself, so this is the only bar). One clean row: sidebar
+// toggle + compact brand + live stats + project name + autosave + icon actions
+// (undo / redo / save) + an "Aksi" dropdown for the less-frequent commands.
+// Lives inside .cag-editor (dark studio chrome) AND inside AppStateProvider, so
+// it can drive both the editor state (useEditor) and the app shell (useApp).
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useApp } from "@/state/AppState";
 import { Button } from "@/components/ds/Button";
 import { sceneDuration } from "@/lib/editorModel";
 import { useProjectSync } from "./useProjectSync";
+import { EditorActionMenu } from "./EditorActionMenu";
 
 export function EditorHeaderBar() {
   const ctx = useEditor();
+  const app = useApp();
   const { project, canUndo, canRedo, autosaveOn } = ctx;
   // Save routes to localStorage always, and to Convex too when signed in.
   const { saveCurrent } = useProjectSync();
@@ -21,41 +27,38 @@ export function EditorHeaderBar() {
 
   return (
     <header className="e-header">
+      <button
+        onClick={app.toggleSidebar}
+        title="Buka/tutup sidebar"
+        style={{
+          flex: "none",
+          width: 32,
+          height: 32,
+          border: "var(--border-width) solid var(--line)",
+          borderRadius: "var(--radius-md)",
+          background: "var(--panel)",
+          color: "var(--muted)",
+          cursor: "pointer",
+          font: "700 14px var(--e-mono)",
+          display: "grid",
+          placeItems: "center",
+        }}
+      >
+        ☰
+      </button>
       <div className="logo">
         <div className="dot" />
         <h1>
-          CAMERA ANGLE GUIDE <span style={{ color: "var(--accent)" }}>PRO</span>
+          Camera Angle Guide <span style={{ color: "var(--accent)" }}>Pro</span>
         </h1>
-        <span>AI previz · storyboard · shot planner</span>
       </div>
-      <div className="spacer" />
       <div className="project-meta">
         <span className="status-pill">
           <b>{sceneCount}</b> scene · <b>{shotCount}</b> shot · <b>{totalDur}s</b>
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          title="Undo (Ctrl/Cmd+Z)"
-          disabled={!canUndo}
-          onClick={ctx.undo}
-        >
-          Undo
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          title="Redo (Ctrl/Cmd+Shift+Z)"
-          disabled={!canRedo}
-          onClick={ctx.redo}
-        >
-          Redo
-        </Button>
       </div>
+      <div className="spacer" />
       <div className="scene-bar">
-        <span className={"autosave" + (autosaveOn ? " on" : "")}>
-          {autosaveOn ? "tersimpan otomatis" : "autosave"}
-        </span>
         <input
           type="text"
           placeholder="Nama proyek…"
@@ -63,12 +66,42 @@ export function EditorHeaderBar() {
           value={project.name}
           onChange={(e) => ctx.setProjectName(e.target.value)}
         />
-        <Button variant="primary" size="sm" onClick={saveCurrent}>
-          Simpan Proyek
-        </Button>
-        <Button variant="outline" size="sm" onClick={ctx.newProjectAction}>
-          Proyek Baru
-        </Button>
+        <span className={"autosave" + (autosaveOn ? " on" : "")}>
+          {autosaveOn ? "tersimpan otomatis" : "autosave"}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon="↶"
+          title="Undo (Ctrl/Cmd+Z)"
+          disabled={!canUndo}
+          onClick={ctx.undo}
+          style={{ padding: "7px 11px" }}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          icon="↷"
+          title="Redo (Ctrl/Cmd+Shift+Z)"
+          disabled={!canRedo}
+          onClick={ctx.redo}
+          style={{ padding: "7px 11px" }}
+        />
+        <Button
+          variant="primary"
+          size="sm"
+          icon="⤓"
+          title="Simpan Proyek"
+          onClick={saveCurrent}
+          style={{ padding: "7px 11px" }}
+        />
+        <EditorActionMenu
+          onSave={saveCurrent}
+          onNew={ctx.newProjectAction}
+          onImport={() => app.openImport("paste")}
+          onExport={app.exportProject}
+          onSchema={app.openSchema}
+        />
       </div>
     </header>
   );
