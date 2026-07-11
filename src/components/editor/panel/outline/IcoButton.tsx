@@ -3,7 +3,7 @@ import React, { type CSSProperties } from "react";
 import { Button } from "@/components/ds/Button";
 
 // Compact micro footprint so the dense outline action rows keep the light Rupa
-// look after swapping the raw .ico <button> to the ds/Button primitive.
+// look on the ds/Button primitive.
 const micro: CSSProperties = {
   padding: "3px 7px",
   fontSize: "11px",

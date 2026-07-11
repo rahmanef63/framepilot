@@ -17,7 +17,7 @@ export function Backdrop({
       style={{
         position: "fixed",
         inset: 0,
-        background: dark ? "rgba(20, 20, 18, .5)" : "transparent",
+        background: dark ? "var(--overlay)" : "transparent",
         animation: "ds-fade var(--motion) var(--ease)",
         ...style,
       }}

@@ -17,7 +17,7 @@
   --line-strong: var(--border-strong);
   --ink: var(--foreground);
   --muted: var(--muted-foreground);
-  --accent: var(--primary, #D97757);
+  --accent: var(--primary);
   --accent-ink: var(--primary-foreground);
   --rec: var(--destructive);
   --ok: var(--chart-3);

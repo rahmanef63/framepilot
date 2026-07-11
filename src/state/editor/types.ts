@@ -44,7 +44,6 @@ export interface HistoryState {
 
 export interface EditorContextValue {
   // reactive snapshots (re-read on bump)
-  version: number;
   project: EditorProject;
   ui: EditorUi;
   playback: EditorPlayback;
@@ -52,7 +51,6 @@ export interface EditorContextValue {
   draftMeta: Meta;
   savedList: SavedEntry[];
   autosaveOn: boolean;
-  quotaWarn: boolean;
   canUndo: boolean;
   canRedo: boolean;
 
@@ -138,7 +136,6 @@ export interface EditorContextValue {
   // import / export / library interop
   importProjectObject: (obj: unknown) => void;
   exportProjectObject: () => EditorProject;
-  toAppProjectNow: () => AppProject;
   importFromLibrary: (appProject: AppProject) => void;
 
   // history

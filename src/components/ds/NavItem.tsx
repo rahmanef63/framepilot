@@ -163,7 +163,7 @@ export function NavItem({
               top: "-5px",
               right: "-6px",
               font: "700 8px var(--font-mono)",
-              background: "var(--highlight, #EFD4AC)",
+              background: "var(--highlight)",
               color: "var(--foreground)",
               border: "1px solid var(--foreground)",
               borderRadius: "var(--radius-sm)",

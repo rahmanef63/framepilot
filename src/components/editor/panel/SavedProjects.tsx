@@ -8,6 +8,7 @@
 import React, { useEffect, useRef } from "react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
+import { useProjectSync } from "@/components/editor/useProjectSync";
 import { Button } from "@/components/ds/Button";
 import {
   exportJSON,
@@ -46,9 +47,20 @@ function ArmDelete({ title, onConfirm }: { title: string; onConfirm: () => void 
   );
 }
 
+// Normalized row so the list renders once regardless of its source (localStorage
+// for anonymous users, Convex for signed-in users).
+type SavedRow = {
+  id: string;
+  name: string;
+  meta: string;
+  onLoad: () => void;
+  onDelete: () => void;
+};
+
 export function SavedProjects() {
   const ctx = useEditor();
   const { showToast, project: libraryProject } = useApp();
+  const { signedIn, cloudList, loadCloud, removeCloud } = useProjectSync();
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   // One-way handoff: pull the scenes staged in the DataPrompt library ("Terapkan")
@@ -114,39 +126,54 @@ export function SavedProjects() {
     reader.readAsText(file);
   };
 
+  // Signed-in → the deployed Convex list; anonymous → the existing localStorage
+  // list. Both collapse to the same SavedRow shape so the JSX below is shared.
+  const localRows: SavedRow[] = ctx.savedList.map((item) => {
+    const scs = item.project.scenes.length;
+    const frs = item.project.scenes.reduce((n, s) => n + s.frames.length, 0);
+    return {
+      id: item.id,
+      name: item.name,
+      meta: `${scs}s·${frs}f · ${new Date(item.updated).toLocaleDateString("id-ID")}`,
+      onLoad: () => {
+        ctx.loadSavedProject(item.id);
+        showToast(`Proyek “${item.name}” dimuat`);
+      },
+      onDelete: () => ctx.deleteSavedProject(item.id),
+    };
+  });
+
+  const cloudRows: SavedRow[] = (cloudList ?? []).map((p) => ({
+    id: p._id,
+    name: p.name,
+    meta: new Date(p.updatedAt).toLocaleDateString("id-ID"),
+    onLoad: () => {
+      void loadCloud(p._id).then(() => showToast(`Proyek “${p.name}” dimuat`));
+    },
+    onDelete: () => {
+      void removeCloud(p._id);
+    },
+  }));
+
+  const rows = signedIn ? cloudRows : localRows;
+
   return (
     <div className="group">
       <h3>Proyek Tersimpan</h3>
       <div className="saved-list">
-        {ctx.savedList.length === 0 ? (
+        {rows.length === 0 ? (
           <div className="storage-note">Belum ada proyek tersimpan.</div>
         ) : (
-          ctx.savedList.map((item) => {
-            const scs = item.project.scenes.length;
-            const frs = item.project.scenes.reduce((n, s) => n + s.frames.length, 0);
-            return (
-              <div className="saved-item" key={item.id}>
-                <span className="name">{item.name}</span>
-                <span className="meta">
-                  {scs}s·{frs}f · {new Date(item.updated).toLocaleDateString("id-ID")}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    ctx.loadSavedProject(item.id);
-                    showToast(`Proyek “${item.name}” dimuat`);
-                  }}
-                >
-                  Muat
-                </Button>
-                <ArmDelete
-                  title="Hapus proyek (klik 2×)"
-                  onConfirm={() => ctx.deleteSavedProject(item.id)}
-                />
-              </div>
-            );
-          })
+          rows.map((row) => (
+            <div className="saved-item" key={row.id}>
+              <span className="name">{row.name}</span>
+              <span className="meta">{row.meta}</span>
+              <Button variant="outline" size="sm" onClick={row.onLoad}>
+                Muat
+              </Button>
+              <ArmDelete title="Hapus proyek (klik 2×)" onConfirm={row.onDelete} />
+            </div>
+          ))
         )}
       </div>
       <div className="io-row">
@@ -171,7 +198,9 @@ export function SavedProjects() {
         <input ref={fileRef} type="file" accept=".json" hidden onChange={onImportFile} />
       </div>
       <p className="storage-note">
-        Autosave aktif di browser. Ekspor JSON tetap disarankan sebagai backup proyek.
+        {signedIn
+          ? "Proyek tersimpan di cloud (akun kamu) dan tersinkron antar perangkat. Ekspor JSON tetap disarankan sebagai backup."
+          : "Autosave aktif di browser. Ekspor JSON tetap disarankan sebagai backup proyek."}
       </p>
     </div>
   );

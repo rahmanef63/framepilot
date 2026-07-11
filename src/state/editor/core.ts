@@ -17,6 +17,11 @@ import type { EditorEngineHandle } from "@/components/editor/viewport/engineApi"
 import { autosave, SavedEntry } from "@/lib/editorStorage";
 import type { EditorUi, EditorPlayback, HistoryState } from "./types";
 
+// Fresh, empty undo/redo stack — used on mount and on every whole-project swap.
+export function newHistoryState(): HistoryState {
+  return { entries: [], index: -1, busy: false, max: 30 };
+}
+
 export interface EditorCore {
   // mutable refs (concept module-globals)
   projectRef: React.MutableRefObject<EditorProject>;
@@ -30,7 +35,6 @@ export interface EditorCore {
   keysHeldRef: React.MutableRefObject<Set<string>>;
   savedRef: React.MutableRefObject<SavedEntry[]>;
   autosaveOnRef: React.MutableRefObject<boolean>;
-  quotaWarnRef: React.MutableRefObject<boolean>;
   historyTimerRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>;
 
   // re-render heartbeat
@@ -40,7 +44,6 @@ export interface EditorCore {
   // shared helpers
   syncRig: () => void;
   pushAutosave: () => void;
-  markDirty: () => void;
 }
 
 export function useEditorCore(initial?: EditorProject): EditorCore {
@@ -63,14 +66,13 @@ export function useEditorCore(initial?: EditorProject): EditorCore {
     loop: false,
     smooth: true,
   });
-  const historyRef = useRef<HistoryState>({ entries: [], index: -1, busy: false, max: 30 });
+  const historyRef = useRef<HistoryState>(newHistoryState());
   const currentFrameIdRef = useRef<string | null>(null);
   const draftMetaRef = useRef<Meta>(defaultShotMeta());
   const engineRef = useRef<EditorEngineHandle | null>(null);
   const keysHeldRef = useRef<Set<string>>(new Set());
   const savedRef = useRef<SavedEntry[]>([]);
   const autosaveOnRef = useRef(false);
-  const quotaWarnRef = useRef(false);
   const historyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --- re-render heartbeat ---
@@ -85,13 +87,8 @@ export function useEditorCore(initial?: EditorProject): EditorCore {
   const pushAutosave = useCallback(() => {
     autosave(projectRef.current, (res) => {
       autosaveOnRef.current = res.ok;
-      quotaWarnRef.current = res.quota;
       bump();
     });
-  }, [bump]);
-
-  const markDirty = useCallback(() => {
-    bump();
   }, [bump]);
 
   return {
@@ -106,12 +103,10 @@ export function useEditorCore(initial?: EditorProject): EditorCore {
     keysHeldRef,
     savedRef,
     autosaveOnRef,
-    quotaWarnRef,
     historyTimerRef,
     version,
     bump,
     syncRig,
     pushAutosave,
-    markDirty,
   };
 }

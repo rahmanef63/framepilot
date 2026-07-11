@@ -30,7 +30,7 @@ export function Badge({
       border: 0,
     },
     highlight: {
-      background: "var(--highlight, #EFD4AC)",
+      background: "var(--highlight)",
       color: "var(--foreground)",
       border: "1px solid var(--foreground)",
     },

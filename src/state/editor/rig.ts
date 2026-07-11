@@ -38,17 +38,17 @@ export function useRigActions(
     scheduleHistoryCommit: (label?: string, delay?: number) => void;
   }
 ): RigActions {
-  const { rigRef, engineRef, syncRig, markDirty } = core;
+  const { rigRef, engineRef, syncRig, bump } = core;
   const { stopPlayback, scheduleHistoryCommit } = deps;
 
   const afterRigMutate = useCallback(
     (label: string) => {
       syncRig();
       engineRef.current?.updateHud();
-      markDirty();
+      bump();
       scheduleHistoryCommit(label);
     },
-    [engineRef, syncRig, markDirty, scheduleHistoryCommit]
+    [engineRef, syncRig, bump, scheduleHistoryCommit]
   );
 
   const orbit = useCallback(
@@ -184,9 +184,9 @@ export function useRigActions(
 
   const onRigChangedFromEngine = useCallback(() => {
     rigRef.current = engineRef.current ? engineRef.current.getRig() : rigRef.current;
-    markDirty();
+    bump();
     scheduleHistoryCommit("Gerakkan kamera");
-  }, [rigRef, engineRef, markDirty, scheduleHistoryCommit]);
+  }, [rigRef, engineRef, bump, scheduleHistoryCommit]);
 
   return {
     afterRigMutate,

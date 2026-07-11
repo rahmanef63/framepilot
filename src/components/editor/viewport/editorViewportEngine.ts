@@ -16,6 +16,7 @@ import {
   clamp,
   norm360,
   norm180,
+  smoothstep,
   getOrbit as orbitFromCart,
   setOrbit as cartFromOrbit,
   focalLength,
@@ -24,6 +25,14 @@ import {
   subjHeight,
   aspectNumber,
 } from "@/lib/editorMath";
+import {
+  buildPerson,
+  buildObject,
+  buildCameraGizmo,
+  buildFacingCone,
+  buildTargetDot,
+  sampleToken,
+} from "./scene-kit";
 import type { RigState, RigSnapshot, Vec3 } from "@/lib/editorModel";
 import type {
   EditorEngineHandle,
@@ -161,23 +170,9 @@ export class EditorViewportEngine implements EditorEngineHandle {
   // string via a 1x1 canvas (mirrors CagViewport._rgb). Falls back to a LIGHT value
   // so the scene never reverts to the old dark palette when a token is missing.
   private rgb(name: string, fb: string): string {
-    try {
-      const el = this.canvas || (typeof document !== "undefined" ? document.documentElement : null);
-      if (!el) return fb;
-      const rawv = getComputedStyle(el).getPropertyValue(name).trim();
-      if (!rawv) return fb;
-      const cv = document.createElement("canvas");
-      cv.width = cv.height = 1;
-      const ctx = cv.getContext("2d");
-      if (!ctx) return fb;
-      ctx.fillStyle = "rgb(0,0,0)";
-      ctx.fillStyle = rawv;
-      ctx.fillRect(0, 0, 1, 1);
-      const d = ctx.getImageData(0, 0, 1, 1).data;
-      return "rgb(" + d[0] + "," + d[1] + "," + d[2] + ")";
-    } catch {
-      return fb;
-    }
+    const el = this.canvas || (typeof document !== "undefined" ? document.documentElement : null);
+    if (!el) return fb;
+    return sampleToken(el, name, fb);
   }
 
   private build(): void {
@@ -247,10 +242,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
     scene.add(this.person, this.objectSubj);
 
     this.facingGroup = new T.Group();
-    const facing = new T.Mesh(new T.ConeGeometry(0.08, 0.25, 4), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
-    facing.rotation.x = Math.PI / 2;
-    facing.position.set(0, 0.02, 0.55);
-    this.facingGroup.add(facing);
+    this.facingGroup.add(buildFacingCone(T, new T.Color(primaryRgb)));
     scene.add(this.facingGroup);
 
     const povCam = new T.PerspectiveCamera(40, 16 / 9, 0.05, 80);
@@ -270,17 +262,12 @@ export class EditorViewportEngine implements EditorEngineHandle {
     scene.add(camHelper);
     this.camHelper = camHelper;
 
-    const camBody = new T.Group();
-    const box = new T.Mesh(new T.BoxGeometry(0.22, 0.18, 0.3), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
-    const lens = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 0.14, 12), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
-    lens.rotation.x = Math.PI / 2;
-    lens.position.z = -0.2;
-    camBody.add(box, lens);
+    const camBody = buildCameraGizmo(T, new T.Color(primaryRgb));
     camBody.traverse((o: any) => o.layers.set(1));
     scene.add(camBody);
     this.camBody = camBody;
 
-    const targetDot = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), new T.MeshBasicMaterial({ color: new T.Color(primaryRgb) }));
+    const targetDot = buildTargetDot(T, new T.Color(primaryRgb), 10, 8);
     targetDot.layers.set(1);
     scene.add(targetDot);
     this.targetDot = targetDot;
@@ -310,54 +297,14 @@ export class EditorViewportEngine implements EditorEngineHandle {
   }
 
   private makePerson(): any {
-    const T = this.T;
-    const g = new T.Group();
-    // single dark --foreground silhouette material for every part (CagViewport parity).
-    const mat = this.subjMat;
-    const legG = new T.CylinderGeometry(0.075, 0.07, 0.82, 10);
-    const l1 = new T.Mesh(legG, mat);
-    l1.position.set(-0.11, 0.41, 0);
-    const l2 = new T.Mesh(legG, mat);
-    l2.position.set(0.11, 0.41, 0);
-    const torso = new T.Mesh(new T.BoxGeometry(0.38, 0.56, 0.22), mat);
-    torso.position.y = 1.1;
-    const armG = new T.CylinderGeometry(0.05, 0.045, 0.58, 10);
-    const a1 = new T.Mesh(armG, mat);
-    a1.position.set(-0.25, 1.06, 0);
-    a1.rotation.z = 0.08;
-    const a2 = new T.Mesh(armG, mat);
-    a2.position.set(0.25, 1.06, 0);
-    a2.rotation.z = -0.08;
-    const neck = new T.Mesh(new T.CylinderGeometry(0.055, 0.055, 0.09, 10), mat);
-    neck.position.y = 1.43;
-    const head = new T.Mesh(new T.SphereGeometry(0.125, 20, 16), mat);
-    head.position.y = 1.58;
-    const nose = new T.Mesh(new T.BoxGeometry(0.04, 0.04, 0.05), mat);
-    nose.position.set(0, 1.58, 0.125);
-    const hair = new T.Mesh(
-      new T.SphereGeometry(0.128, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2.4),
-      mat
-    );
-    hair.position.y = 1.6;
-    g.add(l1, l2, torso, a1, a2, neck, head, nose, hair);
-    return g;
+    // single dark --foreground silhouette material for every part (CagViewport parity);
+    // editor variant adds the hair mesh.
+    return buildPerson(this.T, this.subjMat, { hair: true });
   }
 
   private makeObject(): any {
-    const T = this.T;
-    const g = new T.Group();
     // single dark --foreground silhouette material for every part (CagViewport parity).
-    const mat = this.subjMat;
-    const base = new T.Mesh(new T.CylinderGeometry(0.32, 0.38, 0.12, 24), mat);
-    base.position.y = 0.06;
-    const column = new T.Mesh(new T.CylinderGeometry(0.16, 0.2, 0.78, 20), mat);
-    column.position.y = 0.51;
-    const cap = new T.Mesh(new T.CylinderGeometry(0.26, 0.18, 0.08, 24), mat);
-    cap.position.y = 0.94;
-    const art = new T.Mesh(new T.TorusKnotGeometry(0.17, 0.055, 120, 16), mat);
-    art.position.y = 1.28;
-    g.add(base, column, cap, art);
-    return g;
+    return buildObject(this.T, this.subjMat);
   }
 
   private makeOrthoCam(): any {
@@ -971,7 +918,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
       const a = fr[this.pb.idx];
       const b = fr[(this.pb.idx + 1) % n];
       const t = this.pb.t;
-      const e = t * t * (3 - 2 * t);
+      const e = smoothstep(t);
       s.camPos = {
         x: lerp(a.camPos.x, b.camPos.x, e),
         y: lerp(a.camPos.y, b.camPos.y, e),

@@ -22,7 +22,7 @@ import { useRigActions } from "./editor/rig";
 import { useUiActions } from "./editor/ui";
 import { useFrameActions } from "./editor/frames";
 import { useSceneActions } from "./editor/scenes";
-import { useIoActions } from "./editor/io";
+import { useIoActions, swapProject } from "./editor/io";
 
 // Re-export the value-shape types so consumers keep importing them from here.
 export type { EditorContextValue, EditorUi, EditorPlayback } from "./editor/types";
@@ -59,7 +59,6 @@ export function EditorStateProvider({
     keysHeldRef,
     savedRef,
     autosaveOnRef,
-    quotaWarnRef,
     version,
     bump,
   } = core;
@@ -148,7 +147,6 @@ export function EditorStateProvider({
     refreshSaved,
     importProjectObject,
     exportProjectObject,
-    toAppProjectNow,
     importFromLibrary,
   } = useIoActions(core, { stopPlayback, commitHistory });
 
@@ -161,13 +159,7 @@ export function EditorStateProvider({
     hydratedRef.current = true;
     const auto = loadAutosave();
     if (!auto) return;
-    projectRef.current = auto;
-    currentFrameIdRef.current = null;
-    historyRef.current = { entries: [], index: -1, busy: false, max: 30 };
-    engineRef.current?.setAspect(auto.settings.aspectRatio);
-    engineRef.current?.updateHud();
-    commitHistory("Pulihkan autosave");
-    bump();
+    swapProject(core, auto, "Pulihkan autosave", commitHistory);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -237,7 +229,6 @@ export function EditorStateProvider({
   // ---------- value ----------
   const value = useMemo<EditorContextValue>(
     () => ({
-      version,
       project: projectRef.current,
       ui: uiRef.current,
       playback: playbackRef.current,
@@ -245,7 +236,6 @@ export function EditorStateProvider({
       draftMeta: draftMetaRef.current,
       savedList: savedRef.current,
       autosaveOn: autosaveOnRef.current,
-      quotaWarn: quotaWarnRef.current,
       canUndo: historyRef.current.index > 0,
       canRedo:
         historyRef.current.index >= 0 && historyRef.current.index < historyRef.current.entries.length - 1,
@@ -335,7 +325,6 @@ export function EditorStateProvider({
 
       importProjectObject,
       exportProjectObject,
-      toAppProjectNow,
       importFromLibrary,
 
       undo,
@@ -343,88 +332,11 @@ export function EditorStateProvider({
       commitHistory,
       scheduleHistoryCommit,
     }),
-    // version drives snapshot freshness; actions are stable useCallbacks.
-    [
-      version,
-      projectRef,
-      uiRef,
-      playbackRef,
-      currentFrameIdRef,
-      draftMetaRef,
-      savedRef,
-      autosaveOnRef,
-      quotaWarnRef,
-      historyRef,
-      engineRef,
-      rigRef,
-      keysHeldRef,
-      orbit,
-      setFov,
-      setRoll,
-      setTargetY,
-      setSubjRot,
-      setSubjX,
-      setSubjZ,
-      setSubject,
-      applyAnglePreset,
-      applyShotPreset,
-      applyLensPreset,
-      focusOnSubject,
-      resetRig,
-      onRigChangedFromEngine,
-      setMainTab,
-      setPanelTab,
-      setDragMode,
-      setFocusView,
-      toggleThirds,
-      toggleFrustum,
-      toggleTrackSubject,
-      setAspect,
-      setFps,
-      setProjectName,
-      setDraftMetaField,
-      frameIsDirty,
-      currentFrame,
-      addFrame,
-      updateFrame,
-      loadFrame,
-      dupFrame,
-      delFrame,
-      moveFrame,
-      renameFrame,
-      setFrameNotes,
-      addScene,
-      setActiveSceneId,
-      renameScene,
-      delScene,
-      dupScene,
-      moveScene,
-      setSceneNotes,
-      toggleSceneCollapsed,
-      toggleSceneNotesOpen,
-      togglePlay,
-      play,
-      stopPlayback,
-      nextFrame,
-      prevFrame,
-      setFrameDuration,
-      setLoop,
-      setSmooth,
-      onPlaybackTick,
-      saveCurrentProject,
-      newProjectAction,
-      loadSavedProject,
-      deleteSavedProject,
-      refreshSaved,
-      importProjectObject,
-      exportProjectObject,
-      toAppProjectNow,
-      importFromLibrary,
-      undo,
-      redo,
-      commitHistory,
-      scheduleHistoryCommit,
-    ]
+    // `version` is the sole freshness trigger: every mutation bumps it, and all
+    // actions/refs listed in the value are stable useCallbacks/refs, so re-reading
+    // the snapshot on each version change is both necessary and sufficient.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [version]
   );
 
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;

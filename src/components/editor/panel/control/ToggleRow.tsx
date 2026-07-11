@@ -2,7 +2,7 @@
 // ToggleRow — the "Kamera · Toggle" cluster (plan G11). The two pure command
 // buttons (Fokus Subjek, Reset) are ds/Button. The three state toggles keep the
 // plain <button className="on"> form: they carry the .on accent state that
-// ds/Button has no variant for, so swapping them would drop the ON/OFF visual.
+// ds/Button has no variant for.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";

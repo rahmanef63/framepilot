@@ -1,6 +1,6 @@
 // editor/io.ts — persistence (save/load/delete/list) + import/export/library
 // interop. All the "swap out the whole project" paths reset history and re-seed
-// the engine's aspect/HUD.
+// the engine's aspect/HUD — see swapProject, the one place that block lives.
 
 import { useCallback } from "react";
 import type { Project as AppProject } from "@/lib/dataPrompt";
@@ -10,7 +10,6 @@ import {
   defaultShotMeta,
   deepCopy,
   toEditorProject,
-  toAppProject,
 } from "@/lib/editorModel";
 import {
   saveProject,
@@ -19,7 +18,25 @@ import {
   listProjects,
   newProjectStorage,
 } from "@/lib/editorStorage";
-import type { EditorCore } from "./core";
+import { EditorCore, newHistoryState } from "./core";
+
+// Swap the whole document: point projectRef at `project`, clear the current
+// frame + undo stack, re-seed the engine aspect/HUD, seed history, re-render.
+// Shared by every load/import/new/hydrate path so the reset block lives once.
+export function swapProject(
+  core: EditorCore,
+  project: EditorProject,
+  label: string,
+  commitHistory: (label?: string) => void
+) {
+  core.projectRef.current = project;
+  core.currentFrameIdRef.current = null;
+  core.historyRef.current = newHistoryState();
+  core.engineRef.current?.setAspect(project.settings.aspectRatio);
+  core.engineRef.current?.updateHud();
+  commitHistory(label);
+  core.bump();
+}
 
 export interface IoActions {
   saveCurrentProject: () => void;
@@ -29,7 +46,6 @@ export interface IoActions {
   refreshSaved: () => void;
   importProjectObject: (obj: unknown) => void;
   exportProjectObject: () => EditorProject;
-  toAppProjectNow: () => AppProject;
   importFromLibrary: (appProject: AppProject) => void;
 }
 
@@ -40,19 +56,7 @@ export function useIoActions(
     commitHistory: (label?: string) => void;
   }
 ): IoActions {
-  const {
-    projectRef,
-    rigRef,
-    historyRef,
-    currentFrameIdRef,
-    draftMetaRef,
-    engineRef,
-    savedRef,
-    autosaveOnRef,
-    quotaWarnRef,
-    bump,
-    syncRig,
-  } = core;
+  const { projectRef, rigRef, draftMetaRef, savedRef, autosaveOnRef, bump, syncRig } = core;
   const { stopPlayback, commitHistory } = deps;
 
   const refreshSaved = useCallback(() => {
@@ -62,39 +66,26 @@ export function useIoActions(
 
   const saveCurrentProject = useCallback(() => {
     const res = saveProject(projectRef.current);
-    quotaWarnRef.current = res.quota;
     autosaveOnRef.current = res.ok;
     refreshSaved();
-  }, [projectRef, quotaWarnRef, autosaveOnRef, refreshSaved]);
+  }, [projectRef, autosaveOnRef, refreshSaved]);
 
   const newProjectAction = useCallback(() => {
     stopPlayback();
-    projectRef.current = newProjectStorage();
     rigRef.current = defaultRigState();
-    currentFrameIdRef.current = null;
     draftMetaRef.current = defaultShotMeta();
-    historyRef.current = { entries: [], index: -1, busy: false, max: 30 };
     syncRig();
-    engineRef.current?.setAspect(projectRef.current.settings.aspectRatio);
-    engineRef.current?.updateHud();
-    commitHistory("Proyek baru");
-    bump();
-  }, [projectRef, rigRef, currentFrameIdRef, draftMetaRef, historyRef, engineRef, stopPlayback, syncRig, commitHistory, bump]);
+    swapProject(core, newProjectStorage(), "Proyek baru", commitHistory);
+  }, [core, rigRef, draftMetaRef, stopPlayback, syncRig, commitHistory]);
 
   const loadSavedProject = useCallback(
     (id: string) => {
       stopPlayback();
       const p = loadProject(id);
       if (!p) return;
-      projectRef.current = p;
-      currentFrameIdRef.current = null;
-      historyRef.current = { entries: [], index: -1, busy: false, max: 30 };
-      engineRef.current?.setAspect(p.settings.aspectRatio);
-      engineRef.current?.updateHud();
-      commitHistory("Muat proyek");
-      bump();
+      swapProject(core, p, "Muat proyek", commitHistory);
     },
-    [projectRef, currentFrameIdRef, historyRef, engineRef, stopPlayback, commitHistory, bump]
+    [core, stopPlayback, commitHistory]
   );
 
   const deleteSavedProject = useCallback(
@@ -108,19 +99,12 @@ export function useIoActions(
   const importProjectObject = useCallback(
     (obj: unknown) => {
       stopPlayback();
-      projectRef.current = toEditorProject(obj);
-      currentFrameIdRef.current = null;
-      historyRef.current = { entries: [], index: -1, busy: false, max: 30 };
-      engineRef.current?.setAspect(projectRef.current.settings.aspectRatio);
-      engineRef.current?.updateHud();
-      commitHistory("Impor proyek");
-      bump();
+      swapProject(core, toEditorProject(obj), "Impor proyek", commitHistory);
     },
-    [projectRef, currentFrameIdRef, historyRef, engineRef, stopPlayback, commitHistory, bump]
+    [core, stopPlayback, commitHistory]
   );
 
   const exportProjectObject = useCallback((): EditorProject => deepCopy(projectRef.current), [projectRef]);
-  const toAppProjectNow = useCallback((): AppProject => toAppProject(projectRef.current), [projectRef]);
   const importFromLibrary = useCallback(
     (appProject: AppProject) => {
       importProjectObject(appProject);
@@ -136,7 +120,6 @@ export function useIoActions(
     refreshSaved,
     importProjectObject,
     exportProjectObject,
-    toAppProjectNow,
     importFromLibrary,
   };
 }

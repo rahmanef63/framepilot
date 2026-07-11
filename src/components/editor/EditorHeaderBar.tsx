@@ -7,10 +7,13 @@ import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { Button } from "@/components/ds/Button";
 import { sceneDuration } from "@/lib/editorModel";
+import { useProjectSync } from "./useProjectSync";
 
 export function EditorHeaderBar() {
   const ctx = useEditor();
   const { project, canUndo, canRedo, autosaveOn } = ctx;
+  // Save routes to localStorage always, and to Convex too when signed in.
+  const { saveCurrent } = useProjectSync();
 
   const sceneCount = project.scenes.length;
   const shotCount = project.scenes.reduce((n, sc) => n + sc.frames.length, 0);
@@ -60,7 +63,7 @@ export function EditorHeaderBar() {
           value={project.name}
           onChange={(e) => ctx.setProjectName(e.target.value)}
         />
-        <Button variant="primary" size="sm" onClick={ctx.saveCurrentProject}>
+        <Button variant="primary" size="sm" onClick={saveCurrent}>
           Simpan Proyek
         </Button>
         <Button variant="outline" size="sm" onClick={ctx.newProjectAction}>

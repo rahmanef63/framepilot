@@ -5,12 +5,9 @@
 import {
   Meta,
   DEF,
-  RawFrame,
   Entry,
-  Project,
   ProjectScene,
   uid,
-  synth,
   projFrame,
   entryProject,
 } from "./dataPrompt";
@@ -207,6 +204,19 @@ export function activeScene(project: EditorProject): EditorScene {
   return s;
 }
 
+// Locate a frame by id across all scenes — shared by every scene-walk site
+// (brief.currentFrame + frames CRUD). Null when no scene holds the id.
+export function findFrame(
+  project: EditorProject,
+  id: string
+): { scene: EditorScene; frame: EditorFrame; index: number } | null {
+  for (const scene of project.scenes) {
+    const index = scene.frames.findIndex((f) => f.id === id);
+    if (index >= 0) return { scene, frame: scene.frames[index], index };
+  }
+  return null;
+}
+
 // ============================================================
 // Snapshot <-> live rig (concept snapState/applyState ~1771-1785)
 // ============================================================
@@ -295,33 +305,3 @@ export function toEditorProject(src: unknown): EditorProject {
 
   return newProject();
 }
-
-// Reverse: editor doc -> AppState staging Project (plan §3.3).
-export function toAppProject(ep: EditorProject): Project {
-  return {
-    scenes: ep.scenes.map(
-      (sc): ProjectScene => ({
-        id: sc.id,
-        name: sc.name,
-        frames: sc.frames.map(
-          (f): RawFrame => ({
-            name: f.name,
-            angle: f.angle,
-            shot: f.shot,
-            lens: f.lens,
-            az: f.az,
-            el: f.el,
-            dist: f.dist,
-            roll: f.s.roll,
-            fov: f.s.fov,
-            subj: f.s.subj,
-            meta: { ...f.meta },
-          })
-        ),
-      })
-    ),
-  };
-}
-
-// Reuse synth for import-time snapshot generation where needed.
-export { synth };

@@ -1,12 +1,19 @@
 "use client";
 import React, { CSSProperties, useEffect, useRef } from "react";
+import { setOrbit, deg2rad, fovFromFocal } from "@/lib/editorMath";
+import {
+  buildPerson,
+  buildObject,
+  buildCameraGizmo,
+  buildFacingCone,
+  buildTargetDot,
+  sampleToken,
+} from "@/components/editor/viewport/scene-kit";
 
 // cag-viewport — a self-contained 3D shot-angle viewport, ported from the
 // prototype's cag-viewport.js. Three.js is lazy-loaded (dynamic import) only
 // when a viewport mounts, and the renderer is disposed on unmount. Reads the
-// ds-a CSS tokens for theming.
-
-const D2R = Math.PI / 180;
+// ds-a CSS tokens for theming. Shared geometry/token-sampling lives in scene-kit.
 
 export type CamView = "orbit" | "top" | "side" | "pov";
 
@@ -67,21 +74,7 @@ class Controller {
   }
 
   _rgb(name: string, fb: string): string {
-    try {
-      const rawv = getComputedStyle(this.host).getPropertyValue(name).trim();
-      if (!rawv) return fb;
-      const cv = document.createElement("canvas");
-      cv.width = cv.height = 1;
-      const ctx = cv.getContext("2d");
-      if (!ctx) return fb;
-      ctx.fillStyle = "rgb(0,0,0)";
-      ctx.fillStyle = rawv;
-      ctx.fillRect(0, 0, 1, 1);
-      const d = ctx.getImageData(0, 0, 1, 1).data;
-      return "rgb(" + d[0] + "," + d[1] + "," + d[2] + ")";
-    } catch {
-      return fb;
-    }
+    return sampleToken(this.host, name, fb);
   }
 
   _build() {
@@ -147,46 +140,15 @@ class Controller {
     const mat = this._subjMat; // light --foreground silhouette (read-only theming preserved)
     // Facing cone (front = +Z), accent-colored — mirrors editorViewportEngine facingGroup.
     const accent = new T.Color(this._rgb("--primary", "rgb(217,119,87)"));
-    const facing = new T.Mesh(new T.ConeGeometry(0.08, 0.25, 4), new T.MeshBasicMaterial({ color: accent }));
-    facing.rotation.x = Math.PI / 2;
-    facing.position.set(0, 0.02, 0.55);
+    const facing = buildFacingCone(T, accent);
     if (subj === "object") {
-      // Ported proportions from editorViewportEngine.makeObject (pedestal + column + art),
-      // rendered in the light --foreground material instead of the editor's colored ones.
-      const base = new T.Mesh(new T.CylinderGeometry(0.32, 0.38, 0.12, 24), mat);
-      base.position.y = 0.06;
-      const column = new T.Mesh(new T.CylinderGeometry(0.16, 0.2, 0.78, 20), mat);
-      column.position.y = 0.51;
-      const cap = new T.Mesh(new T.CylinderGeometry(0.26, 0.18, 0.08, 24), mat);
-      cap.position.y = 0.94;
-      const art = new T.Mesh(new T.TorusKnotGeometry(0.17, 0.055, 120, 16), mat);
-      art.position.y = 1.28;
-      g.add(base, column, cap, art, facing);
+      // pedestal + column + art, in the light --foreground material (editor parity).
+      g.add(buildObject(T, mat), facing);
       this._ty = 0.95;
     } else {
-      // Ported proportions from editorViewportEngine.makePerson (legs/torso/arms/neck/head),
-      // rendered in the light --foreground material for the Rupa light library.
-      const legG = new T.CylinderGeometry(0.075, 0.07, 0.82, 10);
-      const l1 = new T.Mesh(legG, mat);
-      l1.position.set(-0.11, 0.41, 0);
-      const l2 = new T.Mesh(legG, mat);
-      l2.position.set(0.11, 0.41, 0);
-      const torso = new T.Mesh(new T.BoxGeometry(0.38, 0.56, 0.22), mat);
-      torso.position.y = 1.1;
-      const armG = new T.CylinderGeometry(0.05, 0.045, 0.58, 10);
-      const a1 = new T.Mesh(armG, mat);
-      a1.position.set(-0.25, 1.06, 0);
-      a1.rotation.z = 0.08;
-      const a2 = new T.Mesh(armG, mat);
-      a2.position.set(0.25, 1.06, 0);
-      a2.rotation.z = -0.08;
-      const neck = new T.Mesh(new T.CylinderGeometry(0.055, 0.055, 0.09, 10), mat);
-      neck.position.y = 1.43;
-      const head = new T.Mesh(new T.SphereGeometry(0.125, 20, 16), mat);
-      head.position.y = 1.58;
-      const nose = new T.Mesh(new T.BoxGeometry(0.04, 0.04, 0.05), mat);
-      nose.position.set(0, 1.58, 0.125);
-      g.add(l1, l2, torso, a1, a2, neck, head, nose, facing);
+      // legs/torso/arms/neck/head, in the light --foreground material. No hair mesh
+      // here (that is an editor-only addition) — the Rupa light library subject.
+      g.add(buildPerson(T, mat, { hair: false }), facing);
       this._ty = 1.35;
     }
   }
@@ -205,18 +167,14 @@ class Controller {
       roll = this.props.roll;
     const ty = this._ty || 1.0,
       target = new T.Vector3(0, ty, 0);
-    const azR = az * D2R,
-      elR = el * D2R;
-    const camPos = new T.Vector3(
-      Math.sin(azR) * Math.cos(elR) * dist,
-      ty + Math.sin(elR) * dist,
-      Math.cos(azR) * Math.cos(elR) * dist
-    );
+    const elR = deg2rad(el);
+    const p = setOrbit(az, el, dist, { x: 0, y: ty, z: 0 });
+    const camPos = new T.Vector3(p.x, p.y, p.z);
     this._camPos = camPos;
     this._target = target;
     this._dist = dist;
     if (!this._userZoomed) this._viewDist = Math.max(4.8, dist * 1.4 + 1.8);
-    const vfovR = 2 * Math.atan(24 / (2 * lens));
+    const vfovR = deg2rad(fovFromFocal(lens));
     const accent = new T.Color(this._rgb("--primary", "rgb(217,119,87)"));
 
     const g = this._shotGroup;
@@ -231,7 +189,7 @@ class Controller {
     let right = new T.Vector3().crossVectors(fwd, wup).normalize();
     let up = new T.Vector3().crossVectors(right, fwd).normalize();
     if (roll) {
-      const rr = roll * D2R,
+      const rr = deg2rad(roll),
         ca = Math.cos(rr),
         sa = Math.sin(rr);
       const nr = right.clone().multiplyScalar(ca).add(up.clone().multiplyScalar(sa));
@@ -243,19 +201,13 @@ class Controller {
     // Camera gizmo (body box + lens) — mirrors editorViewportEngine.camBody. Oriented
     // from the (roll-adjusted) right/up/fwd basis so its lens looks toward the target.
     // Accent-colored so it reads on the light --card background.
-    const camGizmo = new T.Group();
-    const gizMat = new T.MeshBasicMaterial({ color: accent });
-    const body = new T.Mesh(new T.BoxGeometry(0.22, 0.18, 0.3), gizMat);
-    const lensMesh = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 0.14, 12), gizMat);
-    lensMesh.rotation.x = Math.PI / 2;
-    lensMesh.position.z = -0.2; // local -Z = forward (toward target)
-    camGizmo.add(body, lensMesh);
+    const camGizmo = buildCameraGizmo(T, accent); // local -Z = forward (toward target)
     camGizmo.position.copy(camPos);
     camGizmo.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right, up, fwd.clone().negate()));
     g.add(camGizmo);
 
     // Target dot at the aim point — mirrors editorViewportEngine.targetDot.
-    const dot = new T.Mesh(new T.SphereGeometry(0.07, 12, 10), new T.MeshBasicMaterial({ color: accent }));
+    const dot = buildTargetDot(T, accent);
     dot.position.copy(target);
     g.add(dot);
 
@@ -325,14 +277,8 @@ class Controller {
       this._setOrtho(Math.max(3.2, dist * 0.72));
       return this._ortho;
     }
-    const azR = this._viewAz * D2R,
-      elR = this._viewEl * D2R,
-      d = this._viewDist;
-    this._persp.position.set(
-      t.x + Math.sin(azR) * Math.cos(elR) * d,
-      t.y + Math.sin(elR) * d,
-      t.z + Math.cos(azR) * Math.cos(elR) * d
-    );
+    const p = setOrbit(this._viewAz, this._viewEl, this._viewDist, { x: t.x, y: t.y, z: t.z });
+    this._persp.position.set(p.x, p.y, p.z);
     this._persp.up.set(0, 1, 0);
     this._persp.lookAt(t);
     return this._persp;

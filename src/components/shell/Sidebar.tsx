@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { NavItem } from "@/components/ds/NavItem";
 import { ThemePresetSwitcher } from "@/components/shell/ThemePresetSwitcher";
+import { AccountModal } from "@/components/auth/AccountModal";
 import { useApp } from "@/state/AppState";
 
 const F_LABELS: Record<string, string> = {
@@ -30,6 +32,7 @@ export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const open = app.sidebarOpen;
+  const [acctOpen, setAcctOpen] = React.useState(false);
 
   const orient: "horizontal" | "vertical" = open ? "horizontal" : "vertical";
   const itemAlign = open ? "stretch" : "center";
@@ -55,10 +58,8 @@ export function Sidebar() {
     activeSub: app.sourceFilter === k,
   }));
 
-  const navDock = [
-    { key: "notif", icon: "◎", label: "Notifikasi", avatar: false, onClick: () => app.showToast("Notifikasi · sample") },
-    { key: "acct", icon: "RF", label: "Akun", avatar: true, onClick: () => app.showToast("Akun · sample") },
-  ];
+  const notifItem = { key: "notif", icon: "◎", label: "Notifikasi", avatar: false, onClick: () => app.showToast("Notifikasi · sample") };
+  const acctProps = { orientation: orient, avatar: true, onClick: () => setAcctOpen(true), style: orient === "horizontal" ? { width: "100%" } : undefined } as const;
 
   return (
     <aside
@@ -198,18 +199,26 @@ export function Sidebar() {
         }}
       >
         <ThemePresetSwitcher orientation={orient} />
-        {navDock.map((d) => (
-          <NavItem
-            key={d.key}
-            orientation={orient}
-            icon={d.icon}
-            label={d.label}
-            avatar={d.avatar}
-            onClick={d.onClick}
-            style={orient === "horizontal" ? { width: "100%" } : undefined}
-          />
-        ))}
+        <NavItem
+          orientation={orient}
+          icon={notifItem.icon}
+          label={notifItem.label}
+          avatar={notifItem.avatar}
+          onClick={notifItem.onClick}
+          style={orient === "horizontal" ? { width: "100%" } : undefined}
+        />
+        <AuthLoading>
+          <NavItem {...acctProps} icon="RF" label="Akun" />
+        </AuthLoading>
+        <Unauthenticated>
+          <NavItem {...acctProps} icon="RF" label="Masuk" />
+        </Unauthenticated>
+        <Authenticated>
+          <NavItem {...acctProps} icon="✓" label="Akun" active />
+        </Authenticated>
       </div>
+
+      <AccountModal open={acctOpen} onClose={() => setAcctOpen(false)} />
     </aside>
   );
 }

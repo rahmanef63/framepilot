@@ -4,7 +4,7 @@
 
 import { useCallback } from "react";
 import type { Meta } from "@/lib/dataPrompt";
-import { EditorFrame, defaultShotMeta, snapState } from "@/lib/editorModel";
+import { EditorFrame, defaultShotMeta, snapState, findFrame } from "@/lib/editorModel";
 import type { EditorCore } from "./core";
 
 export interface BriefActions {
@@ -27,11 +27,7 @@ export function useBriefActions(core: EditorCore): BriefActions {
   const currentFrame = useCallback((): EditorFrame | null => {
     const id = currentFrameIdRef.current;
     if (!id) return null;
-    for (const sc of projectRef.current.scenes) {
-      const f = sc.frames.find((x) => x.id === id);
-      if (f) return f;
-    }
-    return null;
+    return findFrame(projectRef.current, id)?.frame ?? null;
   }, [projectRef, currentFrameIdRef]);
 
   const frameIsDirty = useCallback(

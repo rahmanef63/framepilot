@@ -8,6 +8,7 @@ import {
   EditorFrame,
   defaultShotMeta,
   activeScene as findActiveScene,
+  findFrame,
   snapState,
   deepCopy,
   applyState,
@@ -88,19 +89,12 @@ export function useFrameActions(
   const loadFrame = useCallback(
     (id: string) => {
       stopPlayback();
-      let target: EditorFrame | null = null;
-      for (const sc of projectRef.current.scenes) {
-        const f = sc.frames.find((x) => x.id === id);
-        if (f) {
-          target = f;
-          projectRef.current.activeSceneId = sc.id;
-          break;
-        }
-      }
-      if (!target) return;
-      applyState(rigRef.current, target.s);
-      currentFrameIdRef.current = target.id;
-      draftMetaRef.current = { ...defaultShotMeta(), ...target.meta };
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      projectRef.current.activeSceneId = hit.scene.id;
+      applyState(rigRef.current, hit.frame.s);
+      currentFrameIdRef.current = hit.frame.id;
+      draftMetaRef.current = { ...defaultShotMeta(), ...hit.frame.meta };
       syncRig();
       engineRef.current?.updateHud();
       bump();
@@ -111,22 +105,17 @@ export function useFrameActions(
   const dupFrame = useCallback(
     (id: string) => {
       stopPlayback();
-      for (const sc of projectRef.current.scenes) {
-        const i = sc.frames.findIndex((x) => x.id === id);
-        if (i >= 0) {
-          const src = sc.frames[i];
-          const copy: EditorFrame = {
-            ...deepCopy(src),
-            id: uid(),
-            name: src.name + " (copy)",
-          };
-          sc.frames.splice(i + 1, 0, copy);
-          currentFrameIdRef.current = copy.id;
-          commitHistory("Gandakan frame");
-          bump();
-          return;
-        }
-      }
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      const copy: EditorFrame = {
+        ...deepCopy(hit.frame),
+        id: uid(),
+        name: hit.frame.name + " (copy)",
+      };
+      hit.scene.frames.splice(hit.index + 1, 0, copy);
+      currentFrameIdRef.current = copy.id;
+      commitHistory("Gandakan frame");
+      bump();
     },
     [projectRef, currentFrameIdRef, stopPlayback, commitHistory, bump]
   );
@@ -134,16 +123,12 @@ export function useFrameActions(
   const delFrame = useCallback(
     (id: string) => {
       stopPlayback();
-      for (const sc of projectRef.current.scenes) {
-        const i = sc.frames.findIndex((x) => x.id === id);
-        if (i >= 0) {
-          sc.frames.splice(i, 1);
-          if (currentFrameIdRef.current === id) currentFrameIdRef.current = null;
-          commitHistory("Hapus frame");
-          bump();
-          return;
-        }
-      }
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      hit.scene.frames.splice(hit.index, 1);
+      if (currentFrameIdRef.current === id) currentFrameIdRef.current = null;
+      commitHistory("Hapus frame");
+      bump();
     },
     [projectRef, currentFrameIdRef, stopPlayback, commitHistory, bump]
   );
@@ -151,32 +136,23 @@ export function useFrameActions(
   const moveFrame = useCallback(
     (id: string, dir: -1 | 1) => {
       stopPlayback();
-      for (const sc of projectRef.current.scenes) {
-        const i = sc.frames.findIndex((x) => x.id === id);
-        if (i >= 0) {
-          const j = i + dir;
-          if (j < 0 || j >= sc.frames.length) return;
-          [sc.frames[i], sc.frames[j]] = [sc.frames[j], sc.frames[i]];
-          commitHistory("Pindahkan frame");
-          bump();
-          return;
-        }
-      }
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      const { scene: sc, index: i } = hit;
+      const j = i + dir;
+      if (j < 0 || j >= sc.frames.length) return;
+      [sc.frames[i], sc.frames[j]] = [sc.frames[j], sc.frames[i]];
+      commitHistory("Pindahkan frame");
+      bump();
     },
     [projectRef, stopPlayback, commitHistory, bump]
   );
 
   const renameFrame = useCallback(
     (id: string, name: string) => {
-      const f = (() => {
-        for (const sc of projectRef.current.scenes) {
-          const hit = sc.frames.find((x) => x.id === id);
-          if (hit) return hit;
-        }
-        return null;
-      })();
-      if (!f) return;
-      f.name = name;
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      hit.frame.name = name;
       scheduleHistoryCommit("Ganti nama frame");
       bump();
     },
@@ -185,15 +161,11 @@ export function useFrameActions(
 
   const setFrameNotes = useCallback(
     (id: string, notes: string) => {
-      for (const sc of projectRef.current.scenes) {
-        const f = sc.frames.find((x) => x.id === id);
-        if (f) {
-          f.notes = notes;
-          scheduleHistoryCommit("Catatan frame");
-          bump();
-          return;
-        }
-      }
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      hit.frame.notes = notes;
+      scheduleHistoryCommit("Catatan frame");
+      bump();
     },
     [projectRef, scheduleHistoryCommit, bump]
   );
