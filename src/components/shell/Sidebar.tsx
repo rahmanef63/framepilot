@@ -7,6 +7,7 @@ import { CreateMenu } from "@/components/shell/CreateMenu";
 import { ThemePresetSwitcher } from "@/components/shell/ThemePresetSwitcher";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
+import { useIsAdmin } from "@/components/admin/useIsAdmin";
 import { useApp } from "@/state/AppState";
 
 const F_LABELS: Record<string, string> = {
@@ -33,6 +34,7 @@ export function Sidebar() {
   const app = useApp();
   const router = useRouter();
   const pathname = usePathname();
+  const isAdmin = useIsAdmin(); // undefined=loading, false=not admin, true=admin (UX gate only)
   const open = app.sidebarOpen;
   const [acctOpen, setAcctOpen] = React.useState(false);
 
@@ -45,12 +47,16 @@ export function Sidebar() {
     { key: "editor", icon: "◈", label: "Studio 3D", href: "/editor" },
   ];
 
-  // Secondary stub routes — de-emphasized below a section divider.
-  const navSecondary: MainNav[] = [
+  // Meaningful supporting routes — kept top-level reachable.
+  const navExplore: MainNav[] = [
     { key: "home", icon: "⌂", label: "Beranda", href: "/beranda" },
+    { key: "guide", icon: "?", label: "Panduan", href: "/panduan" },
+  ];
+
+  // Genuinely-minor routes — tucked inside a collapsed-by-default accordion.
+  const navMinor: MainNav[] = [
     { key: "projects", icon: "▤", label: "Proyek", href: "/proyek" },
     { key: "templates", icon: "▦", label: "Template", href: "/template" },
-    { key: "guide", icon: "?", label: "Panduan", href: "/panduan" },
   ];
 
   const isActive = (n: MainNav) => (n.href ? pathname === n.href : false);
@@ -203,10 +209,25 @@ export function Sidebar() {
           </React.Fragment>
         ))}
 
-        {open ? <SectionLabel>Lainnya</SectionLabel> : <SectionDivider />}
-        {navSecondary.map((m) => (
-          <React.Fragment key={m.key}>{renderNav(m, true)}</React.Fragment>
+        {open ? <SectionLabel>Jelajah</SectionLabel> : <SectionDivider />}
+        {navExplore.map((m) => (
+          <React.Fragment key={m.key}>{renderNav(m)}</React.Fragment>
         ))}
+
+        {open ? (
+          <Collapsible label="Lainnya">
+            {navMinor.map((m) => (
+              <React.Fragment key={m.key}>{renderNav(m, true)}</React.Fragment>
+            ))}
+          </Collapsible>
+        ) : (
+          <>
+            <SectionDivider />
+            {navMinor.map((m) => (
+              <React.Fragment key={m.key}>{renderNav(m, true)}</React.Fragment>
+            ))}
+          </>
+        )}
       </div>
 
       <div
@@ -221,6 +242,16 @@ export function Sidebar() {
       >
         <ThemeModeToggle orientation={orient} />
         <ThemePresetSwitcher orientation={orient} />
+        {isAdmin ? (
+          <NavItem
+            orientation={orient}
+            icon="⚙"
+            label="Admin"
+            active={pathname === "/admin"}
+            onClick={() => router.push("/admin")}
+            style={orient === "horizontal" ? { width: "100%" } : undefined}
+          />
+        ) : null}
         <NavItem
           orientation={orient}
           icon={notifItem.icon}
@@ -257,6 +288,66 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+    </div>
+  );
+}
+
+function Collapsible({ label, children }: { label: string; children: React.ReactNode }) {
+  const storageKey = `fp.sidebar.${label.toLowerCase()}`;
+  const [expanded, setExpanded] = React.useState(false);
+
+  // Rehydrate persisted open/closed state after mount (SSR-safe, defaults closed).
+  React.useEffect(() => {
+    try {
+      if (window.localStorage.getItem(storageKey) === "1") setExpanded(true);
+    } catch {}
+  }, [storageKey]);
+
+  const toggle = () => {
+    setExpanded((v) => {
+      const next = !v;
+      try {
+        window.localStorage.setItem(storageKey, next ? "1" : "0");
+      } catch {}
+      return next;
+    });
+  };
+
+  return (
+    <div>
+      <button
+        onClick={toggle}
+        aria-expanded={expanded}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          width: "100%",
+          border: 0,
+          background: "transparent",
+          cursor: "pointer",
+          font: "700 9.5px var(--font-mono)",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "var(--muted-foreground)",
+          padding: "12px 10px 4px",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-block",
+            fontFamily: "var(--font-mono)",
+            transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
+            transition: "transform var(--motion) var(--ease)",
+          }}
+        >
+          {"›"}
+        </span>
+        <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
+      </button>
+      {expanded ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>{children}</div>
+      ) : null}
     </div>
   );
 }

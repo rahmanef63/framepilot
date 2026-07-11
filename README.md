@@ -1,25 +1,42 @@
-# CODING AGENTS: READ THIS FIRST
+# framepilot — Camera Angle Guide Pro
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+**framepilot** turns shot ideas and references — a photo, a YouTube link, pasted text, or JSON — into structured **camera-angle data** (schema `camera-angle-guide/v2`) plus ready-to-paste **AI prompts**, and lets you plan and author shots in an interactive **3D studio**. Built for filmmakers, content creators, and storyboard artists who want to go from a rough idea to a precise, reusable shot spec without switching tools.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## The two screens
 
-## What you should do — IMPORTANT
+- **Pustaka / Data Prompt (`/`)** — import and manage entries: parse ideas/references into structured angle data, then apply or export them.
+- **Studio 3D (`/editor`)** — author the camera rig in an interactive 3D scene, capture frames, and export a prompt, CSV, or storyboard.
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## The flow
 
-**Read `project/DataPromptScreen.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+**Impor data (Pustaka)** → **author/refine in Studio 3D** → **Ekspor / Salin Prompt.**
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+Supporting screens: **Beranda** (home / quick start), **Panduan** (guide), **Proyek** and **Template** (planned: saved projects and reusable scene/shot presets).
 
-## About the design files
+---
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+## Stack
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+- Next.js 15 + React 19, App Router (`src/app/(app)/*`)
+- Own design-system primitives in `src/components/ds/*` (Button, Badge, Modal, Tabs, NavItem)
+- Rupa CSS tokens in `src/app/globals.css` (`:root` + `[data-theme=dark]`) with Light / Dark / System mode and a tweakcn preset switcher — `globals.css` is the single source of raw colors; everything else uses `var(--token)`
+- Convex Cloud + `@convex-dev/auth` (Password)
+- Bahasa Indonesia UI
 
-## Bundle contents
+## Develop
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Dataset menjadi data prompt` project files (HTML prototypes, assets, components)
+```bash
+npm install
+npx convex dev   # backend (in one terminal)
+npm run dev      # Next.js dev server (in another)
+```
+
+## Deploy
+
+Deployed on Convex Cloud + a Next.js host, live at **frame-pilot.rahmanef.com**. Push to `main` triggers the build.
+
+---
+
+## Design handoff (origin)
+
+This repo started from a **Claude Design** (claude.ai/design) handoff bundle. The original design conversation and HTML/CSS/JS prototypes live under `chats/` and `project/`; `project/DataPromptScreen.dc.html` was the primary Data Prompt design. Those files are reference prototypes, not production code — the app in `src/` is the real implementation.
