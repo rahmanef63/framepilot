@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import {
   Entry,
   Project,
@@ -27,6 +28,8 @@ import {
   toScenes,
   uid,
 } from "@/lib/dataPrompt";
+import { toEditorProject } from "@/lib/editorModel";
+import { AUTOKEY } from "@/lib/editorStorage";
 
 export type ViewMode = "grid" | "table" | "split";
 
@@ -83,6 +86,7 @@ export interface EntryView {
   onDelete: () => void;
   onPick: () => void;
   on3d: () => void;
+  onOpenStudio: () => void;
 }
 
 interface AppContextValue {
@@ -198,6 +202,7 @@ const F_LABELS: Record<string, string> = {
 };
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const nowRef = useRef(0);
   if (nowRef.current === 0) nowRef.current = Date.now();
@@ -437,6 +442,27 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [entries, selected]
   );
 
+  // --- library -> Studio 3D handoff ---
+  // Convert the entry to an EditorProject (reuse toEditorProject — no duplicate
+  // conversion logic) and seed the editor's autosave key, which EditorStateProvider
+  // hydrates from on mount (loadAutosave -> swapProject). Then navigate to /editor,
+  // which mounts fresh and loads the seeded document. This is a full-document swap
+  // (same semantics as the editor's importFromLibrary), so it replaces the current
+  // editor doc — expected for "open THIS entry in Studio 3D".
+  const openInStudio3d = useCallback(
+    (id: string) => {
+      const en = entries.find((e) => e.id === id);
+      if (!en) return;
+      try {
+        localStorage.setItem(AUTOKEY, JSON.stringify(toEditorProject(en)));
+      } catch {
+        /* ignore quota/private-mode */
+      }
+      router.push("/editor");
+    },
+    [entries, router]
+  );
+
   // --- apply ---
   const openApply = useCallback(
     (ids?: string[]) => {
@@ -612,6 +638,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           setView3dOpen(true);
           setView3dFrame(0);
         },
+        onOpenStudio: () => openInStudio3d(en.id),
       };
     };
 
@@ -624,7 +651,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const activeEntry = filtered.find((e) => e.id === activeId) || filtered[0] || null;
     const selectedCount = entriesAll.filter((e) => e.selected).length;
     return { entriesAll, counts, filtered, activeEntry, selectedCount };
-  }, [entries, selected, activeId, sourceFilter, now, toggleSelect, openApply, openEdit, del]);
+  }, [entries, selected, activeId, sourceFilter, now, toggleSelect, openApply, openEdit, del, openInStudio3d]);
 
   const { entriesAll, counts, filtered, activeEntry, selectedCount } = derived;
 

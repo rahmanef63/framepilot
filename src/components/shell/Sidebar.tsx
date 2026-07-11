@@ -3,6 +3,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { NavItem } from "@/components/ds/NavItem";
+import { CreateMenu } from "@/components/shell/CreateMenu";
 import { ThemePresetSwitcher } from "@/components/shell/ThemePresetSwitcher";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
@@ -38,12 +39,16 @@ export function Sidebar() {
   const orient: "horizontal" | "vertical" = open ? "horizontal" : "vertical";
   const itemAlign = open ? "stretch" : "center";
 
-  const navMain: MainNav[] = [
-    { key: "create", icon: "+", label: "Buat", accent: true, onClick: () => app.openImport("paste") },
-    { key: "home", icon: "⌂", label: "Beranda", href: "/beranda" },
-    { key: "projects", icon: "▤", label: "Proyek", href: "/proyek" },
+  // The two REAL tools — kept prominent at the top of the rail.
+  const navCore: MainNav[] = [
     { key: "data", icon: "▧", label: "Data Prompt", crown: true, badge: "Baru", hasSub: true, href: "/" },
     { key: "editor", icon: "◈", label: "Studio 3D", href: "/editor" },
+  ];
+
+  // Secondary stub routes — de-emphasized below a section divider.
+  const navSecondary: MainNav[] = [
+    { key: "home", icon: "⌂", label: "Beranda", href: "/beranda" },
+    { key: "projects", icon: "▤", label: "Proyek", href: "/proyek" },
     { key: "templates", icon: "▦", label: "Template", href: "/template" },
     { key: "guide", icon: "?", label: "Panduan", href: "/panduan" },
   ];
@@ -58,6 +63,24 @@ export function Sidebar() {
     onClick: () => app.setSourceFilter(k),
     activeSub: app.sourceFilter === k,
   }));
+
+  const renderNav = (m: MainNav, dim = false) => (
+    <NavItem
+      orientation={orient}
+      icon={m.icon}
+      label={m.label}
+      active={isActive(m)}
+      accent={m.accent}
+      crown={m.crown}
+      badge={open ? m.badge : undefined}
+      chevron={open ? !!m.hasSub : false}
+      onClick={() => (m.onClick ? m.onClick() : m.href && router.push(m.href))}
+      style={{
+        ...(orient === "horizontal" ? { width: "100%" } : {}),
+        ...(dim && !isActive(m) ? { opacity: 0.62 } : {}),
+      }}
+    />
+  );
 
   const notifItem = { key: "notif", icon: "◎", label: "Notifikasi", avatar: false, onClick: () => app.showToast("Notifikasi · sample") };
   const acctProps = { orientation: orient, avatar: true, onClick: () => setAcctOpen(true), style: orient === "horizontal" ? { width: "100%" } : undefined } as const;
@@ -121,72 +144,69 @@ export function Sidebar() {
           alignItems: itemAlign,
         }}
       >
-        {navMain.map((m) => {
-          const active = isActive(m);
-          const showSub = open && m.hasSub && onDataRoute;
-          return (
-            <React.Fragment key={m.key}>
-              <NavItem
-                orientation={orient}
-                icon={m.icon}
-                label={m.label}
-                active={active}
-                accent={m.accent}
-                crown={m.crown}
-                badge={open ? m.badge : undefined}
-                chevron={open ? !!m.hasSub : false}
-                onClick={() => (m.onClick ? m.onClick() : m.href && router.push(m.href))}
-                style={orient === "horizontal" ? { width: "100%" } : undefined}
-              />
-              {showSub ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "2px",
-                    margin: "2px 0 8px 19px",
-                    paddingLeft: "12px",
-                    borderLeft: "var(--border-width) solid var(--border)",
-                  }}
-                >
-                  {navSub.map((s) => (
-                    <button
-                      key={s.key}
-                      onClick={s.onClick}
+        <CreateMenu
+          orientation={orient}
+          onNew3D={() => router.push("/editor")}
+          onFromImage={() => app.openImport("photo")}
+        />
+
+        {open ? <SectionLabel>Alat</SectionLabel> : <SectionDivider />}
+        {navCore.map((m) => (
+          <React.Fragment key={m.key}>
+            {renderNav(m)}
+            {open && m.hasSub && onDataRoute ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "2px",
+                  margin: "2px 0 8px 19px",
+                  paddingLeft: "12px",
+                  borderLeft: "var(--border-width) solid var(--border)",
+                }}
+              >
+                {navSub.map((s) => (
+                  <button
+                    key={s.key}
+                    onClick={s.onClick}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      width: "100%",
+                      textAlign: "left",
+                      border: 0,
+                      borderRadius: "var(--radius-sm)",
+                      padding: "6px 9px",
+                      cursor: "pointer",
+                      background: s.activeSub ? "var(--primary-soft)" : "transparent",
+                      color: s.activeSub ? "var(--primary)" : "var(--foreground)",
+                      font: `${s.activeSub ? 600 : 400} 12px var(--font-sans)`,
+                    }}
+                  >
+                    <span
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        width: "100%",
-                        textAlign: "left",
-                        border: 0,
-                        borderRadius: "var(--radius-sm)",
-                        padding: "6px 9px",
-                        cursor: "pointer",
-                        background: s.activeSub ? "var(--primary-soft)" : "transparent",
-                        color: s.activeSub ? "var(--primary)" : "var(--foreground)",
-                        font: `${s.activeSub ? 600 : 400} 12px var(--font-sans)`,
+                        flex: 1,
+                        minWidth: 0,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
-                      <span
-                        style={{
-                          flex: 1,
-                          minWidth: 0,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {s.label}
-                      </span>
-                      <span style={{ font: "600 10px var(--font-mono)", opacity: 0.7 }}>{s.count}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </React.Fragment>
-          );
-        })}
+                      {s.label}
+                    </span>
+                    <span style={{ font: "600 10px var(--font-mono)", opacity: 0.7 }}>{s.count}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </React.Fragment>
+        ))}
+
+        {open ? <SectionLabel>Lainnya</SectionLabel> : <SectionDivider />}
+        {navSecondary.map((m) => (
+          <React.Fragment key={m.key}>{renderNav(m, true)}</React.Fragment>
+        ))}
       </div>
 
       <div
@@ -222,5 +242,34 @@ export function Sidebar() {
 
       <AccountModal open={acctOpen} onClose={() => setAcctOpen(false)} />
     </aside>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        font: "700 9.5px var(--font-mono)",
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color: "var(--muted-foreground)",
+        padding: "12px 10px 4px",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function SectionDivider() {
+  return (
+    <div
+      style={{
+        width: "28px",
+        height: "var(--border-width)",
+        background: "var(--border)",
+        margin: "10px 0 6px",
+      }}
+    />
   );
 }

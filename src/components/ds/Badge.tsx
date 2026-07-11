@@ -31,8 +31,8 @@ export function Badge({
     },
     highlight: {
       background: "var(--highlight)",
-      color: "var(--foreground)",
-      border: "1px solid var(--foreground)",
+      color: "var(--highlight-foreground)",
+      border: "1px solid var(--highlight-foreground)",
     },
     outline: {
       background: "transparent",

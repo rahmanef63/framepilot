@@ -31,6 +31,9 @@
 
   --border-strong: #1A1915;
   --highlight: #EFD4AC;
+  /* highlight is a FIXED light sand in both themes, so its ink must be fixed dark
+     too — never var(--foreground) (which flips to near-white in dark → illegible). */
+  --highlight-foreground: #1A1915;
   --overlay: rgba(20, 20, 18, .5);
 
   --sidebar: #FAF9F5;

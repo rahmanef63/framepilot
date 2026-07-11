@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
+import { CagViewport } from "@/components/CagViewport";
 import { EntryView } from "@/state/AppState";
 
 const chip: React.CSSProperties = {
@@ -11,6 +12,58 @@ const chip: React.CSSProperties = {
   borderRadius: "var(--radius-sm)",
   padding: "2px 7px",
 };
+
+// Live 3D preview of the entry's FIRST frame (pAz/pEl/… precomputed in EntryView).
+// WebGL ceiling: browsers cap live WebGL contexts (~16) before evicting the oldest
+// and firing context-loss. The grid can hold arbitrarily many entries, so each card
+// lazy-mounts ONE viewport only while it is near the viewport (IntersectionObserver,
+// 200px margin) and unmounts — freeing its context — when scrolled away. That bounds
+// live contexts to the on-screen handful, well under the cap. Off-screen cards show
+// the original ds-hatch placeholder.
+function CardPreview({ e }: { e: EntryView }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((ents) => setShow(ents[0]?.isIntersecting ?? false), {
+      rootMargin: "200px",
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div
+      ref={ref}
+      className={show ? undefined : "ds-hatch"}
+      style={{
+        height: 116,
+        flex: "none",
+        borderBottom: "var(--border-width) solid var(--border)",
+        display: show ? "block" : "grid",
+        placeItems: "center",
+        position: "relative",
+        font: "600 10px var(--font-mono)",
+        color: "var(--subtle-foreground)",
+      }}
+    >
+      {show ? (
+        <CagViewport
+          camview="orbit"
+          az={e.pAz}
+          el={e.pEl}
+          dist={e.pDist}
+          lens={e.pLens}
+          roll={e.pRoll}
+          subj={e.pSubj}
+          style={{ width: "100%", height: "100%" }}
+        />
+      ) : (
+        <>[ {e.thumbCaption} ]</>
+      )}
+    </div>
+  );
+}
 
 export function GridView({ entries }: { entries: EntryView[] }) {
   return (
@@ -57,20 +110,7 @@ export function GridView({ entries }: { entries: EntryView[] }) {
                 {e.sourceGlyph} {e.sourceLabel}
               </Badge>
             </div>
-            <div
-              className="ds-hatch"
-              style={{
-                height: 116,
-                flex: "none",
-                borderBottom: "var(--border-width) solid var(--border)",
-                display: "grid",
-                placeItems: "center",
-                font: "600 10px var(--font-mono)",
-                color: "var(--subtle-foreground)",
-              }}
-            >
-              [ {e.thumbCaption} ]
-            </div>
+            <CardPreview e={e} />
             <div style={{ padding: "12px 13px 13px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
               <div>
                 <div style={{ font: "700 14px var(--font-sans)", color: "var(--foreground)" }}>{e.name}</div>
@@ -107,6 +147,9 @@ export function GridView({ entries }: { entries: EntryView[] }) {
                 </Button>
                 <Button variant="outline" size="sm" icon="◿" onClick={e.on3d}>
                   3D
+                </Button>
+                <Button variant="outline" size="sm" icon="◈" onClick={e.onOpenStudio} title="Buka di Studio 3D">
+                  Studio
                 </Button>
                 <Button variant="outline" size="sm" onClick={e.onEdit}>
                   Edit
