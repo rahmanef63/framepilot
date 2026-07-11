@@ -9,6 +9,7 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
 import { MOVES } from "@/lib/dataPrompt";
 import { frameDuration } from "@/lib/editorModel";
 import { getOrbit, shotLabel, focalLength, subjHeight } from "@/lib/editorMath";
@@ -26,6 +27,9 @@ export function ShotPanel() {
 
   return (
     <div className="panel-page active">
+      {/* ---- output-of-this-tab hero: paste-ready camera prompt ---- */}
+      <CameraPromptDock />
+
       {/* ---- live summary (#shotSummary) ---- */}
       <div className="group">
         <h3>Brief Shot Aktif</h3>
