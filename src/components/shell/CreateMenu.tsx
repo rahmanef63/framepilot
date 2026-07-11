@@ -88,14 +88,14 @@ export function CreateMenu({
         >
           <MenuOption
             icon="◈"
-            title="Baru dari 3D"
-            desc="Mulai proyek Studio 3D"
+            title="Susun di Studio 3D"
+            desc="Rancang kamera → Prompt Kamera"
             onClick={() => pick(onNew3D)}
           />
           <MenuOption
             icon="▧"
-            title="Baru dari Gambar"
-            desc="Impor foto lalu parse"
+            title="Impor dari Gambar"
+            desc="Foto → ekstrak data kamera"
             onClick={() => pick(onFromImage)}
           />
         </div>

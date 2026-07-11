@@ -42,10 +42,12 @@ export function Sidebar() {
   const orient: "horizontal" | "vertical" = open ? "horizontal" : "vertical";
   const itemAlign = open ? "stretch" : "center";
 
-  // The two REAL tools — kept prominent at the top of the rail.
+  // The two REAL tools. Studio 3D is the app home (it produces the Prompt
+  // Kamera — the hero output), so it leads with the crown; the import/library
+  // flow that only feeds it is demoted to secondary.
   const navCore: MainNav[] = [
-    { key: "data", icon: "▧", label: "Data Prompt", crown: true, badge: "Baru", hasSub: true, href: "/pustaka" },
-    { key: "editor", icon: "◈", label: "Studio 3D", href: "/editor" },
+    { key: "editor", icon: "◈", label: "Studio 3D", crown: true, badge: "Prompt Kamera", href: "/editor" },
+    { key: "data", icon: "▧", label: "Pustaka Data", hasSub: true, href: "/pustaka" },
   ];
 
   // Meaningful supporting routes — kept top-level reachable.

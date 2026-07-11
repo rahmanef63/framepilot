@@ -10,16 +10,19 @@ import React, { useState } from "react";
 import { useEditor } from "@/state/EditorState";
 import { Button } from "@/components/ds/Button";
 import { activeScene } from "@/lib/editorModel";
-import { projectPrompt } from "@/lib/editorPrompt";
+import { projectPrompt, projectDetail } from "@/lib/editorPrompt";
+import { usePlatform } from "./usePlatform";
+import { PlatformSelect, PlatformHint } from "./PlatformPicker";
 import { copyText } from "./panel/outline/clipboard";
 
 export function PreviewPanel() {
   const ctx = useEditor();
   const { playback } = ctx;
+  const [platform, setPlatform] = usePlatform();
   const [copied, setCopied] = useState(false);
 
-  // whole-project prompt for the textarea (concept projectPrompt)
-  const prompt = projectPrompt(ctx.project);
+  // whole-project skinned camera prompt for the textarea (platform-tuned hero)
+  const prompt = projectPrompt(ctx.project, platform);
   const projName = ctx.project.name.trim() || "Proyek tanpa nama";
 
   // transport indicator sourced from the active scene (concept updatePlaybackUI)
@@ -85,19 +88,23 @@ export function PreviewPanel() {
       {/* ---- generated-prompt side panel (concept .pv-side) ---- */}
       <div className="pv-side">
         <div className="pv-side-head">
-          <h3>Prompt siap-salin</h3>
+          <h3>Prompt Kamera</h3>
           <span className="pv-side-count">{totalShots} shot · {projName}</span>
         </div>
         <p className="pv-flow">
-          Susun shot di tab <b>Editor</b> → salin prompt ini → tempel ke AI gambar/video.
+          Susun shot di tab <b>Editor</b> → pilih platform → salin prompt kamera → tempel ke AI video.
         </p>
+        <div className="cam-dock-ctl">
+          <PlatformSelect value={platform} onChange={setPlatform} />
+        </div>
         <textarea
           className="pv-prompt"
           readOnly
           spellCheck={false}
           value={prompt}
-          placeholder="Tambahkan frame di tab Editor, lalu prompt lengkap per shot akan muncul di sini."
+          placeholder="Tambahkan frame di tab Editor, lalu prompt kamera per shot akan muncul di sini."
         />
+        <PlatformHint value={platform} />
         <div className="row">
           <Button
             variant="primary"
@@ -109,9 +116,15 @@ export function PreviewPanel() {
             {copied ? "Tersalin ✓" : hasShots ? "Salin Prompt" : "Belum ada shot"}
           </Button>
         </div>
+        {hasShots ? (
+          <details className="cam-detail">
+            <summary>Detail produksi (bilingual · semua shot)</summary>
+            <pre>{projectDetail(ctx.project)}</pre>
+          </details>
+        ) : null}
         <p className="storage-note">
-          Teks ini bisa ditempel sebagai konteks shot untuk prompt AI (image/video generation)
-          atau catatan produksi.
+          Prompt kamera di atas siap ditempel ke platform AI video. Buka <b>Detail</b> untuk catatan
+          produksi lengkap (tujuan, lighting, style, audio).
         </p>
       </div>
     </>

@@ -1,15 +1,43 @@
 // editorPrompt.ts — prompt generators for the CAG Editor (plan G24).
-// Ported VERBATIM from concept/camera-angle-guides-pro.html (~lines 2300-2357):
-// angleEN map, framePrompt, scenePrompt, projectPrompt. Bilingual ID/EN strings
-// kept as-is. Pure functions — NO React, NO three.
+//
+// HERO (the paste-ready CAMERA prompt) now DELEGATES to the @/lib/prompt engine
+// so there is ONE source of camera wording (DRY). The public framePrompt/
+// scenePrompt/projectPrompt keep their names but emit the platform-tuned camera
+// string the user pastes INTO an AI video-gen platform.
+//
+// SECONDARY (frameDetail/sceneDetail/projectDetail) keeps the original bilingual
+// ID/EN production dump — ported VERBATIM from the concept — now surfaced only as
+// a collapsible "Detail" in the Studio, never the hero. Pure functions — NO React.
 
 import { EditorFrame, EditorScene, EditorProject, defaultShotMeta, frameDuration, sceneDuration } from "./editorModel";
 import { focalLength, norm180 } from "./editorMath";
+import { encodeShot, encodeScene, encodeProject, toNeutral } from "./prompt/cameraPrompt";
+import type { PlatformId } from "./prompt/types";
 
 export type PromptSettings = EditorProject["settings"];
 
 // ============================================================
-// EN maps (concept ~2303)
+// HERO — platform-tuned camera prompt (delegates to the ONE engine)
+// ============================================================
+const DEFAULT_PLATFORM: PlatformId = "runway";
+
+// Single shot → paste-ready camera string for the target platform.
+export function framePrompt(f: EditorFrame, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM): string {
+  return encodeShot(toNeutral(f, { aspectRatio: settings.aspectRatio }), platform);
+}
+
+// One scene → one skinned block per shot ("# Shot\n<camera prompt>").
+export function scenePrompt(sc: EditorScene, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM): string {
+  return encodeScene(sc, platform, { aspectRatio: settings.aspectRatio });
+}
+
+// Whole project → multi-shot skinned output across every scene.
+export function projectPrompt(project: EditorProject, platform: PlatformId = DEFAULT_PLATFORM): string {
+  return encodeProject(project, platform);
+}
+
+// ============================================================
+// SECONDARY — bilingual production dump (concept ~2303-2357), kept as "Detail"
 // ============================================================
 const angleEN: Record<string, string> = {
   "BIRD'S EYE": "bird's-eye view",
@@ -35,10 +63,7 @@ function subjEN(subj: string): string {
   return subj === "person" ? "a standing person" : "a sculptural object on a pedestal";
 }
 
-// ============================================================
-// framePrompt (concept ~2307)
-// ============================================================
-function framePrompt(f: EditorFrame, i: number, settings: PromptSettings): string {
+function frameDetail(f: EditorFrame, i: number, settings: PromptSettings): string {
   const s = f.s;
   const m = { ...defaultShotMeta(), ...(f.meta || {}) };
   const baseAngle = (f.angle || "EYE LEVEL").replace(" · DUTCH", "");
@@ -73,26 +98,20 @@ function framePrompt(f: EditorFrame, i: number, settings: PromptSettings): strin
   return lines.join("\n");
 }
 
-// ============================================================
-// scenePrompt (concept ~2344)
-// ============================================================
-export function scenePrompt(sc: EditorScene, settings: PromptSettings): string {
+export function sceneDetail(sc: EditorScene, settings: PromptSettings): string {
   const head =
     `SCENE: ${sc.name}\n` +
     (sc.notes && sc.notes.trim() ? `Catatan scene: ${sc.notes.trim()}\n` : "") +
     `Total ${sc.frames.length} shot · playback ±${sceneDuration(sc).toFixed(1)}s\n` +
     `${"-".repeat(46)}`;
   if (!sc.frames.length) return head + "\n(scene kosong)";
-  return head + "\n\n" + sc.frames.map((f, i) => framePrompt(f, i, settings)).join("\n\n");
+  return head + "\n\n" + sc.frames.map((f, i) => frameDetail(f, i, settings)).join("\n\n");
 }
 
-// ============================================================
-// projectPrompt (concept ~2353)
-// ============================================================
-export function projectPrompt(project: EditorProject): string {
+export function projectDetail(project: EditorProject): string {
   const name = project.name.trim() || "Proyek tanpa nama";
   return (
     `PROYEK: ${name}\nOUTPUT: ${project.settings.aspectRatio} · ${project.settings.fps} fps · ${project.settings.sensor}\n${"=".repeat(46)}\n\n` +
-    project.scenes.map((sc) => scenePrompt(sc, project.settings)).join("\n\n" + "=".repeat(46) + "\n\n")
+    project.scenes.map((sc) => sceneDetail(sc, project.settings)).join("\n\n" + "=".repeat(46) + "\n\n")
   );
 }

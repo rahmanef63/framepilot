@@ -4,6 +4,7 @@ import type { EditorContextValue } from "@/state/EditorState";
 import type { EditorScene } from "@/lib/editorModel";
 import { sceneDuration } from "@/lib/editorModel";
 import { scenePrompt } from "@/lib/editorPrompt";
+import { usePlatform } from "@/components/editor/usePlatform";
 import { IcoButton, ArmDeleteButton } from "./IcoButton";
 import { FrameRow } from "./FrameRow";
 import { copyText } from "./clipboard";
@@ -23,6 +24,7 @@ export function SceneRow({
   active: boolean;
   currentFrameId: string | null;
 }) {
+  const [platform] = usePlatform();
   const cls =
     "snode" + (active ? " activeScene" : "") + (sc.collapsed ? " collapsed" : "");
   const head = sc.frames[0];
@@ -70,10 +72,10 @@ export function SceneRow({
           Play
         </IcoButton>
         <IcoButton
-          title="Salin prompt scene"
+          title="Salin prompt kamera scene"
           onClick={() => {
-            copyText(scenePrompt(sc, ctx.project.settings));
-            showToast("Prompt scene disalin");
+            copyText(scenePrompt(sc, ctx.project.settings, platform));
+            showToast("Prompt kamera scene disalin");
           }}
         >
           Prompt

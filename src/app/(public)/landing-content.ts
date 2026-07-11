@@ -11,12 +11,12 @@ export const hero = {
     { label: "framepilot", tone: "new" as BadgeTone },
     { label: "Camera Angle Guide Pro", tone: "outline" as BadgeTone },
   ],
-  title: "Ubah ide & referensi shot jadi data sudut kamera + prompt AI siap pakai.",
+  title: "Susun posisi kamera di 3D, dapat Prompt Kamera siap-tempel buat Runway, Kling, Luma, Sora, Veo & Hailuo.",
   purpose:
-    "Camera Angle Guide Pro untuk sineas, kreator konten, dan storyboard artist: impor ide shot atau referensi (foto · YouTube · teks · JSON), rapikan jadi data sudut kamera terstruktur (skema camera-angle-guide/v2), lalu rancang dan tangkap tiap angle di studio 3D interaktif. Hasil akhir: prompt AI, CSV, atau storyboard yang tinggal ditempel.",
+    "Camera Angle Guide Pro untuk sineas, kreator konten, dan storyboard artist: rancang tiap angle di studio 3D interaktif — ukuran shot, sudut, subjek, lensa, satu gerakan kamera, dan speed — lalu pilih platform video-AI dan salin Prompt Kamera yang tinggal ditempel ke Runway, Kling, Luma, Sora, Veo, atau Hailuo. Punya referensi? Impor foto · YouTube · teks · JSON di Pustaka Data untuk mengekstrak data sudut kamera lebih dulu.",
   ctas: [
-    { label: "Mulai di Pustaka", href: "/pustaka", variant: "primary" as const, arrow: true },
-    { label: "Buka Studio 3D", href: "/editor", variant: "outline" as const, arrow: false },
+    { label: "Buka Studio 3D", href: "/editor", variant: "primary" as const, arrow: true },
+    { label: "Impor referensi", href: "/pustaka", variant: "outline" as const, arrow: false },
     { label: "Baca Panduan", href: "/panduan", variant: "ghost" as const, arrow: false },
   ],
 };
@@ -33,21 +33,21 @@ export type Screen = {
 
 export const screens: Screen[] = [
   {
-    tag: "Data Prompt",
-    title: "Pustaka",
-    desc: "Parse & kelola entri: tempel foto, link YouTube, teks, atau JSON — jadikan data sudut kamera terstruktur yang siap dipakai ulang.",
-    href: "/pustaka",
-    cta: "Buka Pustaka",
-    glyph: "▤",
-    tone: "new",
-  },
-  {
     tag: "Studio 3D",
-    title: "Editor",
-    desc: "Rig kamera, atur frame dengan frustum & rule-of-thirds, tangkap tiap angle, lalu ekspor — semua di ruang 3D interaktif.",
+    title: "Studio",
+    desc: "Rig kamera, atur frame dengan frustum & rule-of-thirds, tangkap tiap angle, lalu salin Prompt Kamera yang di-tune per platform video-AI — semua di ruang 3D interaktif.",
     href: "/editor",
     cta: "Buka Studio 3D",
     glyph: "◱",
+    tone: "new",
+  },
+  {
+    tag: "Impor",
+    title: "Pustaka Data",
+    desc: "Punya referensi? Tempel foto, link YouTube, teks, atau JSON — framepilot mengekstraknya jadi data sudut kamera terstruktur yang bisa diterapkan ke scene.",
+    href: "/pustaka",
+    cta: "Buka Pustaka Data",
+    glyph: "▤",
     tone: "outline",
   },
 ];
@@ -64,27 +64,27 @@ export type Step = {
 export const steps: Step[] = [
   {
     n: "01",
-    tag: "Impor",
-    title: "Impor data di Pustaka",
-    href: "/pustaka",
-    cta: "Buka Pustaka",
-    desc: "Tempel ide shot, referensi foto, link YouTube, teks, atau JSON. framepilot mem-parse-nya jadi data sudut kamera terstruktur (skema camera-angle-guide/v2).",
+    tag: "Studio 3D",
+    title: "Susun di Studio 3D",
+    href: "/editor",
+    cta: "Buka Studio 3D",
+    desc: "Rancang posisi kamera secara interaktif — ukuran shot, sudut, subjek, lensa, satu gerakan kamera, dan speed — lalu tangkap tiap angle di ruang 3D.",
   },
   {
     n: "02",
-    tag: "Studio 3D",
-    title: "Susun rig di Studio 3D",
+    tag: "Platform",
+    title: "Pilih platform video-AI",
     href: "/editor",
     cta: "Buka Studio 3D",
-    desc: "Rancang rig kamera secara interaktif, tangkap frame, dan sempurnakan tiap angle di ruang 3D. Data dari Pustaka bisa langsung diterapkan ke scene.",
+    desc: "Tentukan target: Runway, Kling, Luma, Sora, Veo, atau Hailuo. Prompt Kamera langsung di-tune mengikuti gaya platform yang kamu pilih.",
   },
   {
     n: "03",
-    tag: "Ekspor",
-    title: "Ekspor & salin prompt",
+    tag: "Prompt Kamera",
+    title: "Salin Prompt Kamera",
     href: "/editor",
-    cta: "Ke Ekspor",
-    desc: "Hasilkan prompt AI siap tempel, atau ekspor CSV dan storyboard. Dari ide sampai prompt final tanpa berpindah tool.",
+    cta: "Salin Prompt Kamera",
+    desc: "Ambil Prompt Kamera yang siap tempel ke platform video-AI. Butuh referensi lebih dulu? Ekstrak data sudut kamera dari foto · YouTube · teks di Pustaka Data.",
   },
 ];
 
@@ -108,8 +108,8 @@ export const features: Feature[] = [
     desc: "Lihat frustum kamera dan panduan rule-of-thirds langsung di ruang 3D interaktif.",
   },
   {
-    title: "Ekspor JSON · CSV · storyboard",
-    desc: "Salin prompt AI siap tempel, atau ekspor data ke CSV dan storyboard tanpa pindah tool.",
+    title: "Prompt Kamera per platform",
+    desc: "Salin Prompt Kamera yang di-tune untuk Runway · Kling · Luma · Sora · Veo · Hailuo, atau ekspor JSON · CSV · storyboard tanpa pindah tool.",
   },
   {
     title: "Tema Terang · Gelap · Sistem",
@@ -119,6 +119,6 @@ export const features: Feature[] = [
 
 export const closing = {
   title: "Mulai sekarang",
-  desc: "Dari ide sampai prompt final: impor di Pustaka, rancang di Studio 3D, ekspor sekali klik.",
-  cta: { label: "Mulai di Pustaka", href: "/pustaka" },
+  desc: "Susun posisi kamera di Studio 3D, pilih platform video-AI, lalu salin Prompt Kamera siap-tempel. Punya referensi? Impor dulu di Pustaka Data.",
+  cta: { label: "Buka Studio 3D", href: "/editor" },
 };

@@ -9,11 +9,12 @@ import React, { useEffect, useRef } from "react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { useProjectSync } from "@/components/editor/useProjectSync";
+import { usePlatform } from "@/components/editor/usePlatform";
 import { Button } from "@/components/ds/Button";
+import { projectPrompt } from "@/lib/editorPrompt";
 import {
   exportJSON,
   exportCSV,
-  exportPromptTxt,
   exportStoryboardPNG,
   importProject,
   downloadBlob,
@@ -61,6 +62,7 @@ export function SavedProjects() {
   const ctx = useEditor();
   const { showToast, project: libraryProject } = useApp();
   const { signedIn, cloudList, loadCloud, removeCloud } = useProjectSync();
+  const [platform] = usePlatform();
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   // One-way handoff: pull the scenes staged in the DataPrompt library ("Terapkan")
@@ -96,8 +98,10 @@ export function SavedProjects() {
   };
   const doTxt = () => {
     const p = project();
-    downloadBlob(safeFileName(p.name) + "-prompt.txt", exportPromptTxt(p));
-    showToast("Prompt TXT diekspor");
+    // skinned camera prompt at the selected platform (same output as Copy)
+    const blob = new Blob([projectPrompt(p, platform)], { type: "text/plain;charset=utf-8" });
+    downloadBlob(safeFileName(p.name) + "-prompt.txt", blob);
+    showToast("Prompt kamera TXT diekspor");
   };
   const doBoard = async () => {
     const p = project();

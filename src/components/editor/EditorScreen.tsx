@@ -15,6 +15,7 @@ import { PanelTabs } from "./panel/PanelTabs";
 import { EditorViewport } from "./viewport/EditorViewport";
 import { Hud } from "./viewport/Hud";
 import { FramesSection } from "./FramesSection";
+import { CameraPromptDock } from "./CameraPromptDock";
 import { PreviewPanel } from "./PreviewPanel";
 import { GuidePage } from "./GuidePage";
 
@@ -35,6 +36,7 @@ export function EditorScreen() {
           <PanelTabs />
         </div>
         <FramesSection />
+        <CameraPromptDock />
       </div>
 
       {/* ---- Full Preview page: the ONE canvas reflows into .pv-viewport ---- */}
