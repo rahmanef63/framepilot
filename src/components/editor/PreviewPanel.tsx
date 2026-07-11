@@ -11,19 +11,7 @@ import { useEditor } from "@/state/EditorState";
 import { Button } from "@/components/ds/Button";
 import { activeScene } from "@/lib/editorModel";
 import { projectPrompt } from "@/lib/editorPrompt";
-
-function fallbackCopy(txt: string) {
-  const ta = document.createElement("textarea");
-  ta.value = txt;
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand("copy");
-  } catch {
-    /* noop */
-  }
-  ta.remove();
-}
+import { copyText } from "./panel/outline/clipboard";
 
 export function PreviewPanel() {
   const ctx = useEditor();
@@ -42,20 +30,14 @@ export function PreviewPanel() {
   const name = total ? frames[Math.min(playback.idx, total - 1)].name || "" : "";
   const ind = total ? `${cur}/${total} · ${name}` : "—";
 
+  // total shots across every scene — surfaced so the prompt panel says what it holds
+  const totalShots = ctx.project.scenes.reduce((n, s) => n + s.frames.length, 0);
+  const hasShots = totalShots > 0;
+
   const copyPrompt = () => {
-    const done = () => {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1200);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(prompt).then(done).catch(() => {
-        fallbackCopy(prompt);
-        done();
-      });
-    } else {
-      fallbackCopy(prompt);
-      done();
-    }
+    copyText(prompt);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1200);
   };
 
   return (
@@ -102,18 +84,29 @@ export function PreviewPanel() {
 
       {/* ---- generated-prompt side panel (concept .pv-side) ---- */}
       <div className="pv-side">
-        <h3>
-          Info Prompt — <span style={{ color: "var(--accent)" }}>{projName}</span>
-        </h3>
+        <div className="pv-side-head">
+          <h3>Prompt siap-salin</h3>
+          <span className="pv-side-count">{totalShots} shot · {projName}</span>
+        </div>
+        <p className="pv-flow">
+          Susun shot di tab <b>Editor</b> → salin prompt ini → tempel ke AI gambar/video.
+        </p>
         <textarea
+          className="pv-prompt"
           readOnly
           spellCheck={false}
           value={prompt}
-          placeholder="Tambahkan frame di tab Editor, lalu info prompt per shot akan muncul di sini."
+          placeholder="Tambahkan frame di tab Editor, lalu prompt lengkap per shot akan muncul di sini."
         />
         <div className="row">
-          <Button variant="primary" size="sm" style={{ flex: 1 }} onClick={copyPrompt}>
-            {copied ? "Tersalin ✓" : "Salin Prompt"}
+          <Button
+            variant="primary"
+            size="md"
+            style={{ flex: 1 }}
+            disabled={!hasShots}
+            onClick={copyPrompt}
+          >
+            {copied ? "Tersalin ✓" : hasShots ? "Salin Prompt" : "Belum ada shot"}
           </Button>
         </div>
         <p className="storage-note">

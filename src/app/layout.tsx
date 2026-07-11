@@ -14,10 +14,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Anti-FOUC: runs BEFORE first paint. Reads the saved theme mode
+// ("framepilot:theme-mode", default "system") and stamps
+// data-theme="dark|light" on <html> so there is no light→dark flash.
+// Self-contained — mirrors resolveDark() in src/lib/theme/theme-mode.ts.
+const THEME_MODE_BOOT = `(function(){try{var m=localStorage.getItem("framepilot:theme-mode");if(m!=="light"&&m!=="dark"&&m!=="system")m="system";var d=m==="dark"||(m==="system"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light";}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="id" data-preset="rupa" data-theme="light">
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: THEME_MODE_BOOT }} />
+        </head>
         <body>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </body>

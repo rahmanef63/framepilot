@@ -99,7 +99,7 @@ export function AuthPanel({
       </p>
 
       {error ? (
-        <p style={{ marginTop: "12px", font: "500 12px var(--font-sans)", color: "var(--destructive, #d4483b)" }}>
+        <p style={{ marginTop: "12px", font: "500 12px var(--font-sans)", color: "var(--destructive)" }}>
           {error}
         </p>
       ) : null}

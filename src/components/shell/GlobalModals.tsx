@@ -5,7 +5,7 @@ import { Button } from "@/components/ds/Button";
 import { Badge } from "@/components/ds/Badge";
 import { Tabs } from "@/components/ds/Tabs";
 import { CagViewport } from "@/components/CagViewport";
-import { schemaJson } from "@/lib/dataPrompt";
+import { schemaJson, aiPrompt } from "@/lib/dataPrompt";
 import { useApp } from "@/state/AppState";
 
 const inputStyle: React.CSSProperties = {
@@ -42,6 +42,50 @@ const capLabel: React.CSSProperties = {
   textTransform: "uppercase",
   color: "var(--muted-foreground)",
 };
+
+const stepLabel: React.CSSProperties = {
+  font: "700 11px var(--font-sans)",
+  color: "var(--foreground)",
+  display: "flex",
+  alignItems: "center",
+  gap: 7,
+};
+
+const stepNum: React.CSSProperties = {
+  display: "grid",
+  placeItems: "center",
+  width: 18,
+  height: 18,
+  borderRadius: "var(--radius-pill)",
+  background: "var(--primary)",
+  color: "var(--primary-foreground)",
+  font: "700 10px var(--font-mono)",
+  flex: "0 0 auto",
+};
+
+// read-only box that SHOWS the generated AI prompt so the user can see exactly
+// what "Salin prompt" copies (was invisible before — copy-only button).
+const promptBoxStyle: React.CSSProperties = {
+  width: "100%",
+  height: 128,
+  resize: "vertical",
+  background: "var(--muted)",
+  border: "var(--border-width) solid var(--border)",
+  borderRadius: "var(--radius-md)",
+  padding: 11,
+  font: "400 11px/1.55 var(--font-mono)",
+  color: "var(--foreground)",
+  outline: "none",
+};
+
+function StepHead({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <div style={stepLabel}>
+      <span style={stepNum}>{n}</span>
+      {children}
+    </div>
+  );
+}
 
 function ImportModal() {
   const app = useApp();
@@ -149,12 +193,14 @@ function ImportModal() {
             placeholder="https://youtu.be/…"
             style={inputStyle}
           />
+          <StepHead n={1}>Salin prompt ini ke AI · Copy this prompt to your AI</StepHead>
+          <textarea readOnly spellCheck={false} value={aiPrompt("youtube", app.schemaMode)} style={promptBoxStyle} />
           <div>
-            <Button variant="outline" size="sm" icon="{ }" onClick={app.copyYt}>
+            <Button variant="primary" size="sm" icon="{ }" onClick={app.copyYt}>
               Salin prompt + skema · Copy prompt
             </Button>
           </div>
-          <div style={{ ...capLabel, marginTop: 2 }}>Tempel JSON balikan AI · Paste AI&apos;s JSON</div>
+          <StepHead n={2}>Tempel JSON balikan AI · Paste AI&apos;s JSON</StepHead>
           <textarea
             value={app.ytJson}
             onChange={(e) => app.setYtJson(e.target.value)}
@@ -224,12 +270,14 @@ function ImportModal() {
             </div>
             <input type="file" accept="image/*" onChange={app.onPhotoTab} style={{ display: "none" }} />
           </label>
+          <StepHead n={1}>Salin prompt ini ke AI · Copy this prompt to your AI</StepHead>
+          <textarea readOnly spellCheck={false} value={aiPrompt("photo", app.schemaMode)} style={promptBoxStyle} />
           <div>
-            <Button variant="outline" size="sm" icon="{ }" onClick={app.copyPhoto}>
+            <Button variant="primary" size="sm" icon="{ }" onClick={app.copyPhoto}>
               Salin prompt + skema · Copy prompt
             </Button>
           </div>
-          <div style={{ ...capLabel, marginTop: 2 }}>Tempel JSON balikan AI · Paste AI&apos;s JSON</div>
+          <StepHead n={2}>Tempel JSON balikan AI · Paste AI&apos;s JSON</StepHead>
           <textarea
             value={app.photoJson}
             onChange={(e) => app.setPhotoJson(e.target.value)}
@@ -522,7 +570,7 @@ function Toast() {
         left: "50%",
         transform: "translateX(-50%)",
         background: "var(--foreground)",
-        color: "var(--card)",
+        color: "var(--background)",
         padding: "10px 18px",
         borderRadius: "var(--radius-pill)",
         font: "600 12px var(--font-sans)",

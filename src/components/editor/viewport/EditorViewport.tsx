@@ -87,7 +87,7 @@ export function EditorViewport() {
         if (quad) {
           const note = document.createElement("div");
           note.style.cssText =
-            "position:absolute;inset:0;display:grid;place-items:center;font:600 12px monospace;color:#8d99a5";
+            "position:absolute;inset:0;display:grid;place-items:center;font:600 12px var(--e-mono);color:var(--muted-foreground)";
           note.textContent = "3D tak tersedia";
           quad.appendChild(note);
         }

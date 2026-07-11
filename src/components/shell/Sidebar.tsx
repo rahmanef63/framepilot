@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { NavItem } from "@/components/ds/NavItem";
 import { ThemePresetSwitcher } from "@/components/shell/ThemePresetSwitcher";
+import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
 import { useApp } from "@/state/AppState";
 
@@ -198,6 +199,7 @@ export function Sidebar() {
           alignItems: itemAlign,
         }}
       >
+        <ThemeModeToggle orientation={orient} />
         <ThemePresetSwitcher orientation={orient} />
         <NavItem
           orientation={orient}
