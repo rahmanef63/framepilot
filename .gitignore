@@ -7,3 +7,10 @@ next-env.d.ts
 .DS_Store
 npm-debug.log*
 .env*.local
+
+# Added by si-coder deploy (secret-leak guard)
+.env
+.env.*
+!.env.example
+node_modules
+.next
