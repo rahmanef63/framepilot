@@ -38,6 +38,7 @@ export function Sidebar() {
     { key: "home", icon: "⌂", label: "Beranda", href: "/beranda" },
     { key: "projects", icon: "▤", label: "Proyek", href: "/proyek" },
     { key: "data", icon: "▧", label: "Data Prompt", crown: true, badge: "Baru", hasSub: true, href: "/" },
+    { key: "editor", icon: "◈", label: "Studio 3D", href: "/editor" },
     { key: "templates", icon: "▦", label: "Template", href: "/template" },
     { key: "guide", icon: "?", label: "Panduan", href: "/panduan" },
   ];

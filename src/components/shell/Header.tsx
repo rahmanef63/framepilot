@@ -9,6 +9,7 @@ const SCREEN_NAMES: Record<string, string> = {
   "/beranda": "Beranda · Home",
   "/proyek": "Proyek · Projects",
   "/template": "Template · Templates",
+  "/editor": "Studio 3D · Editor",
   "/panduan": "Panduan · Guide",
 };
 
