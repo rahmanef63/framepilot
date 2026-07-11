@@ -12,6 +12,7 @@ import { useApp } from "@/state/AppState";
 
 const F_LABELS: Record<string, string> = {
   all: "Semua",
+  studio: "Studio 3D",
   photo: "Foto",
   youtube: "YouTube",
   file: "File",
@@ -62,7 +63,7 @@ export function Sidebar() {
   const isActive = (n: MainNav) => (n.href ? pathname === n.href : false);
   const onDataRoute = pathname === "/";
 
-  const navSub = ["all", "photo", "youtube", "file", "paste"].map((k) => ({
+  const navSub = ["all", "studio", "photo", "youtube", "file", "paste"].map((k) => ({
     key: k,
     label: F_LABELS[k],
     count: app.counts[k] ?? 0,

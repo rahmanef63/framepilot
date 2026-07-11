@@ -9,6 +9,9 @@ import React, {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { useConvexAuth, useConvex, useMutation, useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import {
   Entry,
   Project,
@@ -28,8 +31,21 @@ import {
   toScenes,
   uid,
 } from "@/lib/dataPrompt";
-import { toEditorProject } from "@/lib/editorModel";
-import { AUTOKEY } from "@/lib/editorStorage";
+import {
+  EditorProject,
+  ensureProjectShape,
+  projectToEntry,
+  projectHasFrames,
+  toEditorProject,
+} from "@/lib/editorModel";
+import {
+  AUTOKEY,
+  PROJECTS_CHANGED,
+  SavedEntry,
+  deleteProject,
+  listProjects,
+  saveProject,
+} from "@/lib/editorStorage";
 
 export type ViewMode = "grid" | "table" | "split";
 
@@ -75,6 +91,8 @@ export interface EntryView {
   pRoll: number;
   pLens: number;
   pSubj: string;
+  /** true = a read-only "Contoh" seed demo (shown only when the store is empty). */
+  example: boolean;
   selected: boolean;
   active: boolean;
   rowBg: string;
@@ -195,6 +213,7 @@ export function useApp(): AppContextValue {
 
 const F_LABELS: Record<string, string> = {
   all: "Semua",
+  studio: "Studio 3D",
   photo: "Foto",
   youtube: "YouTube",
   file: "File",
@@ -208,8 +227,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   if (nowRef.current === 0) nowRef.current = Date.now();
   const now = nowRef.current;
 
-  const [entries, setEntries] = useState<Entry[]>(() => seed(now));
+  // The persistent projects store is the SSOT for the Pustaka. `seedEntries` is
+  // ONLY the "Contoh" demo shown as an empty-state (see showingExamples). Imports
+  // and Studio 3D saves write the store, NOT this state.
+  const [seedEntries, setSeedEntries] = useState<Entry[]>(() => seed(now));
   const [project, setProject] = useState<Project>(() => seedProject());
+
+  // ---- persistent projects store (SSOT) ----
+  const { isAuthenticated } = useConvexAuth();
+  const convex = useConvex();
+  const saveMutation = useMutation(api.projects.save);
+  const removeMutation = useMutation(api.projects.remove);
+  // Signed-in: reactive metadata list — a Studio 3D save bumps updatedAt and this
+  // re-runs, so the Pustaka updates live. Anonymous: skipped, localStorage rules.
+  const cloudList = useQuery(api.projects.listMine, isAuthenticated ? {} : "skip");
+  const [cloudDocs, setCloudDocs] = useState<Record<string, EditorProject>>({});
+  // Anonymous: the localStorage saved-projects list, re-read on mount / focus /
+  // the projects-changed event that editorStorage dispatches on every save.
+  const [localSaved, setLocalSaved] = useState<SavedEntry[]>([]);
   const [view, setView] = useState<ViewMode>("grid");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
@@ -246,10 +281,77 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    // default active entry = first seeded entry
-    setActiveId((cur) => cur ?? (entries[0] ? entries[0].id : null));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ---- anonymous store: re-read localStorage on mount / focus / save event ----
+  useEffect(() => {
+    const read = () => setLocalSaved(listProjects());
+    read();
+    window.addEventListener("focus", read);
+    window.addEventListener(PROJECTS_CHANGED, read);
+    return () => {
+      window.removeEventListener("focus", read);
+      window.removeEventListener(PROJECTS_CHANGED, read);
+    };
+  }, []);
+
+  // ---- signed-in store: fetch each cloud project's doc (get is owner-scoped).
+  // Re-runs whenever listMine changes (reactive), so a Studio 3D save refreshes
+  // the docs and the Pustaka live. Few projects per user → simple full refetch.
+  useEffect(() => {
+    if (!isAuthenticated || !cloudList) {
+      setCloudDocs({});
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const next: Record<string, EditorProject> = {};
+      for (const p of cloudList) {
+        try {
+          const doc = await convex.query(api.projects.get, { id: p._id });
+          if (doc) next[p._id] = ensureProjectShape(JSON.parse(doc));
+        } catch {
+          /* skip unreadable */
+        }
+      }
+      if (!cancelled) setCloudDocs(next);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, cloudList, convex]);
+
+  // ---- the Pustaka's real content = the persistent store, converted to Entry.
+  // Signed-in reads Convex; anonymous reads localStorage. Empty projects (no
+  // frames) are hidden. This is the SSOT; seedEntries are examples-only.
+  const storeEntries = useMemo<Entry[]>(() => {
+    if (isAuthenticated && cloudList) {
+      return cloudList
+        .map((p) => {
+          const doc = cloudDocs[p._id];
+          if (!doc || !projectHasFrames(doc)) return null;
+          return projectToEntry(doc, {
+            id: "cloud:" + p._id,
+            source: doc.source || "studio",
+            created: p.updatedAt,
+          });
+        })
+        .filter((e): e is Entry => e !== null);
+    }
+    return localSaved
+      .filter((s) => projectHasFrames(s.project))
+      .map((s) =>
+        projectToEntry(s.project, {
+          id: "local:" + s.id,
+          source: s.project.source || "studio",
+          created: s.updated,
+        })
+      );
+  }, [isAuthenticated, cloudList, cloudDocs, localSaved]);
+
+  // Seed demos are shown ONLY when the store has no real projects (empty-state).
+  const showingExamples = storeEntries.length === 0;
+  const entries = showingExamples ? seedEntries : storeEntries;
 
   const showToast = useCallback((m: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -278,6 +380,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       showToast(msg || "Disalin · Copied");
     },
     [showToast]
+  );
+
+  // Persist a library Entry to the SSOT projects store (localStorage always +
+  // Convex when signed in). Reuses toEditorProject (Entry -> v2) and tags the
+  // origin. Shared by the import/parse flow and library-file import. Returns the
+  // localStorage id so callers can focus the new card.
+  const persistEntry = useCallback(
+    (en: Entry): string => {
+      const editorProj = toEditorProject(en);
+      editorProj.name = en.name;
+      editorProj.source = en.source;
+      const res = saveProject(editorProj); // dispatches PROJECTS_CHANGED
+      if (isAuthenticated) {
+        saveMutation({ name: editorProj.name || "Proyek", doc: JSON.stringify(editorProj) }).catch(() => {});
+      }
+      return res.id;
+    },
+    [isAuthenticated, saveMutation]
   );
 
   // --- import / parse ---
@@ -315,8 +435,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         data: { scenes },
       };
       const fc = scenes.reduce((a, sc) => a + sc.frames.length, 0);
-      setEntries((cur) => [en, ...cur]);
-      setActiveId(en.id);
+
+      // Create-from-image / import persistence: write the SAME projects store the
+      // Studio 3D editor uses, so the new prompt shows in the Pustaka AND /proyek
+      // and survives reload (SSOT).
+      const savedId = persistEntry(en);
+      setLocalSaved(listProjects());
+      setActiveId("local:" + savedId);
       setSourceFilter("all");
       setIoMsg("Ditambahkan · added: " + scenes.length + " scene · " + fc + " shot");
       setIoOk(true);
@@ -326,7 +451,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setPhotoJson("");
       showToast("Data prompt ditambahkan — " + scenes.length + " scene · " + fc + " shot");
     },
-    [showToast]
+    [showToast, persistEntry]
   );
 
   const openImport = useCallback((tab?: string) => {
@@ -413,12 +538,35 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [entries]
   );
 
-  const saveEdit = useCallback(() => {
-    setEntries((cur) => cur.map((e) => (e.id === editId ? { ...e, name: editName, en: editEn } : e)));
+  // Rename routes to the store. localStorage save-by-name upserts, so a rename is
+  // delete-old + save-renamed. Cloud mirrors that (remove + save). Only `name`
+  // persists to store-backed entries (the v2 doc has no EN label); seed examples
+  // keep the in-memory EN edit.
+  const saveEdit = useCallback(async () => {
+    const id = editId;
+    if (id && id.startsWith("local:")) {
+      const se = localSaved.find((s) => "local:" + s.id === id);
+      if (se) {
+        deleteProject(se.id);
+        saveProject({ ...se.project, name: editName });
+        setLocalSaved(listProjects());
+      }
+    } else if (id && id.startsWith("cloud:")) {
+      const cid = id.slice(6) as Id<"projects">;
+      const doc = cloudDocs[cid];
+      if (doc) {
+        await removeMutation({ id: cid });
+        await saveMutation({ name: editName || "Proyek", doc: JSON.stringify({ ...doc, name: editName }) });
+      }
+    } else {
+      setSeedEntries((cur) => cur.map((e) => (e.id === id ? { ...e, name: editName, en: editEn } : e)));
+    }
     setEditOpen(false);
     showToast("Perubahan disimpan · saved");
-  }, [editId, editName, editEn, showToast]);
+  }, [editId, editName, editEn, localSaved, cloudDocs, removeMutation, saveMutation, showToast]);
 
+  // Delete routes to the store (localStorage / Convex); seed examples are removed
+  // from in-memory demo state. Derived activeEntry falls back to the first card.
   const del = useCallback(
     (id: string) => {
       setSelected((sel) => {
@@ -426,15 +574,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         delete m[id];
         return m;
       });
-      setEntries((cur) => cur.filter((e) => e.id !== id));
-      setActiveId((cur) => {
-        if (cur !== id) return cur;
-        const rest = entries.filter((e) => e.id !== id);
-        return rest[0] ? rest[0].id : null;
-      });
+      if (id.startsWith("local:")) {
+        deleteProject(id.slice(6));
+        setLocalSaved(listProjects());
+      } else if (id.startsWith("cloud:")) {
+        removeMutation({ id: id.slice(6) as Id<"projects"> }).catch(() => {});
+      } else {
+        setSeedEntries((cur) => cur.filter((e) => e.id !== id));
+      }
+      setActiveId((cur) => (cur === id ? null : cur));
       showToast("Data prompt dihapus · deleted");
     },
-    [entries, showToast]
+    [removeMutation, showToast]
   );
 
   const selectedIds = useCallback(
@@ -451,16 +602,27 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // editor doc — expected for "open THIS entry in Studio 3D".
   const openInStudio3d = useCallback(
     (id: string) => {
-      const en = entries.find((e) => e.id === id);
-      if (!en) return;
+      // Store-backed entries open with FULL original-doc fidelity (no lossy
+      // Entry round-trip); seed examples convert on the fly.
+      let proj: EditorProject | null = null;
+      if (id.startsWith("local:")) {
+        const se = localSaved.find((s) => "local:" + s.id === id);
+        proj = se ? se.project : null;
+      } else if (id.startsWith("cloud:")) {
+        proj = cloudDocs[id.slice(6)] ?? null;
+      } else {
+        const en = entries.find((e) => e.id === id);
+        if (en) proj = toEditorProject(en);
+      }
+      if (!proj) return;
       try {
-        localStorage.setItem(AUTOKEY, JSON.stringify(toEditorProject(en)));
+        localStorage.setItem(AUTOKEY, JSON.stringify(proj));
       } catch {
         /* ignore quota/private-mode */
       }
       router.push("/editor");
     },
-    [entries, router]
+    [entries, localSaved, cloudDocs, router]
   );
 
   // --- apply ---
@@ -540,7 +702,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         try {
           const o = JSON.parse(String(r.result));
           if (o && Array.isArray(o.entries)) {
-            setEntries((cur) => o.entries.map((e: Entry) => ({ ...e, id: e.id || uid() })).concat(cur));
+            // Persist each imported entry to the SSOT store (not a parallel list).
+            (o.entries as Entry[]).forEach((e) =>
+              persistEntry({ ...e, id: e.id || uid(), source: e.source || "file" })
+            );
+            setLocalSaved(listProjects());
             showToast("Pustaka diimpor · library imported");
           } else {
             parseIncoming(String(r.result), "file", f.name);
@@ -552,7 +718,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       r.readAsText(f);
     };
     inp.click();
-  }, [parseIncoming, showToast]);
+  }, [parseIncoming, persistEntry, showToast]);
 
   // --- selection helpers ---
   const toggleSelect = useCallback((id: string) => {
@@ -567,7 +733,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const frameCount = scenes.reduce((a, sc) => a + sc.frames.length, 0);
       const rows = fillRows(en);
       const fc = rows.filter((r) => r.filled).length;
-      const sm = SRC_META[en.source] || SRC_META.paste;
+      // Examples get a clear "Contoh" badge via the existing source-badge UI, so
+      // demo cards are unmistakable without touching the card components.
+      const sm = showingExamples
+        ? { glyph: "★", label: "Contoh", tone: "outline" as const }
+        : SRC_META[en.source] || SRC_META.paste;
       const isSel = !!selected[en.id];
       const isActive = activeId === en.id;
       const framesFlat: EntryView["framesFlat"] = [];
@@ -623,6 +793,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         pRoll: pf.roll ?? 0,
         pLens: pf.lens,
         pSubj: pf.subj ?? "person",
+        example: showingExamples,
         selected: isSel,
         active: isActive,
         rowBg: isSel ? "var(--primary-soft)" : "transparent",
@@ -643,7 +814,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     };
 
     const entriesAll = entries.map(view);
-    const counts: Record<string, number> = { all: entriesAll.length, photo: 0, youtube: 0, file: 0, paste: 0 };
+    const counts: Record<string, number> = { all: entriesAll.length, studio: 0, photo: 0, youtube: 0, file: 0, paste: 0 };
     entriesAll.forEach((e) => {
       if (counts[e.source] != null) counts[e.source]++;
     });
@@ -651,7 +822,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const activeEntry = filtered.find((e) => e.id === activeId) || filtered[0] || null;
     const selectedCount = entriesAll.filter((e) => e.selected).length;
     return { entriesAll, counts, filtered, activeEntry, selectedCount };
-  }, [entries, selected, activeId, sourceFilter, now, toggleSelect, openApply, openEdit, del, openInStudio3d]);
+  }, [entries, showingExamples, selected, activeId, sourceFilter, now, toggleSelect, openApply, openEdit, del, openInStudio3d]);
 
   const { entriesAll, counts, filtered, activeEntry, selectedCount } = derived;
 

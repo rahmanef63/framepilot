@@ -3,7 +3,11 @@
 
 export const D2R = Math.PI / 180;
 
-export type SourceKind = "photo" | "youtube" | "file" | "paste";
+// "studio" = a document authored in Studio 3D and persisted to the projects
+// store; the other kinds come from the import flow (photo / YouTube / file /
+// paste). All of them live in the SAME persistent store now — the source tag is
+// just how the Pustaka labels + filters them.
+export type SourceKind = "photo" | "youtube" | "file" | "paste" | "studio";
 
 export interface Meta {
   intent: string;
@@ -566,6 +570,7 @@ export function fmtWhen(ts: number, now: number): string {
 }
 
 export const SRC_META: Record<SourceKind, { glyph: string; label: string; tone: "new" | "highlight" | "outline" | "default" }> = {
+  studio: { glyph: "◈", label: "Studio 3D", tone: "new" },
   photo: { glyph: "▦", label: "Foto", tone: "new" },
   youtube: { glyph: "▷", label: "YouTube", tone: "highlight" },
   file: { glyph: "≡", label: "File", tone: "outline" },

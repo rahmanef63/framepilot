@@ -7,6 +7,22 @@ export const AUTOKEY = "camguide-pro-autosave";
 export const LISTKEY = "camguide-pro-projects";
 export const OLDKEY = "camguide-pro-scenes"; // legacy scenes key (read-only migration)
 
+// Fired whenever the saved-projects list changes (save/delete). The Pustaka
+// (AppState) listens for this so an anonymous Studio 3D save shows up live —
+// AppStateProvider spans both "/" and "/editor" and never remounts, so it can't
+// rely on a route change to re-read. Signed-in users get live updates from the
+// reactive Convex query instead; this event is the localStorage counterpart.
+export const PROJECTS_CHANGED = "framepilot:projects-changed";
+
+function notifyProjectsChanged(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.dispatchEvent(new Event(PROJECTS_CHANGED));
+  } catch {
+    /* ignore */
+  }
+}
+
 // ---- backend selection ----
 interface KV {
   getItem(k: string): string | null;
@@ -101,6 +117,7 @@ export function saveProject(project: EditorProject): SaveResult & { id: string }
   if (idx >= 0) list[idx] = entry;
   else list.unshift(entry);
   const res = safeWrite(LISTKEY, JSON.stringify(list));
+  if (res.ok) notifyProjectsChanged();
   return { ...res, id: entry.id };
 }
 
@@ -112,7 +129,9 @@ export function loadProject(id: string): EditorProject | null {
 
 export function deleteProject(id: string): SaveResult {
   const list = listProjects().filter((e) => e.id !== id);
-  return safeWrite(LISTKEY, JSON.stringify(list));
+  const res = safeWrite(LISTKEY, JSON.stringify(list));
+  if (res.ok) notifyProjectsChanged();
+  return res;
 }
 
 // ============================================================

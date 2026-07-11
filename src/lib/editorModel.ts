@@ -6,7 +6,10 @@ import {
   Meta,
   DEF,
   Entry,
+  RawFrame,
   ProjectScene,
+  SourceKind,
+  raw,
   uid,
   projFrame,
   entryProject,
@@ -64,6 +67,11 @@ export interface EditorProject {
   settings: { aspectRatio: string; fps: number; sensor: "Full Frame" };
   scenes: EditorScene[];
   activeSceneId: string | null;
+  // Optional origin tag — set by the create-from-image / import flow so the
+  // Pustaka can label + filter it ("photo", "youtube", …). Absent for docs
+  // authored in Studio 3D, which the Pustaka treats as source "studio".
+  // Round-trips through save/load (JSON + deepCopy preserve it).
+  source?: SourceKind;
 }
 
 // Live rig — mutated in place, pushed to the engine imperatively (plan §3.1).
@@ -304,4 +312,59 @@ export function toEditorProject(src: unknown): EditorProject {
   }
 
   return newProject();
+}
+
+// EditorFrame -> RawFrame (the AppState/library frame shape). Reverse of the
+// projFrame + synth path in toEditorProject: pulls roll/fov/subj back out of the
+// rig snapshot so a round-trip preserves the visible fields.
+function editorFrameToRaw(f: EditorFrame): RawFrame {
+  const s = f.s || ({} as RigSnapshot);
+  const num = (v: unknown, d: number) => (Number.isFinite(+(v as number)) ? +(v as number) : d);
+  return {
+    name: f.name || "Shot",
+    angle: f.angle || "EYE LEVEL",
+    shot: f.shot || "MEDIUM SHOT",
+    lens: num(f.lens, 50),
+    az: num(f.az, 30),
+    el: num(f.el, 4),
+    dist: num(f.dist, 3),
+    roll: num(s.roll, 0),
+    fov: num(s.fov, 40),
+    subj: s.subj || "person",
+    meta: { ...DEF, ...(f.meta || {}) },
+  };
+}
+
+export interface ProjectEntryMeta {
+  id: string; // the stable Pustaka entry id (e.g. "local:<id>" / "cloud:<_id>")
+  source?: SourceKind; // defaults to "studio" (a Studio-3D-authored doc)
+  created?: number; // defaults to Date.now()
+  ref?: string;
+  en?: string;
+}
+
+// The MISSING direction (plan §3.3 was one-way editor<-library): EditorProject
+// (or a stored SavedEntry.project) -> AppState library Entry, so the Pustaka can
+// render the persistent projects store as Entry cards. Reuses editorFrameToRaw
+// for the frame shape; guarantees at least one scene with one frame so the
+// Pustaka's derived view (scenes[0].frames[0]) is always safe.
+export function projectToEntry(project: EditorProject, meta: ProjectEntryMeta): Entry {
+  const scenes = (project.scenes || [])
+    .map((sc) => ({ name: sc.name || "Scene", frames: (sc.frames || []).map(editorFrameToRaw) }))
+    .filter((sc) => sc.frames.length);
+  return {
+    id: meta.id,
+    name: project.name || "Tanpa nama",
+    en: meta.en || "",
+    source: meta.source || project.source || "studio",
+    ref: meta.ref || "",
+    created: meta.created ?? Date.now(),
+    data: { scenes: scenes.length ? scenes : [{ name: "Scene 1", frames: [raw()] }] },
+  };
+}
+
+// True when a project has at least one real frame — used to hide empty (freshly
+// created, no-shot) projects from the Pustaka.
+export function projectHasFrames(project: EditorProject): boolean {
+  return (project.scenes || []).some((sc) => (sc.frames || []).length > 0);
 }
