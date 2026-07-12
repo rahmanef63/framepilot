@@ -8,7 +8,6 @@ import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { sceneDuration } from "@/lib/editorModel";
-import { Button } from "@/components/ds/Button";
 import { SceneRow } from "./outline/SceneRow";
 
 export function OutlineTree() {
@@ -21,10 +20,9 @@ export function OutlineTree() {
 
   return (
     <>
+      {/* "+ Scene" lives in the sticky header above (co-located with "+ Frame"); this
+          is just the count for the list below. */}
       <div className="tree-head">
-        <Button variant="primary" size="sm" onClick={ctx.addScene}>
-          + Scene Baru
-        </Button>
         <span className="count">
           {project.scenes.length} scene · {totalF} frame · {totalD.toFixed(1)}s
         </span>

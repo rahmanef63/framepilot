@@ -11,6 +11,7 @@ import { useEditor } from "@/state/EditorState";
 import { ViewCell } from "./ViewCell";
 import { CellViewMenu } from "./CellViewMenu";
 import { Hud } from "./Hud";
+import { IconPrev, IconNext, IconPlus } from "../EditorIcons";
 import type { EditorViewportEngine as EngineType } from "./editorViewportEngine";
 import type { EngineHudRefs, ViewId, SlotId, ViewKind } from "./engineApi";
 
@@ -43,6 +44,9 @@ export function EditorViewport() {
   } = ctx;
   const savedViews = project.savedViews ?? [];
   const quadSlots = project.quadSlots ?? SLOT_DEFAULTS;
+  // Frame count of the active scene — drives the on-screen capture bar's prev/next.
+  const activeScene = project.scenes.find((s) => s.id === project.activeSceneId) ?? project.scenes[0];
+  const frameCount = activeScene?.frames.length ?? 0;
 
   const quadRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -187,6 +191,39 @@ export function EditorViewport() {
             </ViewCell>
           );
         })}
+      </div>
+
+      {/* On-screen capture bar — mobile only (the sidebar manager is behind the ☰
+          drawer there). Step frames and capture the current camera without leaving
+          the viewport: ◀ prev · ＋ Frame · next ▶. */}
+      <div className="vp-capture" role="group" aria-label="Kontrol frame cepat">
+        <button
+          className="vp-cap-nav"
+          onClick={ctx.prevFrame}
+          disabled={frameCount < 2}
+          title="Frame sebelumnya"
+          aria-label="Frame sebelumnya"
+        >
+          <IconPrev size={18} />
+        </button>
+        <button
+          className="vp-cap-shot"
+          onClick={ctx.addFrame}
+          title="Tangkap frame dari kamera ini"
+          aria-label="Tangkap frame dari kamera ini"
+        >
+          <IconPlus size={17} />
+          <span>Frame</span>
+        </button>
+        <button
+          className="vp-cap-nav"
+          onClick={ctx.nextFrame}
+          disabled={frameCount < 2}
+          title="Frame berikutnya"
+          aria-label="Frame berikutnya"
+        >
+          <IconNext size={18} />
+        </button>
       </div>
     </div>
   );

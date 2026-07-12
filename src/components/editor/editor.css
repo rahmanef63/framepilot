@@ -1082,19 +1082,35 @@
   padding: 10px;
   border-bottom: 1px solid var(--line);
 }
-.cag-editor .os-actions {
+/* os-top = three tidy rows: 1) CREATE (+ Frame / + Scene, co-located), 2) PLAYBACK
+   (the prev·play·next nav trio, then smaller stop/loop/transition options split by
+   a divider), 3) STATUS (which frame · duration · Terapkan-when-dirty). */
+.cag-editor .os-create {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-/* os-top = exactly TWO rows in the narrow (~206px) sidebar: row 1 = Frame +
-   Update + duration, row 2 = the 6 transport icons + status. nowrap keeps row 2
-   a single line (was wrapping to 4 rows). Mobile drawer re-enables wrap below. */
 .cag-editor .os-transport {
   display: flex;
   align-items: center;
-  gap: 3px;
-  flex-wrap: nowrap;
+  gap: 4px;
+}
+.cag-editor .os-tgroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.cag-editor .os-tdiv {
+  flex: 0 0 auto;
+  width: 1px;
+  align-self: stretch;
+  min-height: 22px;
+  background: var(--line);
+}
+.cag-editor .os-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .cag-editor .os-ico {
   flex: 0 0 auto;
@@ -1106,6 +1122,15 @@
   justify-content: center;
   border-radius: 7px;
   color: var(--ink);
+}
+/* prev·play·next = the prominent maju/mundur trio; stop/loop/transition = smaller options */
+.cag-editor .os-nav {
+  width: 34px;
+  height: 34px;
+}
+.cag-editor .os-opt {
+  width: 26px;
+  height: 26px;
 }
 .cag-editor .os-ico.on {
   background: var(--accent);
@@ -1136,8 +1161,6 @@
 .cag-editor .os-ind {
   flex: 1 1 auto;
   min-width: 0;
-  margin-left: 4px;
-  text-align: right;
   font-family: var(--e-mono);
   font-size: 10px;
   color: var(--muted);
@@ -1154,6 +1177,72 @@
   flex-direction: column;
   gap: 10px;
   scrollbar-width: thin;
+}
+
+/* ---------- on-screen capture bar (mobile viewport overlay) ----------
+   The scene/frame manager is behind the ☰ drawer on mobile, so a floating bar
+   over the 3D viewport gives the core loop inline: ◀ prev · ＋ Frame · next ▶.
+   Hidden on desktop (the sidebar manager is always visible there). */
+.cag-editor .vp-capture {
+  display: none;
+}
+.cag-editor .vp-cap-nav {
+  flex: 0 0 auto;
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+}
+.cag-editor .vp-cap-nav:disabled {
+  opacity: 0.4;
+}
+.cag-editor .vp-cap-shot {
+  flex: 0 0 auto;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 13px var(--e-sans);
+}
+.cag-editor .vp-cap-shot:hover {
+  background: var(--accent);
+  filter: brightness(1.06);
+}
+@media (max-width: 768px) {
+  .cag-editor .vp-capture {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* let camera-orbit drags pass THROUGH the bar's gaps/background — only the
+       buttons (pointer-events:auto) capture taps, so the pill never eats an orbit */
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    /* sits in the lower third of the cam view, clear of the bottom edge so iOS
+       Safari's URL bar / home indicator doesn't cover it */
+    bottom: 78px;
+    transform: translateX(-50%);
+    z-index: 4;
+    padding: 6px 8px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--card) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 /* ---------- transport bar (Full Preview .pv-bar reuses .pbar) ---------- */
@@ -1704,10 +1793,24 @@
     width: 38px;
     height: 38px;
   }
+  /* comfortable touch: keep the nav trio bigger than the options */
+  .cag-editor .os-nav {
+    width: 42px;
+    height: 42px;
+  }
+  .cag-editor .os-opt {
+    width: 36px;
+    height: 36px;
+  }
   /* big touch icons don't fit one line in the drawer — let the transport wrap
      here (the drawer has its own scroll, so extra rows are fine). */
   .cag-editor .os-transport {
     flex-wrap: wrap;
+  }
+  /* when the two groups wrap onto separate lines the align-self:stretch divider
+     dangles off the nav row — drop it (mirrors the viewbar-on-wrap rule above). */
+  .cag-editor .os-tdiv {
+    display: none;
   }
   .cag-editor .os-dur input {
     min-height: 34px;
