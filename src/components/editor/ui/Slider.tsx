@@ -51,6 +51,7 @@ export function Slider({
       <input
         ref={inputRef}
         type="range"
+        aria-label={label}
         min={min}
         max={max}
         step={step}

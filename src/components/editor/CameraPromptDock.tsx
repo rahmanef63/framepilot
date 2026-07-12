@@ -53,7 +53,7 @@ export function CameraPromptDock() {
         </div>
       </div>
 
-      <div className="cam-dock-row">
+      <div className="cam-dock-row" data-tour="copy">
         <PlatformSelect value={platform} onChange={setPlatform} />
         <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
           {copied ? "Tersalin ✓" : hasShots ? "Salin" : "Belum ada shot"}

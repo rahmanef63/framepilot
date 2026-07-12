@@ -46,7 +46,7 @@ export function EditorTabBar() {
         ))}
       </div>
 
-      <div className="modebar">
+      <div className="modebar" data-tour="drag">
         <span className="mlab">DRAG</span>
         <Seg options={DRAG_OPTIONS} value={ui.dragToolMode} onChange={ctx.setDragMode} />
       </div>

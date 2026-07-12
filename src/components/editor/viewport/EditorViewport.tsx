@@ -146,7 +146,7 @@ export function EditorViewport() {
   const toggleFocus = (v: ViewId) => setFocusView(ui.focusView === v ? null : v);
 
   return (
-    <div className="quad-area">
+    <div className="quad-area" data-tour="viewport">
       <div className="quad" ref={quadRef} data-focus={ui.focusView ?? undefined}>
         <canvas
           className="gl"

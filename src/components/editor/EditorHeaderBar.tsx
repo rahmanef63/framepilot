@@ -92,6 +92,14 @@ export function EditorHeaderBar() {
           />
         </span>
         <Button
+          variant="ghost"
+          size="sm"
+          icon="🎓"
+          title="Tur / onboarding — pandu langkah demi langkah"
+          onClick={() => window.dispatchEvent(new Event("cag:start-tour"))}
+          style={{ padding: "7px 11px" }}
+        />
+        <Button
           variant="primary"
           size="sm"
           icon="⤓"

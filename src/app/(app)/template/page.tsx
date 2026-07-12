@@ -11,7 +11,7 @@
 //      muncul di Pustaka (data Pustaka DIHASILKAN, bukan demo statis).
 //   3. localStorage[AUTOKEY] = project — seed autosave yang di-hydrate
 //      EditorStateProvider saat mount (loadAutosave -> swapProject).
-//   4. router.push("/editor") — Studio 3D mount ulang & memuat dokumen tadi.
+//   4. router.push("/") — Studio 3D mount ulang & memuat dokumen tadi.
 
 import { useRouter } from "next/navigation";
 import { CagCardPreview } from "@/components/CagCardPreview";
@@ -34,7 +34,7 @@ export default function TemplatePage() {
     } catch {
       /* ignore quota/private-mode — editor akan mulai dari proyek baru */
     }
-    router.push("/editor");
+    router.push("/");
   };
 
   return (

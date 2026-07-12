@@ -30,12 +30,16 @@ export function Sidebar() {
 
   const orient: "horizontal" | "vertical" = open ? "horizontal" : "vertical";
   const itemAlign = open ? "stretch" : "center";
+  // Studio is the app home (`/`). On Studio the scene+frame manager portals into
+  // the slot below the nav (see #fp-studio-slot), so the nav yields its flex-grow
+  // to the manager and the manager gets its own scroll area between two dividers.
+  const isStudio = pathname === "/";
 
   // The two REAL tools. Studio 3D is the app home (it produces the Prompt
   // Kamera — the hero output), so it leads with the crown; Pustaka is the one
   // merged project list (localStorage + Convex, SSOT) that feeds it.
   const navCore: MainNav[] = [
-    { key: "editor", icon: "◈", label: "Studio 3D", crown: true, badge: "Prompt Kamera", href: "/editor" },
+    { key: "editor", icon: "◈", label: "Studio 3D", crown: true, badge: "Prompt Kamera", href: "/" },
     { key: "library", icon: "▧", label: "Pustaka", href: "/library" },
   ];
 
@@ -121,13 +125,15 @@ export function Sidebar() {
           gap: "2px",
           overflowY: "auto",
           overflowX: "hidden",
-          flex: 1,
+          // On Studio the manager slot below takes the flex space; elsewhere the
+          // nav grows to push the footer down.
+          flex: isStudio ? "0 1 auto" : 1,
           alignItems: itemAlign,
         }}
       >
         <CreateMenu
           orientation={orient}
-          onNew3D={() => router.push("/editor")}
+          onNew3D={() => router.push("/")}
           onFromImage={() => app.openImport("photo")}
           onFromTemplate={() => router.push("/template")}
         />
@@ -136,6 +142,36 @@ export function Sidebar() {
         {navCore.map((m) => (
           <React.Fragment key={m.key}>{renderNav(m)}</React.Fragment>
         ))}
+      </div>
+
+      {/* Scene & Frame manager slot — the editor portals its OutlineSidebar here
+          on Studio (own scroll, divider top + bottom via the footer's border). */}
+      <div
+        className="fp-sidebar-studio"
+        data-tour="shots"
+        style={{
+          display: isStudio && open ? "flex" : "none",
+          flexDirection: "column",
+          flex: "1 1 auto",
+          minHeight: 0,
+          marginTop: "8px",
+          paddingTop: "8px",
+          borderTop: "var(--border-width) solid var(--border)",
+        }}
+      >
+        <div
+          style={{
+            font: "700 9.5px var(--font-mono)",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--muted-foreground)",
+            padding: "0 6px 6px",
+            flex: "none",
+          }}
+        >
+          Scene &amp; Frame
+        </div>
+        <div id="fp-studio-slot" style={{ flex: "1 1 auto", minHeight: 0, display: "flex", flexDirection: "column" }} />
       </div>
 
       <div
@@ -149,6 +185,14 @@ export function Sidebar() {
         }}
       >
         <ThemeModeToggle orientation={orient} />
+        <NavItem
+          orientation={orient}
+          icon="▤"
+          label="Docs"
+          active={pathname.startsWith("/docs")}
+          onClick={() => router.push("/docs")}
+          style={orient === "horizontal" ? { width: "100%" } : undefined}
+        />
         <NavItem
           orientation={orient}
           icon="?"

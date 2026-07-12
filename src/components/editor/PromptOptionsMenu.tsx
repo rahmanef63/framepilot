@@ -26,7 +26,7 @@ export function PromptOptionsMenu() {
   const on = ROWS.filter((r) => opts[r.key]).length;
 
   return (
-    <details className="cam-opts">
+    <details className="cam-opts" data-tour="detail-prompt">
       <summary title="Pilih detail yang ikut ke dalam prompt">
         <span className="cam-opts__title">Detail prompt</span>
         <span className="cam-opts__count">

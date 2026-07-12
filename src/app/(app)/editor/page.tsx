@@ -1,11 +1,6 @@
-import React from "react";
-import { EditorStateProvider } from "@/state/EditorState";
-import { EditorScreen } from "@/components/editor/EditorScreen";
+import { redirect } from "next/navigation";
 
-export default function EditorPage() {
-  return (
-    <EditorStateProvider>
-      <EditorScreen />
-    </EditorStateProvider>
-  );
+// Studio moved to `/` (the app home). Keep `/editor` working for old links.
+export default function EditorRedirect() {
+  redirect("/");
 }

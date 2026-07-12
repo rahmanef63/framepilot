@@ -1,13 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ds/Button";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 
-/**
- * Public chrome — slim top bar (no Shell/Sidebar/Header, those belong to (app)).
- * Brand mark + wordmark left, theme toggle + Panduan + Buka Aplikasi right.
- * Full-width, token bg, mobile-first (bar wraps on narrow).
- */
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "Docs — Camera Angle Guide Pro",
+  description:
+    "Dokumentasi Camera Angle Guide Pro: kenalan, mulai cepat, Prompt Kamera, platform video-AI, dan impor referensi.",
+};
+
+// Standalone docs chrome — OUTSIDE the app Shell (no app sidebar). Slim top bar +
+// full-width main; the TOC + content two-column lives in page.tsx.
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
@@ -22,16 +26,17 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     >
       <header
         style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
           gap: 12,
-          // pad the top by the status-bar inset (viewport-fit=cover) so the bar
-          // clears the iOS clock/battery; 12px elsewhere, 0 extra on desktop.
           padding: "calc(12px + env(safe-area-inset-top)) 20px 12px",
           borderBottom: "var(--border-width) solid var(--border)",
-          background: "var(--background)",
+          background: "var(--card)",
         }}
       >
         <Link
@@ -43,23 +48,22 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             textDecoration: "none",
             color: "var(--foreground)",
             minWidth: 0,
-            overflow: "hidden",
           }}
         >
           <span style={{ font: "700 18px var(--font-mono)", color: "var(--primary)", flex: "none" }}>◉</span>
-          {/* Brand may shrink/truncate on a narrow phone; the "Buka Aplikasi" CTA
-              in <nav> must never get pushed off-screen. */}
           <span
             style={{
               font: "700 15px var(--font-sans)",
               color: "var(--foreground)",
-              minWidth: 0,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
             Camera Angle Guide Pro
+          </span>
+          <span style={{ font: "600 11px var(--font-mono)", color: "var(--muted-foreground)", flex: "none" }}>
+            · Docs
           </span>
         </Link>
 
@@ -72,31 +76,15 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               Panduan
             </Button>
           </Link>
-          <Link href="/library" style={{ textDecoration: "none" }}>
+          <Link href="/" style={{ textDecoration: "none" }}>
             <Button variant="primary" size="sm">
-              Buka Aplikasi →
+              Buka Studio →
             </Button>
           </Link>
         </nav>
       </header>
 
       <main style={{ flex: 1, minHeight: 0 }}>{children}</main>
-
-      <footer
-        style={{
-          borderTop: "var(--border-width) solid var(--border)",
-          padding: "18px 20px",
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          flexWrap: "wrap",
-          font: "400 12px var(--font-sans)",
-          color: "var(--subtle-foreground)",
-        }}
-      >
-        <span style={{ font: "700 13px var(--font-mono)", color: "var(--primary)" }}>◉</span>
-        <span>Camera Angle Guide Pro — dari ide shot ke prompt AI + Studio 3D.</span>
-      </footer>
     </div>
   );
 }

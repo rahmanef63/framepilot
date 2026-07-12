@@ -17,6 +17,7 @@ import { EditorViewport } from "./viewport/EditorViewport";
 import { Hud } from "./viewport/Hud";
 import { OutlineSidebar } from "./OutlineSidebar";
 import { PreviewPanel } from "./PreviewPanel";
+import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 
 export function EditorScreen() {
   const ctx = useEditor();
@@ -28,10 +29,17 @@ export function EditorScreen() {
       <EditorHeaderBar />
       <EditorTabBar />
 
-      {/* ---- Editor page: [ scene+frame sidebar | ONE viewport | panel ] ----
+      {/* Scene+frame manager — renders here (inside EditorStateProvider) but
+          PORTALS into the app Shell sidebar (#fp-studio-slot), so no in-grid box. */}
+      <OutlineSidebar />
+
+      {/* Step-by-step onboarding coach-marks (auto once, replayable via the
+          `cag:start-tour` event fired from the header "Tur" button). */}
+      <OnboardingWizard />
+
+      {/* ---- Editor page: [ ONE viewport | panel ] ----
            The viewport never unmounts (keeps its WebGL context across tab swaps). */}
       <div className={"page editor-page" + (tab === "editor" ? " active" : "")}>
-        <OutlineSidebar />
         <EditorViewport />
         <div className="panel">
           <PanelTabs />

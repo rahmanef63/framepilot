@@ -1,0 +1,118 @@
+/* onboarding.css — coach-mark tour overlay. Tokens ONLY (Rupa SSOT), correct in
+   light + [data-theme="dark"]. z above everything; the tooltip + buttons are the
+   only interactive bits (the rest is a modal blocker). */
+
+.ob-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* full-screen modal blocker (transparent unless there is no spotlight) */
+.ob-catch {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+.ob-catch--dim {
+  background: var(--overlay);
+}
+
+/* the spotlight hole: transparent center, dim surround via the huge box-shadow */
+.ob-spot {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px var(--overlay);
+  outline: 2px solid var(--primary);
+  outline-offset: 0;
+  transition: left 0.18s ease, top 0.18s ease, width 0.18s ease, height 0.18s ease;
+}
+
+/* tooltip card */
+.ob-tip {
+  position: fixed;
+  z-index: 2;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 15px 12px;
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: var(--shadow-lg);
+  /* opacity-ONLY fade — ds-ovin also animates transform:none at its end frame,
+     which would override the inline translate(-50%,-50%) that centers the
+     no-target fallback card (it landed at the corner + overflowed on mobile). */
+  animation: ob-in 0.16s ease both;
+}
+@keyframes ob-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ob-tip-h {
+  font: 800 15px/1.25 var(--font-sans);
+  color: var(--foreground);
+}
+.ob-tip-b {
+  margin: 0;
+  font: 400 13px/1.55 var(--font-sans);
+  color: var(--muted-foreground);
+}
+.ob-tip-f {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+.ob-count {
+  font: 600 11px var(--font-mono);
+  color: var(--subtle-foreground);
+  flex: none;
+}
+.ob-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.ob-btns button {
+  font: 600 12px var(--font-sans);
+  border-radius: var(--radius-pill);
+  padding: 7px 13px;
+  cursor: pointer;
+  border: var(--border-width) solid transparent;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.ob-skip {
+  background: transparent;
+  color: var(--muted-foreground);
+}
+.ob-skip:hover {
+  color: var(--foreground);
+}
+.ob-back {
+  background: var(--card);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+.ob-back:hover {
+  border-color: var(--border-strong);
+}
+.ob-next {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+.ob-next:hover {
+  filter: brightness(1.07);
+}

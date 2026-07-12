@@ -1,12 +1,14 @@
 "use client";
-// OutlineSidebar.tsx — the editor's LEFT column: the single scene + frame
-// manager. A sticky action/transport strip (icon buttons — Add Frame, Update,
-// Prev/Play/Next/Stop, Loop, Transition, Duration) over a self-scrolling body
-// that hosts the <OutlineTree/> (scene→frame hierarchy, moved out of the Prompt
-// tab). Replaces the old bottom filmstrip (FramesSection) + the in-tab outline —
-// one home for "manage shots", so the Prompt tab is just the prompt.
+// OutlineSidebar.tsx — the single scene + frame manager. A sticky action/transport
+// strip (icon buttons — Add Frame, Update, Prev/Play/Next/Stop, Loop, Transition,
+// Duration) over a self-scrolling body that hosts the <OutlineTree/> (scene→frame
+// hierarchy). It PORTALS into the app Shell sidebar (#fp-studio-slot, below the
+// nav) — so it lives in the main sidebar while its source stays inside
+// EditorStateProvider (useEditor works). The portal root carries `cag-editor` so
+// every `.cag-editor .*` scoped style still resolves outside the editor subtree.
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useEditor } from "@/state/EditorState";
 import { Button } from "@/components/ds/Button";
 import { OutlineTree } from "./panel/OutlineTree";
@@ -26,6 +28,12 @@ export function OutlineSidebar() {
   const ctx = useEditor();
   const { project, playback } = ctx;
 
+  // Target the Shell sidebar slot after mount (it renders before the editor).
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setSlot(document.getElementById("fp-studio-slot"));
+  }, []);
+
   const scene = project.scenes.find((s) => s.id === project.activeSceneId) ?? project.scenes[0];
   const frames = scene?.frames ?? [];
   const total = frames.length;
@@ -36,7 +44,7 @@ export function OutlineSidebar() {
   const current = ctx.currentFrame();
   const dirty = ctx.frameIsDirty(current);
 
-  return (
+  const content = (
     <aside className="outline-side" aria-label="Manajemen scene & frame">
       <div className="os-top">
         <div className="os-actions">
@@ -47,7 +55,9 @@ export function OutlineSidebar() {
             onClick={ctx.addFrame}
             style={{ flex: "1 1 auto" }}
           >
-            <IconPlus size={14} /> Frame
+            <span data-tour="add-frame" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <IconPlus size={14} /> Frame
+            </span>
           </Button>
           <Button
             variant={current && dirty ? "primary" : "outline"}
@@ -118,6 +128,12 @@ export function OutlineSidebar() {
       </div>
     </aside>
   );
+
+  // Portal into the Shell sidebar slot. The `cag-editor` class on the portal root
+  // re-establishes the editor's local CSS-var aliases + scoped selectors so the
+  // tree/transport styles resolve even though the DOM now lives under .fp-sidebar.
+  if (!slot) return null;
+  return createPortal(<div className="cag-editor fp-outline-portal">{content}</div>, slot);
 }
 
 export default OutlineSidebar;

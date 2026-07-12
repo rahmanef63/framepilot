@@ -286,3 +286,71 @@ header { flex-wrap: wrap; }
    sideways at any width. Wide content (library table, frames strip) scrolls
    inside its own overflow container, never the page body. */
 body { overflow-x: hidden; }
+
+/* ---------- /docs (standalone, TOC + content) ---------- */
+.docs-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.docs-toc {
+  position: sticky;
+  top: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.docs-toc-h {
+  font: 700 9.5px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  padding: 0 10px 6px;
+}
+.docs-toc-a {
+  font: 500 13px var(--font-sans);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  border-left: 2px solid transparent;
+}
+.docs-toc-a:hover { color: var(--foreground); background: var(--muted); }
+.docs-toc-a.active { color: var(--primary); border-left-color: var(--primary); font-weight: 700; }
+.docs-body { display: flex; flex-direction: column; gap: 40px; min-width: 0; }
+.docs-section { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 84px; }
+.docs-h2 { font: 800 22px/1.2 var(--font-sans); color: var(--foreground); margin: 0; }
+.docs-lead { font: 500 15px/1.55 var(--font-sans); color: var(--foreground); margin: 0; }
+.docs-p { font: 400 14px/1.7 var(--font-sans); color: var(--muted-foreground); margin: 0; }
+.docs-list { margin: 4px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 7px; }
+.docs-list li { font: 400 13px/1.5 var(--font-sans); color: var(--muted-foreground); }
+.docs-steps { display: flex; flex-direction: column; gap: 10px; }
+.docs-step {
+  display: flex;
+  gap: 14px;
+  padding: 14px 16px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+}
+.docs-step-n { font: 700 13px var(--font-mono); color: var(--subtle-foreground); flex: none; }
+.docs-step-t { font: 700 14px var(--font-sans); color: var(--foreground); margin-bottom: 3px; }
+.docs-step-d { font: 400 13px/1.55 var(--font-sans); color: var(--muted-foreground); }
+@media (max-width: 720px) {
+  .docs-wrap { grid-template-columns: 1fr; gap: 18px; padding: 20px 16px 48px; }
+  .docs-toc {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-bottom: 8px;
+    border-bottom: var(--border-width) solid var(--border);
+  }
+  .docs-toc-h { display: none; }
+  .docs-toc-a { border-left: none; border-bottom: 2px solid transparent; padding: 6px 9px; }
+  .docs-toc-a.active { border-left: none; border-bottom-color: var(--primary); }
+}

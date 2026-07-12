@@ -26,6 +26,7 @@ export function PanelTabs() {
           <button
             key={t.key}
             className={tab === t.key ? "active" : undefined}
+            data-tour={t.key === "shot" ? "panel-prompt" : undefined}
             onClick={() => ctx.setPanelTab(t.key)}
           >
             {t.label}

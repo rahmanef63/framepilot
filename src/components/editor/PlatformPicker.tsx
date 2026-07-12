@@ -17,7 +17,7 @@ export function PlatformSelect({
   onChange: (id: PlatformId) => void;
 }) {
   return (
-    <label className="cam-plat-picker">
+    <label className="cam-plat-picker" data-tour="platform">
       <span className="cam-plat-picker__label">Platform</span>
       <span className="cam-plat-select-wrap">
         <select

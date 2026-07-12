@@ -423,7 +423,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       } catch {
         /* ignore quota/private-mode */
       }
-      router.push("/editor");
+      router.push("/");
     },
     [entries, localSaved, cloudDocs, router]
   );
