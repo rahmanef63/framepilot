@@ -139,6 +139,42 @@
 
 html, body { height: 100%; }
 
+/* ---------- app shell (root frame) ---------- */
+/* Desktop = fixed shell locked to the viewport, no page scroll (perfect — do not
+   touch). height / overflow / safe-area MUST live here as a CLASS, not inline on
+   Shell.tsx, so the ≤820 rule below can override them (an inline style can't be
+   beaten by a class media-query). dvh = the currently-visible height, so the app
+   never hides its bottom behind mobile Safari's URL bar. env() safe-area is real
+   only because layout.tsx sets viewport-fit=cover (0 on desktop). */
+.app-shell {
+  position: relative;
+  display: flex;
+  height: 100dvh;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* ---------- MOBILE (≤820): natural document scroll ----------
+   Kill the fixed-height machinery so iOS Safari drives its own URL bar / status
+   bar over a normally-scrolling document (the reliable pattern). The shell grows
+   with content; the DOCUMENT scrolls, not a nested box. Safe-area padding stays:
+   the top inset clears the status bar at scroll-0, the bottom inset clears the
+   home indicator at the page end. */
+@media (max-width: 820px) {
+  .app-shell {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -237,7 +273,7 @@ header { flex-wrap: wrap; }
 
 /* ---------- touch targets (coarse pointer only — desktop density unchanged) --- */
 @media (pointer: coarse) {
-  button { min-height: 36px; }
+  button { min-height: 40px; }
   .cag-editor button { min-height: 40px; }
   /* keep dense editor micro-controls (outline folds, row icons, HUD maximise) tight */
   .cag-editor .fold,

@@ -32,8 +32,8 @@ export function EditorHeaderBar() {
         title="Buka/tutup sidebar"
         style={{
           flex: "none",
-          width: 32,
-          height: 32,
+          width: 40,
+          height: 40,
           border: "var(--border-width) solid var(--line)",
           borderRadius: "var(--radius-md)",
           background: "var(--panel)",

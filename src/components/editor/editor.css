@@ -1714,8 +1714,51 @@
    all it needs — no engine edits. The viewport gets a sane ~52vh so the page
    stays usable and the panel/frames sit below it. */
 @media (max-width: 820px) {
-  .cag-editor .editor-page {
-    grid-template-rows: 52vh auto auto;
+  /* Natural document scroll: no fixed height, no nested scroll — the page flows
+     and iOS Safari owns the scroll + URL bar (the app-shell is height:auto here,
+     so there is no dvh box to trap the tail in). */
+  .cag-editor {
+    height: auto;
+  }
+  .cag-editor .editor-page,
+  .cag-editor .preview-page {
+    height: auto;
+    overflow: visible; /* beats the ≤980 overflow-y:auto — page scrolls, not this box */
+    /* 3D viewport = a fixed block; frames + panel flow beneath it down the page.
+       vh here is iOS's LARGE viewport (stable, doesn't twitch with the URL bar),
+       the correct unit for a fixed block inside a natural-scroll document. */
+    grid-template-rows: min(60vh, 480px) auto auto;
+  }
+  /* kill the panel's nested scroll — it just flows at the bottom of the page */
+  .cag-editor .panel {
+    overflow: visible;
+    max-height: none;
+    height: auto;
+  }
+  /* DRAG Seg ("Subjek/Kamera") clipped off-screen: .tabbar wraps but .modebar /
+     .viewbar (holding .seg, min-width:64px buttons) have no width limit so they
+     overflow the row instead of wrapping. Force each to a full-width row and let
+     the seg buttons shrink → clean stacked rows. */
+  .cag-editor .modebar,
+  .cag-editor .viewbar {
+    flex: 1 1 100%;
+  }
+  .cag-editor .seg {
+    flex: 1;
+  }
+  .cag-editor .seg button {
+    min-width: 0;
+  }
+  /* AZ/EL/DIST/LENS/FOV/ROLL HUD readout: nowrap + overflow-x:hidden clips the
+     telemetry on a 390px cell. Let it wrap and grow (translucent bottom overlay,
+     extra height is fine). */
+  .cag-editor .readout {
+    height: auto;
+    min-height: 30px;
+    white-space: normal;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 5px 10px;
   }
   .cag-editor .quad {
     grid-template-columns: 1fr;

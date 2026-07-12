@@ -530,7 +530,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     return (
       <div
         style={{
-          height: "100dvh",
+          minHeight: "100dvh",
           display: "grid",
           placeItems: "center",
           background: "var(--background)",

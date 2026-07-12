@@ -6,28 +6,11 @@ import { GlobalModals } from "./GlobalModals";
 
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        position: "relative",
-        display: "flex",
-        // dvh (not vh) = the CURRENTLY visible height, so the app never hides its
-        // bottom behind mobile Safari's URL bar. Safe-area padding keeps the
-        // header clear of the status bar and the tail clear of the home indicator
-        // (real values only because layout.tsx sets viewport-fit=cover; 0 on desktop).
-        height: "100dvh",
-        minHeight: 0,
-        width: "100%",
-        boxSizing: "border-box",
-        paddingTop: "env(safe-area-inset-top)",
-        paddingBottom: "env(safe-area-inset-bottom)",
-        paddingLeft: "env(safe-area-inset-left)",
-        paddingRight: "env(safe-area-inset-right)",
-        overflow: "hidden",
-        background: "var(--background)",
-        color: "var(--foreground)",
-        fontFamily: "var(--font-sans)",
-      }}
-    >
+    // NOTE: the root frame (height / overflow / safe-area padding) MUST live in
+    // the `.app-shell` CSS class (globals.css), NOT as an inline style here — an
+    // inline style beats any class media-query, so keeping it inline would make
+    // the ≤820 mobile natural-scroll override impossible to apply.
+    <div className="app-shell">
       <Sidebar />
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
         <Header />
