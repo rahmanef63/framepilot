@@ -11,6 +11,7 @@ import {
   deepCopy,
   toEditorProject,
 } from "@/lib/editorModel";
+import type { SlotId } from "@/lib/editorModel";
 import {
   saveProject,
   loadProject,
@@ -34,6 +35,12 @@ export function swapProject(
   core.historyRef.current = newHistoryState();
   core.engineRef.current?.setAspect(project.settings.aspectRatio);
   core.engineRef.current?.updateHud();
+  // reconfigurable quad (Goal B): re-seed custom views + slot assignments so a
+  // loaded/imported/new doc's quad renders its saved configuration.
+  core.engineRef.current?.setSavedViews(project.savedViews ?? []);
+  (["top", "left", "right"] as SlotId[]).forEach((s) =>
+    core.engineRef.current?.setCellView(s, project.quadSlots?.[s] ?? s)
+  );
   commitHistory(label);
   core.bump();
 }

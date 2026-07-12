@@ -44,6 +44,10 @@ import type {
   FocusView,
   DragMode,
   MainTab,
+  SlotId,
+  OrthoId,
+  ViewKind,
+  SavedView,
 } from "./engineApi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -101,7 +105,14 @@ export class EditorViewportEngine implements EditorEngineHandle {
   private person: any = null;
   private objectSubj: any = null;
   private facingGroup: any = null;
-  private views: Record<"top" | "left" | "right" | "iso", OrthoView> | null = null;
+  private views: Record<OrthoId, OrthoView> | null = null;
+
+  // --- reconfigurable quad (Goal B) — slot→view map (default = identity, so
+  // byte-identical default behavior), the persisted custom orbits, and ONE reused
+  // perspective camera for whichever custom view a slot draws. ---
+  private slotView: Record<SlotId, ViewKind> = { top: "top", left: "left", right: "right" };
+  private savedViews: SavedView[] = [];
+  private customCam: any = null;
 
   // --- view / overlay state ---
   private activeTab: MainTab = "editor";
@@ -274,8 +285,11 @@ export class EditorViewportEngine implements EditorEngineHandle {
 
     this.views = {
       top: { cam: this.makeOrthoCam(), ext: 4.5, u: 0, v: 0, w: 0 },
+      bottom: { cam: this.makeOrthoCam(), ext: 4.5, u: 0, v: 0, w: 0 },
       left: { cam: this.makeOrthoCam(), ext: 3.2, u: 0, v: 1.1, w: 0 },
       right: { cam: this.makeOrthoCam(), ext: 3.2, u: 0, v: 1.1, w: 0 },
+      front: { cam: this.makeOrthoCam(), ext: 3.2, u: 0, v: 1.1, w: 0 },
+      back: { cam: this.makeOrthoCam(), ext: 3.2, u: 0, v: 1.1, w: 0 },
       iso: { cam: this.makeOrthoCam(), ext: 4.2, u: 0, v: 1.0, w: 0 },
     };
 
@@ -483,6 +497,20 @@ export class EditorViewportEngine implements EditorEngineHandle {
     this.updateFormatGuides();
   }
 
+  // --- reconfigurable quad (Goal B) — imperative; the render loop + ortho
+  // interaction resolve each slot through slotView. No re-render needed. ---
+  setCellView(slot: SlotId, kind: ViewKind): void {
+    this.slotView[slot] = kind;
+  }
+
+  getCellView(slot: SlotId): ViewKind {
+    return this.slotView[slot];
+  }
+
+  setSavedViews(list: SavedView[]): void {
+    this.savedViews = list ? list.slice() : [];
+  }
+
   // ============================================================
   // HUD
   // ============================================================
@@ -549,12 +577,17 @@ export class EditorViewportEngine implements EditorEngineHandle {
     this.updateHud();
   }
 
-  private setupOrtho(id: "top" | "left" | "right" | "iso", aspect: number): void {
+  private setupOrtho(id: OrthoId, aspect: number): void {
     const V = this.views![id];
     const c = V.cam;
     if (id === "top") {
       c.position.set(V.u, 60, V.v);
       c.up.set(0, 0, -1);
+      c.lookAt(V.u, 0, V.v);
+    } else if (id === "bottom") {
+      // mirror of top, looking up
+      c.position.set(V.u, -60, V.v);
+      c.up.set(0, 0, 1);
       c.lookAt(V.u, 0, V.v);
     } else if (id === "left") {
       c.position.set(-60, V.v, V.u);
@@ -564,7 +597,18 @@ export class EditorViewportEngine implements EditorEngineHandle {
       c.position.set(60, V.v, V.u);
       c.up.set(0, 1, 0);
       c.lookAt(0, V.v, V.u);
+    } else if (id === "front") {
+      // +Z toward -Z
+      c.position.set(V.u, V.v, 60);
+      c.up.set(0, 1, 0);
+      c.lookAt(V.u, V.v, 0);
+    } else if (id === "back") {
+      // -Z toward +Z
+      c.position.set(V.u, V.v, -60);
+      c.up.set(0, 1, 0);
+      c.lookAt(V.u, V.v, 0);
     } else {
+      // iso
       c.position.set(V.u + 8, V.v + 7, V.w + 8);
       c.up.set(0, 1, 0);
       c.lookAt(V.u, V.v, V.w);
@@ -574,6 +618,34 @@ export class EditorViewportEngine implements EditorEngineHandle {
     c.top = V.ext;
     c.bottom = -V.ext;
     c.updateProjectionMatrix();
+  }
+
+  // Resolve a slot's ViewKind to the camera that draws it (ortho preset OR the
+  // ONE reused perspective custom cam). Used by BOTH the quad path and the focus
+  // path since resolution lives inside renderView.
+  private resolveCam(kind: ViewKind, aspect: number): any {
+    if (typeof kind === "string" && kind.startsWith("custom:")) {
+      const v = this.savedViews.find((s) => "custom:" + s.id === kind);
+      return this.setupCustomCam(v ?? { id: "", name: "", az: 30, el: 20, dist: 5 }, aspect);
+    }
+    this.setupOrtho(kind as OrthoId, aspect);
+    return this.views![kind as OrthoId].cam;
+  }
+
+  private setupCustomCam(v: SavedView, aspect: number): any {
+    const T = this.T;
+    if (!this.customCam) {
+      this.customCam = new T.PerspectiveCamera(45, 1, 0.05, 200);
+      this.customCam.layers.enable(0);
+      this.customCam.layers.enable(1); // show subject + frustum/gizmo
+    }
+    const p = cartFromOrbit(v.az, v.el, v.dist, this.rig.target);
+    this.customCam.position.set(p.x, Math.max(0.07, p.y), p.z);
+    this.customCam.up.set(0, 1, 0);
+    this.customCam.lookAt(this.rig.target.x, this.rig.target.y, this.rig.target.z);
+    this.customCam.aspect = aspect;
+    this.customCam.updateProjectionMatrix();
+    return this.customCam;
   }
 
   // ============================================================
@@ -619,7 +691,12 @@ export class EditorViewportEngine implements EditorEngineHandle {
       px = e.clientX;
       py = e.clientY;
       if (viewId === "cam") this.handleCamViewDrag(dx, dy, btn);
-      else this.handleOrthoDrag(viewId, dx, dy, btn, rect!);
+      else {
+        // resolve slot→kind; custom slots are view-only in v1
+        const kind = this.slotView[viewId as SlotId] ?? (viewId as ViewKind);
+        if (typeof kind === "string" && kind.startsWith("custom:")) return;
+        this.handleOrthoDrag(kind as OrthoId, dx, dy, btn, rect!);
+      }
       this.updateScene();
       this.callbacks.onRigChanged?.();
     };
@@ -635,7 +712,9 @@ export class EditorViewportEngine implements EditorEngineHandle {
         const o = this.getOrbit();
         this.setOrbit(o.az, o.el, clamp(o.dist * (1 + e.deltaY * 0.001), 0.3, 30));
       } else {
-        const V = this.views![viewId as "top" | "left" | "right" | "iso"];
+        const kind = this.slotView[viewId as SlotId] ?? (viewId as ViewKind);
+        if (typeof kind === "string" && kind.startsWith("custom:")) return; // custom = view-only in v1
+        const V = this.views![kind as OrthoId];
         V.ext = clamp(V.ext * (1 + e.deltaY * 0.001), 0.8, 30);
       }
       this.updateScene();
@@ -721,7 +800,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
   }
 
   private handleOrthoDrag(
-    id: "top" | "left" | "right" | "iso",
+    id: OrthoId,
     dx: number,
     dy: number,
     btn: number,
@@ -737,12 +816,24 @@ export class EditorViewportEngine implements EditorEngineHandle {
       wx = dx * wpp;
       wz = dy * wpp;
     }
+    if (id === "bottom") {
+      wx = dx * wpp;
+      wz = -dy * wpp;
+    }
     if (id === "left") {
       wz = dx * wpp;
       wy = -dy * wpp;
     }
     if (id === "right") {
       wz = -dx * wpp;
+      wy = -dy * wpp;
+    }
+    if (id === "front") {
+      wx = dx * wpp;
+      wy = -dy * wpp;
+    }
+    if (id === "back") {
+      wx = -dx * wpp;
       wy = -dy * wpp;
     }
     if (id === "iso") {
@@ -767,11 +858,23 @@ export class EditorViewportEngine implements EditorEngineHandle {
       V.u -= dx * wpp;
       V.v -= dy * wpp;
     }
+    if (id === "bottom") {
+      V.u -= dx * wpp;
+      V.v += dy * wpp;
+    }
     if (id === "left") {
       V.u -= dx * wpp;
       V.v += dy * wpp;
     }
     if (id === "right") {
+      V.u += dx * wpp;
+      V.v += dy * wpp;
+    }
+    if (id === "front") {
+      V.u -= dx * wpp;
+      V.v += dy * wpp;
+    }
+    if (id === "back") {
       V.u += dx * wpp;
       V.v += dy * wpp;
     }
@@ -1053,10 +1156,13 @@ export class EditorViewportEngine implements EditorEngineHandle {
       this.povCam.updateProjectionMatrix();
       this.renderer.render(this.scene, this.povCam);
     } else {
+      // id is the DOM slot (top/left/right/iso); resolve it through the slot map.
+      // Non-slot ids (iso) fall back to themselves so iso focus keeps working.
+      const kind = this.slotView[id as SlotId] ?? (id as ViewKind);
       this.scene.background = this.orthoBg;
       this.scene.fog = null;
-      this.setupOrtho(id as "top" | "left" | "right" | "iso", rect.w / rect.h);
-      this.renderer.render(this.scene, this.views![id as "top" | "left" | "right" | "iso"].cam);
+      const cam = this.resolveCam(kind, rect.w / rect.h);
+      this.renderer.render(this.scene, cam);
       this.scene.background = this.povBg;
       this.scene.fog = this.povFog;
     }

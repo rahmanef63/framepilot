@@ -13,18 +13,22 @@ export function ViewCell({
   label,
   maxTitle,
   onMax,
+  head,
   children,
 }: {
   view: ViewId;
   label: string;
   maxTitle?: string;
   onMax: () => void;
+  // Optional head node — the reconfigurable quad slots pass a <CellViewMenu/> here
+  // to replace the static .vname chip with a view-picker dropdown.
+  head?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
     <div className="cell" data-view={view}>
       <div className="cell-head">
-        <span className="vname">{label}</span>
+        {head ?? <span className="vname">{label}</span>}
         <span className="vspace" />
         <button className="maxbtn" title={maxTitle} onClick={onMax}>
           MAX

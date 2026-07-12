@@ -4,7 +4,7 @@
 
 import type { Meta } from "@/lib/dataPrompt";
 import type { Project as AppProject } from "@/lib/dataPrompt";
-import type { EditorProject, EditorFrame, RigState } from "@/lib/editorModel";
+import type { EditorProject, EditorFrame, RigState, SlotId, ViewKind } from "@/lib/editorModel";
 import type {
   EditorEngineHandle,
   DragMode,
@@ -64,6 +64,8 @@ export interface EditorContextValue {
   setFov: (v: number) => void;
   setRoll: (v: number) => void;
   setTargetY: (v: number) => void;
+  setCamPos: (axis: "x" | "y" | "z", v: number) => void;
+  setTarget: (axis: "x" | "y" | "z", v: number) => void;
   setSubjRot: (v: number) => void;
   setSubjX: (v: number) => void;
   setSubjZ: (v: number) => void;
@@ -83,6 +85,12 @@ export interface EditorContextValue {
   toggleThirds: () => void;
   toggleFrustum: () => void;
   toggleTrackSubject: () => void;
+
+  // reconfigurable quad (Goal B)
+  addSavedView: (name?: string) => void;
+  renameSavedView: (id: string, name: string) => void;
+  deleteSavedView: (id: string) => void;
+  setCellView: (slot: SlotId, kind: ViewKind) => void;
 
   // output frame
   setAspect: (a: string) => void;

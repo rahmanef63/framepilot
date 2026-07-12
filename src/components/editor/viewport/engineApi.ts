@@ -2,7 +2,11 @@
 // 3D authoring engine. TYPES ONLY: no three, no implementation. Both
 // EditorState.tsx and editorViewportEngine.ts import this so the boundary is frozen.
 
-import type { RigState, RigSnapshot } from "@/lib/editorModel";
+import type { RigState, RigSnapshot, SlotId, OrthoId, ViewKind, SavedView } from "@/lib/editorModel";
+
+// Re-export the reconfigurable-quad types (canonical in editorModel) so the
+// engine + viewport keep importing view types from this frozen boundary.
+export type { SlotId, OrthoId, ViewKind, SavedView };
 
 // ---- shared enums ----
 export type ViewId = "cam" | "top" | "left" | "right" | "iso";
@@ -75,6 +79,11 @@ export interface EditorEngineHandle {
   setThirds(on: boolean): void;
   setFrustum(on: boolean): void;
   setAspect(aspect: string): void; // real POV aspect + letterbox
+
+  // --- reconfigurable quad (Goal B) ---
+  setCellView(slot: SlotId, kind: ViewKind): void; // reassign a slot's effective view
+  getCellView(slot: SlotId): ViewKind;
+  setSavedViews(list: SavedView[]): void; // push persisted custom orbits into the render cache
 
   // --- HUD ---
   setHudRefs(refs: EngineHudRefs): void;

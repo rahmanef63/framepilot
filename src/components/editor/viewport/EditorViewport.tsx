@@ -9,9 +9,14 @@
 import React, { useEffect, useRef } from "react";
 import { useEditor } from "@/state/EditorState";
 import { ViewCell } from "./ViewCell";
+import { CellViewMenu } from "./CellViewMenu";
 import { Hud } from "./Hud";
 import type { EditorViewportEngine as EngineType } from "./editorViewportEngine";
-import type { EngineHudRefs, ViewId } from "./engineApi";
+import type { EngineHudRefs, ViewId, SlotId, ViewKind } from "./engineApi";
+
+// The three reconfigurable quad slots (cam stays locked to the pov shot camera).
+const SLOT_IDS: SlotId[] = ["top", "left", "right"];
+const SLOT_DEFAULTS: Record<SlotId, ViewKind> = { top: "top", left: "left", right: "right" };
 
 const VIEW_META: { id: ViewId; label: string; maxTitle: string }[] = [
   { id: "cam", label: "◉ CAMERA", maxTitle: "Fokus view (1)" },
@@ -23,7 +28,21 @@ const VIEW_META: { id: ViewId; label: string; maxTitle: string }[] = [
 
 export function EditorViewport() {
   const ctx = useEditor();
-  const { ui, registerEngine, onRigChangedFromEngine, onPlaybackTick, keysHeld, setFocusView } = ctx;
+  const {
+    ui,
+    project,
+    registerEngine,
+    onRigChangedFromEngine,
+    onPlaybackTick,
+    keysHeld,
+    setFocusView,
+    setCellView,
+    addSavedView,
+    renameSavedView,
+    deleteSavedView,
+  } = ctx;
+  const savedViews = project.savedViews ?? [];
+  const quadSlots = project.quadSlots ?? SLOT_DEFAULTS;
 
   const quadRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -135,16 +154,39 @@ export function EditorViewport() {
           role="img"
           aria-label="Viewport 3D untuk mengatur kamera, subjek, dan framing"
         />
-        {VIEW_META.map((m) => (
-          <ViewCell key={m.id} view={m.id} label={m.label} maxTitle={m.maxTitle} onMax={() => toggleFocus(m.id)}>
-            {m.id === "cam" ? (
-              <>
-                <Hud thirdsOn={ui.thirdsOn} />
-                <div className="flash" />
-              </>
-            ) : null}
-          </ViewCell>
-        ))}
+        {VIEW_META.map((m) => {
+          const isSlot = (SLOT_IDS as string[]).includes(m.id);
+          const slot = m.id as SlotId;
+          return (
+            <ViewCell
+              key={m.id}
+              view={m.id}
+              label={m.label}
+              maxTitle={m.maxTitle}
+              onMax={() => toggleFocus(m.id)}
+              head={
+                isSlot ? (
+                  <CellViewMenu
+                    slot={slot}
+                    current={quadSlots[slot] ?? SLOT_DEFAULTS[slot]}
+                    savedViews={savedViews}
+                    onPick={(kind) => setCellView(slot, kind)}
+                    onSaveCurrent={(name) => addSavedView(name)}
+                    onRename={renameSavedView}
+                    onDelete={deleteSavedView}
+                  />
+                ) : undefined
+              }
+            >
+              {m.id === "cam" ? (
+                <>
+                  <Hud thirdsOn={ui.thirdsOn} />
+                  <div className="flash" />
+                </>
+              ) : null}
+            </ViewCell>
+          );
+        })}
       </div>
     </div>
   );

@@ -11,7 +11,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import type { ViewId } from "@/components/editor/viewport/engineApi";
 import { loadAutosave } from "@/lib/editorStorage";
-import type { EditorProject } from "@/lib/editorModel";
+import type { EditorProject, SlotId } from "@/lib/editorModel";
 
 import type { EditorContextValue } from "./editor/types";
 import { useEditorCore } from "./editor/core";
@@ -20,6 +20,7 @@ import { useBriefActions } from "./editor/brief";
 import { usePlaybackActions } from "./editor/playback";
 import { useRigActions } from "./editor/rig";
 import { useUiActions } from "./editor/ui";
+import { useViewActions } from "./editor/views";
 import { useFrameActions } from "./editor/frames";
 import { useSceneActions } from "./editor/scenes";
 import { useIoActions, swapProject } from "./editor/io";
@@ -91,6 +92,8 @@ export function EditorStateProvider({
     setFov,
     setRoll,
     setTargetY,
+    setCamPos,
+    setTarget,
     setSubjRot,
     setSubjX,
     setSubjZ,
@@ -115,6 +118,10 @@ export function EditorStateProvider({
     setFps,
     setProjectName,
   } = useUiActions(core, { afterRigMutate, commitHistory });
+
+  const { addSavedView, renameSavedView, deleteSavedView, setCellView } = useViewActions(core, {
+    commitHistory,
+  });
 
   const {
     addFrame,
@@ -252,6 +259,11 @@ export function EditorStateProvider({
           handle.applyFocus(uiRef.current.focusView);
           handle.setActiveTab(uiRef.current.mainTab);
           handle.updateHud();
+          // reconfigurable quad (Goal B): re-seed custom views + slot assignments
+          handle.setSavedViews(projectRef.current.savedViews ?? []);
+          (["top", "left", "right"] as SlotId[]).forEach((s) =>
+            handle.setCellView(s, projectRef.current.quadSlots?.[s] ?? s)
+          );
         }
       },
       keysHeld: keysHeldRef.current,
@@ -261,6 +273,8 @@ export function EditorStateProvider({
       setFov,
       setRoll,
       setTargetY,
+      setCamPos,
+      setTarget,
       setSubjRot,
       setSubjX,
       setSubjZ,
@@ -279,6 +293,11 @@ export function EditorStateProvider({
       toggleThirds,
       toggleFrustum,
       toggleTrackSubject,
+
+      addSavedView,
+      renameSavedView,
+      deleteSavedView,
+      setCellView,
 
       setAspect,
       setFps,

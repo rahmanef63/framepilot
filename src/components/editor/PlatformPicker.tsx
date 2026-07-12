@@ -19,18 +19,23 @@ export function PlatformSelect({
   return (
     <label className="cam-plat-picker">
       <span className="cam-plat-picker__label">Platform</span>
-      <select
-        className="cam-plat-select"
-        aria-label="Platform AI video tujuan"
-        value={value}
-        onChange={(e) => onChange(e.target.value as PlatformId)}
-      >
-        {PLATFORMS.map((p) => (
-          <option key={p.id} value={p.id} title={p.note}>
-            {p.label}
-          </option>
-        ))}
-      </select>
+      <span className="cam-plat-select-wrap">
+        <select
+          className="cam-plat-select"
+          aria-label="Platform AI video tujuan"
+          value={value}
+          onChange={(e) => onChange(e.target.value as PlatformId)}
+        >
+          {PLATFORMS.map((p) => (
+            <option key={p.id} value={p.id} title={p.note}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+        <span className="cam-plat-select__chevron" aria-hidden="true">
+          ▾
+        </span>
+      </span>
     </label>
   );
 }

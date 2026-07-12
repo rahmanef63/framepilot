@@ -1,8 +1,10 @@
 "use client";
-// RigSliders — the numeric rig controls: the 6 camera-rig sliders (plan G5) plus
-// the 3 subject-transform sliders (G6). az/el/dist are derived from camPos via
-// getOrbit each render and written back through ctx.orbit (setOrbit re-clamps).
-// Sliders are imperative (ui/Slider) so a drag doesn't fight React for the value.
+// RigSliders — the KAMERA numeric controls (plan G5). Three groups:
+//   · Rig            — az/el/dist derived from camPos via getOrbit + fov/roll
+//   · Posisi Kamera  — raw camPos {x,y,z} world coordinates (setCamPos)
+//   · Posisi Anchor  — raw target {x,y,z}, the point the camera aims/orbits (setTarget)
+// Subject transform moved to <SubjectControls/> (SUBJEK tab). Sliders are
+// imperative (ui/Slider) so a drag doesn't fight React for the value.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
@@ -13,6 +15,8 @@ export function RigSliders() {
   const ctx = useEditor();
   const rig = ctx.rigRef.current;
   const o = getOrbit(rig.camPos, rig.target);
+  const c = rig.camPos;
+  const t = rig.target;
 
   return (
     <>
@@ -64,46 +68,69 @@ export function RigSliders() {
           format={(v) => `${Math.round(v)}°`}
           onInput={(v) => ctx.setRoll(v)}
         />
+      </div>
+
+      {/* ---- posisi kamera (raw camPos) ---- */}
+      <div className="group">
+        <h3>Posisi Kamera</h3>
         <Slider
-          label="Target Y"
-          min={0.1}
-          max={3}
-          step={0.05}
-          value={rig.target.y}
+          label="X"
+          min={-15}
+          max={15}
+          step={0.1}
+          value={c.x}
           format={(v) => `${v.toFixed(2)}m`}
-          onInput={(v) => ctx.setTargetY(v)}
+          onInput={(v) => ctx.setCamPos("x", v)}
+        />
+        <Slider
+          label="Y (tinggi)"
+          min={0.05}
+          max={15}
+          step={0.05}
+          value={c.y}
+          format={(v) => `${v.toFixed(2)}m`}
+          onInput={(v) => ctx.setCamPos("y", v)}
+        />
+        <Slider
+          label="Z"
+          min={-15}
+          max={15}
+          step={0.1}
+          value={c.z}
+          format={(v) => `${v.toFixed(2)}m`}
+          onInput={(v) => ctx.setCamPos("z", v)}
         />
       </div>
 
-      {/* ---- subject transform (G6) ---- */}
+      {/* ---- posisi anchor (raw target) ---- */}
       <div className="group">
-        <h3>Subjek · Transform</h3>
+        <h3>Posisi Anchor</h3>
         <Slider
-          label="Rotasi"
-          min={-180}
-          max={180}
-          step={5}
-          value={rig.subjRot}
-          format={(v) => `${Math.round(v)}°`}
-          onInput={(v) => ctx.setSubjRot(v)}
+          label="X"
+          min={-8}
+          max={8}
+          step={0.1}
+          value={t.x}
+          format={(v) => `${v.toFixed(2)}m`}
+          onInput={(v) => ctx.setTarget("x", v)}
         />
         <Slider
-          label="Posisi X"
-          min={-6}
-          max={6}
-          step={0.1}
-          value={rig.subjPos.x}
-          format={(v) => v.toFixed(1)}
-          onInput={(v) => ctx.setSubjX(v)}
+          label="Y (tinggi)"
+          min={0.1}
+          max={3}
+          step={0.05}
+          value={t.y}
+          format={(v) => `${v.toFixed(2)}m`}
+          onInput={(v) => ctx.setTarget("y", v)}
         />
         <Slider
-          label="Posisi Z"
-          min={-6}
-          max={6}
+          label="Z"
+          min={-8}
+          max={8}
           step={0.1}
-          value={rig.subjPos.z}
-          format={(v) => v.toFixed(1)}
-          onInput={(v) => ctx.setSubjZ(v)}
+          value={t.z}
+          format={(v) => `${v.toFixed(2)}m`}
+          onInput={(v) => ctx.setTarget("z", v)}
         />
       </div>
     </>

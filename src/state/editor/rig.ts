@@ -19,6 +19,8 @@ export interface RigActions {
   setFov: (v: number) => void;
   setRoll: (v: number) => void;
   setTargetY: (v: number) => void;
+  setCamPos: (axis: "x" | "y" | "z", v: number) => void;
+  setTarget: (axis: "x" | "y" | "z", v: number) => void;
   setSubjRot: (v: number) => void;
   setSubjX: (v: number) => void;
   setSubjZ: (v: number) => void;
@@ -85,6 +87,26 @@ export function useRigActions(
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
+  // Raw world-space setters for the KAMERA inspector's "Posisi kamera" /
+  // "Posisi anchor" number controls. camPos.y is clamped to the engine's
+  // [0.05, 25] range (concept clamp); orbit sliders re-derive from camPos.
+  const setCamPos = useCallback(
+    (axis: "x" | "y" | "z", v: number) => {
+      stopPlayback();
+      rigRef.current.camPos[axis] = axis === "y" ? clamp(v, 0.05, 25) : v;
+      afterRigMutate("Posisi kamera");
+    },
+    [rigRef, stopPlayback, afterRigMutate]
+  );
+  const setTarget = useCallback(
+    (axis: "x" | "y" | "z", v: number) => {
+      stopPlayback();
+      rigRef.current.target[axis] = v;
+      afterRigMutate("Posisi anchor");
+    },
+    [rigRef, stopPlayback, afterRigMutate]
+  );
+
   const setSubjRot = useCallback(
     (v: number) => {
       stopPlayback();
@@ -194,6 +216,8 @@ export function useRigActions(
     setFov,
     setRoll,
     setTargetY,
+    setCamPos,
+    setTarget,
     setSubjRot,
     setSubjX,
     setSubjZ,

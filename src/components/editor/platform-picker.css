@@ -18,6 +18,14 @@
   color: var(--muted-foreground);
 }
 
+/* select + its overlaid chevron share one positioned box */
+.cam-plat-select-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
 .cam-plat-select {
   width: 100%;
   min-width: 0;
@@ -33,19 +41,51 @@
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
-    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
-  background-position: right 13px center, right 8px center;
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
   transition: border-color 120ms ease;
+}
+
+/* visible ▾ dropdown arrow, token-colored, click-through to the select */
+.cam-plat-select__chevron {
+  position: absolute;
+  top: 0;
+  right: 11px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted-foreground);
+  pointer-events: none;
 }
 
 .cam-plat-select:hover {
   border-color: var(--primary);
 }
 
+.cam-plat-select:hover + .cam-plat-select__chevron {
+  color: var(--primary);
+}
+
 .cam-plat-select:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* ONE row: dropdown grows, Copy sits to its right, bottom-aligned to the select */
+.cam-dock-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.cam-dock-row .cam-plat-picker {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cam-dock-row > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }

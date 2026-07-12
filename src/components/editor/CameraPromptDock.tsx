@@ -47,14 +47,14 @@ export function CameraPromptDock() {
           <Badge tone="new">Prompt Kamera</Badge>
           <span className="cam-scope">{scope}</span>
         </div>
-        <div className="cam-dock-ctl">
-          <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
-            {copied ? "Tersalin ✓" : hasShots ? "Salin" : "Belum ada shot"}
-          </Button>
-        </div>
       </div>
 
-      <PlatformSelect value={platform} onChange={setPlatform} />
+      <div className="cam-dock-row">
+        <PlatformSelect value={platform} onChange={setPlatform} />
+        <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
+          {copied ? "Tersalin ✓" : hasShots ? "Salin" : "Belum ada shot"}
+        </Button>
+      </div>
 
       <textarea
         className="cam-out"

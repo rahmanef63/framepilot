@@ -61,6 +61,23 @@ export interface EditorScene {
   notesOpen: boolean;
 }
 
+// --- reconfigurable quad (Goal B) ---
+// A quad slot is one of the three reconfigurable cells (cam stays locked to the
+// pov shot camera). Each slot resolves to a ViewKind: a fixed ortho preset, or a
+// custom saved orbit ("custom:<savedViewId>").
+export type SlotId = "top" | "left" | "right";
+export type OrthoId = "top" | "bottom" | "left" | "right" | "front" | "back" | "iso";
+export type ViewKind = OrthoId | `custom:${string}`;
+
+// A named custom camera orbit the user snapshotted from the pov camera.
+export interface SavedView {
+  id: string;
+  name: string;
+  az: number;
+  el: number;
+  dist: number;
+}
+
 export interface EditorProject {
   schema: "camera-angle-guide/v2";
   name: string;
@@ -72,6 +89,10 @@ export interface EditorProject {
   // authored in Studio 3D, which the Pustaka treats as source "studio".
   // Round-trips through save/load (JSON + deepCopy preserve it).
   source?: SourceKind;
+  // Reconfigurable quad (Goal B) — both optional for back-compat with older v2
+  // docs; sanitized/defaulted in ensureProjectShape. deepCopy carries them.
+  savedViews?: SavedView[]; // custom orbits, per-project authoring data
+  quadSlots?: Record<SlotId, ViewKind>; // which view each reconfigurable cell shows
 }
 
 // Live rig — mutated in place, pushed to the engine imperatively (plan §3.1).
@@ -200,6 +221,35 @@ export function ensureProjectShape(input: unknown): EditorProject {
   });
 
   if (!scenes.some((s) => s.id === p.activeSceneId)) p.activeSceneId = scenes[0].id;
+
+  // --- reconfigurable quad (Goal B) — savedViews first, then quadSlots so a slot
+  // pointing at a deleted custom view reverts to its default preset (never blanks). ---
+  const rawViews = Array.isArray(p.savedViews) ? (p.savedViews as Record<string, unknown>[]) : [];
+  const savedViews: SavedView[] = rawViews
+    .filter((v) => v && typeof v.id === "string" && Number.isFinite(+(v.az as number)))
+    .map((v) => ({
+      id: String(v.id),
+      name: String(v.name ?? "View").slice(0, 60),
+      az: +(v.az as number) || 0,
+      el: +(v.el as number) || 0,
+      dist: clamp(+(v.dist as number) || 3, 0.3, 30),
+    }));
+  p.savedViews = savedViews;
+  const viewIds = new Set(savedViews.map((v) => v.id));
+
+  const ORTHO_KINDS = ["top", "bottom", "left", "right", "front", "back", "iso"];
+  const SLOT_DEFAULTS: Record<SlotId, ViewKind> = { top: "top", left: "left", right: "right" };
+  const rawSlots = (p.quadSlots as Record<string, unknown>) || {};
+  const quadSlots: Record<SlotId, ViewKind> = { ...SLOT_DEFAULTS };
+  (["top", "left", "right"] as SlotId[]).forEach((slot) => {
+    const k = rawSlots[slot];
+    if (typeof k === "string" && ORTHO_KINDS.includes(k)) quadSlots[slot] = k as ViewKind;
+    else if (typeof k === "string" && k.startsWith("custom:") && viewIds.has(k.slice(7)))
+      quadSlots[slot] = k as ViewKind;
+    else quadSlots[slot] = SLOT_DEFAULTS[slot];
+  });
+  p.quadSlots = quadSlots;
+
   return p as unknown as EditorProject;
 }
 
