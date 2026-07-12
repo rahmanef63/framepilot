@@ -16,6 +16,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         flexDirection: "column",
         background: "var(--background)",
         color: "var(--foreground)",
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
       }}
     >
       <header
@@ -25,7 +27,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           justifyContent: "space-between",
           flexWrap: "wrap",
           gap: 12,
-          padding: "12px 20px",
+          // pad the top by the status-bar inset (viewport-fit=cover) so the bar
+          // clears the iOS clock/battery; 12px elsewhere, 0 extra on desktop.
+          padding: "calc(12px + env(safe-area-inset-top)) 20px 12px",
           borderBottom: "var(--border-width) solid var(--border)",
           background: "var(--background)",
         }}

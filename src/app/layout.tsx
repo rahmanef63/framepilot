@@ -12,6 +12,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // cover = content extends under the iOS status bar / home indicator so
+  // env(safe-area-inset-*) become real values the shells pad back in.
+  viewportFit: "cover",
 };
 
 // Anti-FOUC: runs BEFORE first paint. Reads the saved theme mode
