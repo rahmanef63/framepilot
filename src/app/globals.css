@@ -265,6 +265,109 @@ button { font-family: inherit; }
    wrap, and the landing hero <header> is a column so wrap is a no-op there. */
 header { flex-wrap: wrap; }
 
+/* ---------- app header (3-section bar: left crumb · center nav · right CRUD) ---------- */
+.app-header {
+  flex: none;
+  display: grid;
+  /* minmax(0,…) lets the side tracks shrink (crumb/name truncate) instead of
+     overflowing when the 3 sections get tight */
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  border-bottom: var(--border-width) solid var(--border);
+  background: var(--card);
+}
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.app-header-burger {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font: 700 14px var(--font-mono);
+  display: grid;
+  place-items: center;
+}
+.app-header-brand { display: inline-flex; flex: none; }
+.app-header-brandword { font: 500 12px var(--font-mono); color: var(--muted-foreground); white-space: nowrap; }
+.app-header-sep { color: var(--subtle-foreground); flex: none; }
+.app-header-crumb {
+  font: 700 14px var(--font-sans);
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-header-center { display: flex; justify-content: center; min-width: 0; }
+.app-hnav { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.app-header-right { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; }
+.app-header-stats {
+  font: 600 11px var(--font-mono);
+  color: var(--muted-foreground);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 5px 11px;
+  white-space: nowrap;
+}
+
+/* editor project CRUD portaled into #fp-header-actions (both are display:contents,
+   so these lay out as direct flex items of .app-header-right) */
+.ehx { display: contents; }
+.ehx-name {
+  width: 180px;
+  min-width: 90px;
+  background: var(--card);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--foreground);
+  font: 500 13px var(--font-sans);
+  padding: 7px 10px;
+}
+.ehx-name:focus { outline: 2px solid var(--ring); outline-offset: 1px; }
+.ehx-autosave { font: 500 10px var(--font-mono); color: var(--muted-foreground); white-space: nowrap; }
+.ehx-autosave.on { color: var(--chart-3); }
+.ehx-history { display: inline-flex; gap: 2px; }
+
+/* Keep the 3-section row from colliding on laptops: below ~1180px the Studio's
+   wide project CRUD + center nav + breadcrumb no longer fit, so drop the wordmark
+   + autosave + undo/redo icons (undo/redo stay in the ⋯ menu) and let the name
+   input shrink — the single row then holds down to the ≤768 stack. */
+@media (max-width: 1180px) {
+  .app-header-brandword { display: none; }
+  .ehx-autosave { display: none; }
+  .ehx-history { display: none; }
+  .ehx-name { width: auto; flex: 1 1 110px; min-width: 90px; max-width: 200px; }
+}
+/* phones + small tablets: stack — the nav drops to its own row */
+@media (max-width: 768px) {
+  .app-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 8px 12px;
+  }
+  .app-header-left { flex: 1 1 auto; order: 1; min-width: 0; }
+  .app-header-right { order: 2; }
+  .app-header-center {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    /* padding so the active pill's focus ring isn't clipped by the scroll box */
+    padding: 4px;
+    scroll-padding-inline: 4px;
+  }
+}
+
 /* ---------- responsive: landing padding (≤640) ---------- */
 /* The landing container's fixed 40px padding steals 80px on a phone. */
 @media (max-width: 640px) {

@@ -73,6 +73,8 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
         label={isAuthenticated ? "Akun" : "Masuk"}
         active={open}
         chevron={orientation === "horizontal"}
+        ariaHasPopup="menu"
+        ariaExpanded={open}
         onClick={toggle}
         style={orientation === "horizontal" ? { width: "100%" } : undefined}
       />
@@ -89,7 +91,7 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
             background: "var(--card)",
             border: "var(--border-width) solid var(--border)",
             borderRadius: "var(--radius-md)",
-            boxShadow: "var(--shadow, 0 8px 24px rgba(0,0,0,.16))",
+            boxShadow: "var(--elevation-overlay)",
             ...pos,
           }}
         >
@@ -149,6 +151,7 @@ function MenuLink({
       }}
     >
       <span
+        aria-hidden
         style={{
           width: 26,
           height: 26,

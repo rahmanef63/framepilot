@@ -3,99 +3,85 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
+import { HeaderNav } from "@/components/shell/HeaderNav";
+import { BrandMark } from "@/components/shell/BrandMark";
 
 const SCREEN_NAMES: Record<string, string> = {
+  "/": "Studio 3D",
   "/library": "Pustaka",
   "/template": "Template",
   "/panduan": "Panduan · Guide",
   "/admin": "Admin",
 };
 
+/**
+ * The single app header, shown on every (app)-shell route (including `/`, the
+ * Studio home — the editor no longer draws its own top bar; it portals its
+ * project CRUD into `#fp-header-actions` on the right).
+ *
+ * Three sections: LEFT = sidebar trigger + brand breadcrumb · CENTER = primary
+ * nav (Buat / Studio 3D / Pustaka) · RIGHT = CRUD contextual to the active route.
+ */
 export function Header() {
   const app = useApp();
   const pathname = usePathname();
-  // On `/` the Studio (now the app home) supplies its own consolidated header
-  // (EditorHeaderBar), so the app shell header suppresses itself to avoid a
-  // double-stacked bar. Every other route keeps this header.
-  if (pathname === "/") return null;
   const crumb = SCREEN_NAMES[pathname] || "Studio 3D · Prompt Kamera";
   const onData = pathname === "/library";
+  const isStudio = pathname === "/";
 
   return (
-    <header
-      style={{
-        flex: "none",
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "11px 20px",
-        borderBottom: "var(--border-width) solid var(--border)",
-        background: "var(--card)",
-      }}
-    >
-      <button
-        onClick={app.toggleSidebar}
-        title="Buka/tutup sidebar"
-        style={{
-          flex: "none",
-          width: 34,
-          height: 34,
-          border: "var(--border-width) solid var(--border)",
-          borderRadius: "var(--radius-md)",
-          background: "var(--card)",
-          color: "var(--muted-foreground)",
-          cursor: "pointer",
-          font: "700 14px var(--font-mono)",
-          display: "grid",
-          placeItems: "center",
-        }}
-      >
-        ☰
-      </button>
-      <span
-        style={{
-          font: "500 12px var(--font-mono)",
-          color: "var(--muted-foreground)",
-          whiteSpace: "nowrap",
-          flex: "none",
-        }}
-      >
-        Camera Angle Guide Pro
-      </span>
-      <span style={{ color: "var(--subtle-foreground)", flex: "none" }}>›</span>
-      <b style={{ font: "700 14px var(--font-sans)", color: "var(--foreground)", whiteSpace: "nowrap", flex: "none" }}>
-        {crumb}
-      </b>
-      <div style={{ flex: 1 }} />
-      {onData ? (
-        <>
-          <span
-            style={{
-              font: "600 11px var(--font-mono)",
-              color: "var(--muted-foreground)",
-              border: "var(--border-width) solid var(--border)",
-              borderRadius: "var(--radius-pill)",
-              padding: "5px 11px",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {app.projStats}
-          </span>
-          <Button variant="outline" size="sm" icon="{ }" onClick={app.openSchema}>
-            Skema
-          </Button>
-          <Button variant="outline" size="sm" onClick={app.exportProject}>
-            Ekspor proyek
-          </Button>
+    <header className="app-header">
+      {/* LEFT — sidebar trigger + brand breadcrumb */}
+      <div className="app-header-left">
+        <button
+          type="button"
+          onClick={app.toggleSidebar}
+          aria-label="Buka/tutup sidebar"
+          aria-expanded={app.sidebarOpen}
+          aria-controls="fp-sidebar"
+          className="app-header-burger"
+        >
+          <span aria-hidden>☰</span>
+        </button>
+        <span className="app-header-brand" style={{ color: "var(--primary)" }} aria-hidden>
+          <BrandMark size={22} />
+        </span>
+        <span className="app-header-brandword">Camera Angle Guide Pro</span>
+        <span className="app-header-sep" aria-hidden>
+          ›
+        </span>
+        <b className="app-header-crumb">{crumb}</b>
+      </div>
+
+      {/* CENTER — primary nav */}
+      <div className="app-header-center">
+        <HeaderNav />
+      </div>
+
+      {/* RIGHT — contextual CRUD. On `/` the editor portals its actions into the
+          slot; other routes render their own. */}
+      <div className="app-header-right">
+        {/* display:contents so the portaled editor buttons lay out inline here */}
+        <div id="fp-header-actions" style={{ display: "contents" }} />
+        {onData ? (
+          <>
+            <span className="app-header-stats">{app.projStats}</span>
+            <Button variant="outline" size="sm" icon="{ }" onClick={app.openSchema}>
+              Skema
+            </Button>
+            <Button variant="outline" size="sm" onClick={app.exportProject}>
+              Ekspor
+            </Button>
+            <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport("paste")}>
+              Impor
+            </Button>
+          </>
+        ) : isStudio ? null : (
           <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport("paste")}>
             Impor
           </Button>
-        </>
-      ) : (
-        <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport("paste")}>
-          Impor
-        </Button>
-      )}
+        )}
+      </div>
     </header>
   );
 }

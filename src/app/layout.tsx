@@ -4,9 +4,26 @@ import { ConvexClientProvider } from "@/components/convex-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Data Prompt · Camera Angle Guide Pro",
+  metadataBase: new URL("https://frame-pilot.rahmanef.com"),
+  applicationName: "Camera Angle Guide Pro",
+  title: "Camera Angle Guide Pro — studio 3D → prompt kamera AI",
   description:
-    "Kelola data prompt hasil AI — impor foto/YouTube/JSON, unduh skema, terapkan ke Camera Angle Guide Pro, pratinjau 3D.",
+    "Susun sudut kamera di studio 3D lalu ekspor prompt kamera siap-tempel untuk 10+ platform video AI (Runway, Kling, Veo, Sora, Luma, …).",
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Camera Angle Guide Pro",
+    title: "Camera Angle Guide Pro",
+    description: "Susun sudut kamera di studio 3D → prompt kamera siap-tempel untuk video AI.",
+    locale: "id_ID",
+    images: [{ url: "/meta/framepilot-opengraph.webp", width: 1672, height: 941, alt: "Camera Angle Guide Pro" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Camera Angle Guide Pro",
+    description: "Susun sudut kamera di studio 3D → prompt kamera siap-tempel untuk video AI.",
+    images: ["/meta/framepilot-twitter-card.webp"],
+  },
 };
 
 export const viewport: Viewport = {

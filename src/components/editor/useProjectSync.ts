@@ -2,7 +2,7 @@
 // useProjectSync.ts — cloud-sync seam for saved projects (Task C). Signed-in
 // Convex users get their project list / save / load / delete routed to the
 // deployed convex/projects.* functions; anonymous users keep the existing
-// localStorage flow untouched. One hook shared by EditorHeaderBar (the "Simpan
+// localStorage flow untouched. One hook shared by EditorHeaderActions (the "Simpan
 // Proyek" button) and SavedProjects (list/load/delete) so the auth branch lives
 // in exactly one place — DRY, not a duplicated component.
 

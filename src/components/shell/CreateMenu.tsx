@@ -15,11 +15,14 @@ export function CreateMenu({
   onNew3D,
   onFromImage,
   onFromTemplate,
+  fill = true,
 }: {
   orientation: "horizontal" | "vertical";
   onNew3D: () => void;
   onFromImage: () => void;
   onFromTemplate: () => void;
+  /** horizontal trigger stretches full-width (sidebar) when true; auto-width (header nav) when false. */
+  fill?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const wrapRef = React.useRef<HTMLDivElement>(null);
@@ -56,12 +59,12 @@ export function CreateMenu({
   // expanded, to the right of the collapsed rail tile otherwise.
   const menuPos: React.CSSProperties = rect
     ? orientation === "horizontal"
-      ? { top: rect.bottom + 4, left: rect.left, width: rect.width }
+      ? { top: rect.bottom + 4, left: rect.left, width: fill ? rect.width : 210 }
       : { top: rect.top, left: rect.right + 8, width: 190 }
     : {};
 
   return (
-    <div ref={wrapRef} style={{ position: "relative", width: orientation === "horizontal" ? "100%" : undefined }}>
+    <div ref={wrapRef} style={{ position: "relative", width: orientation === "horizontal" && fill ? "100%" : undefined }}>
       <NavItem
         orientation={orientation}
         icon="+"
@@ -69,8 +72,10 @@ export function CreateMenu({
         accent
         active={open}
         chevron={orientation === "horizontal"}
+        ariaHasPopup="menu"
+        ariaExpanded={open}
         onClick={toggle}
-        style={orientation === "horizontal" ? { width: "100%" } : undefined}
+        style={orientation === "horizontal" ? { width: fill ? "100%" : "auto" } : undefined}
       />
       {open ? (
         <div
@@ -85,7 +90,7 @@ export function CreateMenu({
             background: "var(--card)",
             border: "var(--border-width) solid var(--border)",
             borderRadius: "var(--radius-md)",
-            boxShadow: "var(--shadow, 0 8px 24px rgba(0,0,0,.16))",
+            boxShadow: "var(--elevation-overlay)",
             ...menuPos,
           }}
         >
@@ -146,6 +151,7 @@ function MenuOption({
       }}
     >
       <span
+        aria-hidden
         style={{
           width: "26px",
           height: "26px",

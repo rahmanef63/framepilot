@@ -10,7 +10,7 @@
 import React from "react";
 import "./editor.css";
 import { useEditor } from "@/state/EditorState";
-import { EditorHeaderBar } from "./EditorHeaderBar";
+import { EditorHeaderActions } from "./EditorHeaderActions";
 import { EditorTabBar } from "./EditorTabBar";
 import { PanelTabs } from "./panel/PanelTabs";
 import { EditorViewport } from "./viewport/EditorViewport";
@@ -26,7 +26,9 @@ export function EditorScreen() {
 
   return (
     <div className={"cag-editor" + (playback.playing ? " playing" : "")} data-tab={tab}>
-      <EditorHeaderBar />
+      {/* Project CRUD lives in the app header now (portaled into #fp-header-actions);
+          the editor keeps only its working toolbar (tabs / drag / views) below. */}
+      <EditorHeaderActions />
       <EditorTabBar />
 
       {/* Scene+frame manager — renders here (inside EditorStateProvider) but

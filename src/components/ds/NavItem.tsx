@@ -19,6 +19,8 @@ export function NavItem({
   orientation = "vertical",
   onClick,
   style = {},
+  ariaHasPopup,
+  ariaExpanded,
 }: {
   icon?: ReactNode;
   label?: ReactNode;
@@ -31,6 +33,9 @@ export function NavItem({
   orientation?: "vertical" | "horizontal";
   onClick?: () => void;
   style?: CSSProperties;
+  /** for menu triggers — announces the disclosure + its open state to AT */
+  ariaHasPopup?: boolean | "menu";
+  ariaExpanded?: boolean;
 }) {
   const [hover, setHover] = useState(false);
   const bg = active ? "var(--primary-soft)" : hover ? "var(--muted)" : "transparent";
@@ -39,6 +44,8 @@ export function NavItem({
     return (
       <button
         onClick={onClick}
+        aria-haspopup={ariaHasPopup}
+        aria-expanded={ariaExpanded}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         style={{
@@ -58,6 +65,7 @@ export function NavItem({
         }}
       >
         <span
+          aria-hidden
           style={{
             width: "24px",
             height: "24px",
@@ -128,6 +136,8 @@ export function NavItem({
     <button
       onClick={onClick}
       title={typeof label === "string" ? label : undefined}
+      aria-haspopup={ariaHasPopup}
+      aria-expanded={ariaExpanded}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -147,6 +157,7 @@ export function NavItem({
       }}
     >
       <span
+        aria-hidden
         style={{
           position: "relative",
           display: "grid",
