@@ -41,6 +41,7 @@ export function CagCardPreview({ az, el, dist, lens, roll = 0, subj = "person", 
       className={show ? undefined : "ds-hatch"}
       style={{
         height,
+        width: "100%",
         flex: "none",
         display: show ? "block" : "grid",
         placeItems: "center",

@@ -49,7 +49,9 @@ export function useFrameActions(
     const rig = rigRef.current;
     const o = getOrbit(rig.camPos, rig.target);
     return {
-      thumb: engineRef.current?.captureThumb(projectRef.current.settings.aspectRatio) ?? null,
+      // "" (engine not ready) must degrade to null so FrameCard shows the 3D
+      // fallback, not a broken <img src="">.
+      thumb: engineRef.current?.captureThumb(projectRef.current.settings.aspectRatio) || null,
       angle: angleLabel(o.el, rig.roll),
       shot: shotLabel(o.dist, rig.fov, subjHeight(rig.subj)),
       lens: focalLength(rig.fov),

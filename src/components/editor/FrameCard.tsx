@@ -8,6 +8,7 @@
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { Button } from "@/components/ds/Button";
+import { CagCardPreview } from "@/components/CagCardPreview";
 import { EditorFrame, frameDuration } from "@/lib/editorModel";
 
 export function FrameCard({ frame, index }: { frame: EditorFrame; index: number }) {
@@ -18,7 +19,23 @@ export function FrameCard({ frame, index }: { frame: EditorFrame; index: number 
   return (
     <div className={"frame-card" + (isCurrent ? " current" : "") + (isDirty ? " dirty" : "")}>
       <div className="frame-thumb" onClick={() => ctx.loadFrame(frame.id)}>
-        <img src={frame.thumb ?? undefined} alt={frame.name} />
+        {/* Studio-captured frames carry a jpeg thumb; template/import/empty-capture
+            frames have none → fall back to the SAME lazy 3D preview the library uses,
+            rendered from the frame's own camera (never a broken <img>). */}
+        {frame.thumb ? (
+          <img src={frame.thumb} alt={frame.name} />
+        ) : (
+          <CagCardPreview
+            az={frame.az}
+            el={frame.el}
+            dist={frame.dist}
+            lens={frame.lens}
+            roll={frame.s?.roll ?? 0}
+            subj={frame.s?.subj ?? "person"}
+            height={119}
+            fallback={<>{frame.shot}</>}
+          />
+        )}
         <span className="fnum">#{index + 1}</span>
       </div>
       <div className="frame-body">
