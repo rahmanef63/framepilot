@@ -15,7 +15,7 @@ import type { SavedEntry } from "@/lib/editorStorage";
 
 export interface EditorUi {
   mainTab: MainTab;
-  panelTab: "control" | "shot" | "outline";
+  panelTab: "control" | "shot";
   dragToolMode: DragMode;
   focusView: FocusView;
   thirdsOn: boolean;

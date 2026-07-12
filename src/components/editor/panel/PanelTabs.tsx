@@ -1,19 +1,17 @@
 "use client";
-// PanelTabs.tsx — the right-panel sub-tabs (concept .panel-tabs): Kontrol / Data
-// Shot / Outline. Renders ControlPanel for "control", ShotPanel for "shot",
-// OutlineTree for "outline".
+// PanelTabs.tsx — the right-panel sub-tabs (concept .panel-tabs): Kontrol / Shot.
+// Renders ControlPanel for "control", the merged ShotPanel (prompt → outline →
+// optional brief) for "shot".
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { ControlPanel } from "./ControlPanel";
 import { ShotPanel } from "./ShotPanel";
-import { OutlineTree } from "./OutlineTree";
 import type { EditorUi } from "@/state/EditorState";
 
 const SUB_TABS: { key: EditorUi["panelTab"]; label: string }[] = [
   { key: "control", label: "Kontrol" },
-  { key: "shot", label: "Data Shot" },
-  { key: "outline", label: "Outline" },
+  { key: "shot", label: "Shot" },
 ];
 
 export function PanelTabs() {
@@ -36,7 +34,6 @@ export function PanelTabs() {
 
       {tab === "control" ? <ControlPanel /> : null}
       {tab === "shot" ? <ShotPanel /> : null}
-      {tab === "outline" ? <OutlineTree /> : null}
     </>
   );
 }

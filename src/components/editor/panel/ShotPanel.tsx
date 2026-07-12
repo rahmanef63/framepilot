@@ -1,15 +1,15 @@
 "use client";
-// ShotPanel.tsx — the Data Shot brief (plan G16). The 6-field brief
-// (intent · movement · action · lighting · style · audio) bound to
-// useEditor().draftMeta via setDraftMetaField, plus the live #shotSummary
-// readout and dirty state from frameIsDirty(currentFrame()). movement is the
-// 14-enum MOVES select. duration/transition live on the filmstrip playback
-// controls, not this tab. Ported VERBATIM from concept #ptab-shot (~770-816);
-// summary line mirrors refreshFrameAction (~1746-1748). Purely presentational.
+// ShotPanel.tsx — the merged "Shot" tab. Top→bottom: (i) CameraPromptDock (the
+// paste-ready camera prompt + Copy — the hero, so the core flow stays add-frame →
+// Salin); (ii) the Outline scene→frame tree (embedded <OutlineTree/>, no double
+// wrapper); (iii) the 6-field brief (intent · movement · action · lighting · style
+// · audio) bound to draftMeta via setDraftMetaField, tucked into ONE OPTIONAL
+// collapsed <details> so a user with no extra info never has to open it.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
+import { OutlineTree } from "./OutlineTree";
 import { MOVES } from "@/lib/dataPrompt";
 import { frameDuration } from "@/lib/editorModel";
 import { getOrbit, shotLabel, focalLength, subjHeight } from "@/lib/editorMath";
@@ -30,9 +30,14 @@ export function ShotPanel() {
       {/* ---- output-of-this-tab hero: paste-ready camera prompt ---- */}
       <CameraPromptDock />
 
-      {/* ---- live summary (#shotSummary) ---- */}
-      <div className="group">
-        <h3>Brief Shot Aktif</h3>
+      {/* ---- outline scene→frame tree (embedded, no extra wrapper) ---- */}
+      <OutlineTree />
+
+      {/* ---- optional brief: one collapsible layer, collapsed by default ---- */}
+      <details className="brief-fold">
+        <summary>Detail brief (opsional)</summary>
+
+        {/* live summary (#shotSummary) */}
         <div className="shot-summary" id="shotSummary">
           {frame ? (
             <>
@@ -48,10 +53,8 @@ export function ShotPanel() {
             "Belum ada frame aktif. Isi brief, atur kamera, lalu tambahkan frame."
           )}
         </div>
-      </div>
 
-      {/* ---- 6-field brief ---- */}
-      <div className="group">
+        {/* 6-field brief */}
         <div className="field">
           <label htmlFor="shotIntent">Tujuan shot</label>
           <input
@@ -116,12 +119,12 @@ export function ShotPanel() {
             onChange={(e) => set("audio", e.target.value)}
           />
         </div>
-      </div>
 
-      <p className="storage-note">
-        Data ini ikut tersimpan di frame, Shot List CSV, Storyboard, dan prompt AI. Pilih frame lalu
-        klik “Perbarui Frame” untuk menyimpan perubahan.
-      </p>
+        <p className="storage-note">
+          Data ini ikut tersimpan di frame, Shot List CSV, Storyboard, dan prompt AI. Pilih frame
+          lalu klik “Perbarui Frame” untuk menyimpan perubahan.
+        </p>
+      </details>
     </div>
   );
 }

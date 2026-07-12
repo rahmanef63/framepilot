@@ -1,7 +1,8 @@
 "use client";
-// OutlineTree.tsx — the Outline panel (plan G19). Scene→frame hierarchy mirroring
-// the concept renderTree() (~2032-2160). Composition-only: each scene renders a
-// <SceneRow> (see panel/outline/*), every mutation is a frozen context action.
+// OutlineTree.tsx — the Outline scene→frame tree (plan G19), mirroring the concept
+// renderTree() (~2032-2160). Composition-only: each scene renders a <SceneRow>
+// (see panel/outline/*), every mutation is a frozen context action. Embeddable:
+// returns a bare fragment (no .panel-page wrapper) so ShotPanel hosts it inline.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
@@ -19,7 +20,7 @@ export function OutlineTree() {
   const totalD = project.scenes.reduce((n, s) => n + sceneDuration(s), 0);
 
   return (
-    <div className="panel-page active">
+    <>
       <div className="tree-head">
         <Button variant="primary" size="sm" onClick={ctx.addScene}>
           + Scene Baru
@@ -45,7 +46,7 @@ export function OutlineTree() {
         Klik baris scene untuk mengaktifkannya, klik thumbnail frame untuk memuat kamera. ▶
         memutar scene tsb. Hapus perlu klik ✕ dua kali.
       </p>
-    </div>
+    </>
   );
 }
 

@@ -66,27 +66,31 @@ export function EditorHeaderBar() {
           value={project.name}
           onChange={(e) => ctx.setProjectName(e.target.value)}
         />
-        <span className={"autosave" + (autosaveOn ? " on" : "")}>
+        <span className={"autosave" + (autosaveOn ? " on" : "")} aria-hidden={true}>
           {autosaveOn ? "tersimpan otomatis" : "autosave"}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          icon="↶"
-          title="Undo (Ctrl/Cmd+Z)"
-          disabled={!canUndo}
-          onClick={ctx.undo}
-          style={{ padding: "7px 11px" }}
-        />
-        <Button
-          variant="ghost"
-          size="sm"
-          icon="↷"
-          title="Redo (Ctrl/Cmd+Shift+Z)"
-          disabled={!canRedo}
-          onClick={ctx.redo}
-          style={{ padding: "7px 11px" }}
-        />
+        {/* Undo/Redo icons on desktop; on mobile .hdr-history is hidden and these
+            actions live inside the Aksi menu instead (short one-row header). */}
+        <span className="hdr-history">
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="↶"
+            title="Undo (Ctrl/Cmd+Z)"
+            disabled={!canUndo}
+            onClick={ctx.undo}
+            style={{ padding: "7px 11px" }}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="↷"
+            title="Redo (Ctrl/Cmd+Shift+Z)"
+            disabled={!canRedo}
+            onClick={ctx.redo}
+            style={{ padding: "7px 11px" }}
+          />
+        </span>
         <Button
           variant="primary"
           size="sm"
@@ -101,6 +105,10 @@ export function EditorHeaderBar() {
           onImport={() => app.openImport("paste")}
           onExport={app.exportProject}
           onSchema={app.openSchema}
+          onUndo={ctx.undo}
+          onRedo={ctx.redo}
+          canUndo={canUndo}
+          canRedo={canRedo}
         />
       </div>
     </header>

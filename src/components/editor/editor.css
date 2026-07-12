@@ -141,6 +141,12 @@
 .cag-editor .autosave.on {
   color: var(--ok);
 }
+/* Undo/Redo icon pair. display:contents on desktop = the two buttons stay direct
+   flex items of .scene-bar (pixel-identical to before). On mobile this wrapper is
+   display:none'd and the actions live in the Aksi menu instead. */
+.cag-editor .hdr-history {
+  display: contents;
+}
 
 /* ================= buttons / selects ================= */
 .cag-editor button {
@@ -349,6 +355,11 @@
   height: 100%;
   z-index: 0;
   border-radius: var(--e-r);
+  /* Touch on the 3D viewport ORBITS the camera instead of scrolling the page
+     (the rest of the natural-scroll document still scrolls). Paired with the
+     same rule on .cell (the pointer target) + .pv-viewport. Touch-only —
+     mouse/desktop orbit is unaffected. */
+  touch-action: none;
 }
 .cag-editor .cell {
   position: relative;
@@ -1794,14 +1805,34 @@
     padding: 2px 6px;
     font-size: 8px;
   }
-  /* Header: give the project name + actions their own full-width row and let the
-     name input flex instead of pinning 180px. */
+  /* Header collapses to ONE tidy row:  ☰ | [name input, flex] | ⤓ save | ⋯ menu.
+     Brand, stats pill, autosave text, spacer and the undo/redo icons are hidden;
+     undo/redo move into the Aksi (⋯) menu. Nothing wraps → a single clean row. */
+  .cag-editor .e-header {
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
   .cag-editor .scene-bar {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    min-width: 0;
+    gap: 6px;
   }
   .cag-editor .scene-bar input[type="text"] {
-    flex: 1 1 140px;
+    flex: 1 1 auto;
     width: auto;
+    min-width: 0;
+    min-height: 40px; /* ≥40px tap target */
+  }
+  .cag-editor .scene-bar button {
+    min-height: 40px; /* ⤓ save + ⋯ menu = ≥40px tap targets */
+  }
+  /* Hidden on mobile: verbose autosave text, the flex spacer, and the undo/redo
+     pair (folded into the ⋯ menu). */
+  .cag-editor .autosave,
+  .cag-editor .spacer,
+  .cag-editor .hdr-history {
+    display: none;
   }
   .cag-editor .frames-head {
     gap: 6px;
@@ -1819,8 +1850,9 @@
   .cag-editor .frames-head [data-pb="smooth"] {
     order: 5;
   }
-  /* drop two header rows: the wordmark + the scene·shot·s pill (echoed in Outline) */
-  .cag-editor .logo h1 {
+  /* drop the brand (dot + wordmark) and the scene·shot·s stats pill (echoed in
+     the Outline / frames strip) so the header is just ☰ + name + save + menu. */
+  .cag-editor .logo {
     display: none;
   }
   .cag-editor .project-meta {

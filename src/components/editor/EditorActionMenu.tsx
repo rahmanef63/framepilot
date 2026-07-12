@@ -14,12 +14,20 @@ export function EditorActionMenu({
   onImport,
   onExport,
   onSchema,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
 }: {
   onSave: () => void;
   onNew: () => void;
   onImport: () => void;
   onExport: () => void;
   onSchema: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const wrapRef = React.useRef<HTMLDivElement>(null);
@@ -85,6 +93,9 @@ export function EditorActionMenu({
             ...menuPos,
           }}
         >
+          <MenuOption icon="↶" title="Urungkan" desc="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={() => pick(onUndo)} />
+          <MenuOption icon="↷" title="Ulangi" desc="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={() => pick(onRedo)} />
+          <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
           <MenuOption icon="⤓" title="Simpan Proyek" desc="Tulis ke penyimpanan" onClick={() => pick(onSave)} />
           <MenuOption icon="✦" title="Proyek Baru" desc="Mulai proyek kosong" onClick={() => pick(onNew)} />
           <MenuOption icon="+" title="Impor" desc="Tempel / unggah data" onClick={() => pick(onImport)} />
@@ -101,17 +112,20 @@ function MenuOption({
   title,
   desc,
   onClick,
+  disabled = false,
 }: {
   icon: string;
   title: string;
   desc: string;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   const [hover, setHover] = React.useState(false);
   return (
     <button
       role="menuitem"
       onClick={onClick}
+      disabled={disabled}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -123,8 +137,10 @@ function MenuOption({
         border: 0,
         borderRadius: "var(--radius-sm)",
         padding: "8px 9px",
-        cursor: "pointer",
-        background: hover ? "var(--muted)" : "transparent",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.4 : 1,
+        pointerEvents: disabled ? "none" : "auto",
+        background: hover && !disabled ? "var(--muted)" : "transparent",
         color: "var(--foreground)",
       }}
     >
