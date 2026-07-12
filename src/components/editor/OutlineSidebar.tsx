@@ -69,6 +69,19 @@ export function OutlineSidebar() {
             <IconUpdate size={14} />
             {dirty ? " *" : ""}
           </Button>
+          {/* duration lives on the action row so the transport row below stays a
+              single clean line of icons (was wrapping to 4 rows in the sidebar). */}
+          <label className="os-dur" title="Durasi per frame saat play">
+            <input
+              type="number"
+              min={0.5}
+              max={30}
+              step={0.5}
+              value={playback.duration}
+              onChange={(e) => ctx.setFrameDuration(Number(e.target.value) || 0.5)}
+            />
+            s
+          </label>
         </div>
 
         <div className="os-transport">
@@ -107,20 +120,10 @@ export function OutlineSidebar() {
           >
             <IconTransition />
           </button>
-          <label className="os-dur" title="Durasi per frame saat play">
-            <input
-              type="number"
-              min={0.5}
-              max={30}
-              step={0.5}
-              value={playback.duration}
-              onChange={(e) => ctx.setFrameDuration(Number(e.target.value) || 0.5)}
-            />
-            s
-          </label>
+          {/* playback status trails the icons on the same row (right-aligned,
+              ellipsis) — keeps os-top to exactly two rows. */}
+          <span className="os-ind">{ind}</span>
         </div>
-
-        <span className="os-ind">{ind}</span>
       </div>
 
       <div className="os-scroll">

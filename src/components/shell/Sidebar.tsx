@@ -1,12 +1,9 @@
 "use client";
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { NavItem } from "@/components/ds/NavItem";
 import { CreateMenu } from "@/components/shell/CreateMenu";
-import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
-import { AccountModal } from "@/components/auth/AccountModal";
-import { useIsAdmin } from "@/components/admin/useIsAdmin";
+import { NavUserMenu } from "@/components/shell/NavUserMenu";
 import { useApp } from "@/state/AppState";
 
 interface MainNav {
@@ -24,9 +21,7 @@ export function Sidebar() {
   const app = useApp();
   const router = useRouter();
   const pathname = usePathname();
-  const isAdmin = useIsAdmin(); // undefined=loading, false=not admin, true=admin (UX gate only)
   const open = app.sidebarOpen;
-  const [acctOpen, setAcctOpen] = React.useState(false);
 
   const orient: "horizontal" | "vertical" = open ? "horizontal" : "vertical";
   const itemAlign = open ? "stretch" : "center";
@@ -58,8 +53,6 @@ export function Sidebar() {
       style={orient === "horizontal" ? { width: "100%" } : undefined}
     />
   );
-
-  const acctProps = { orientation: orient, avatar: true, onClick: () => setAcctOpen(true), style: orient === "horizontal" ? { width: "100%" } : undefined } as const;
 
   return (
     <>
@@ -174,55 +167,19 @@ export function Sidebar() {
         <div id="fp-studio-slot" style={{ flex: "1 1 auto", minHeight: 0, display: "flex", flexDirection: "column" }} />
       </div>
 
+      {/* Footer collapsed to ONE user dropdown (theme + Docs + Panduan + Admin +
+          account) so the nav + scene/frame manager above keep their room. */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "2px",
           paddingTop: "8px",
           borderTop: "var(--border-width) solid var(--border)",
           alignItems: itemAlign,
         }}
       >
-        <ThemeModeToggle orientation={orient} />
-        <NavItem
-          orientation={orient}
-          icon="▤"
-          label="Docs"
-          active={pathname.startsWith("/docs")}
-          onClick={() => router.push("/docs")}
-          style={orient === "horizontal" ? { width: "100%" } : undefined}
-        />
-        <NavItem
-          orientation={orient}
-          icon="?"
-          label="Panduan"
-          active={pathname === "/panduan"}
-          onClick={() => router.push("/panduan")}
-          style={orient === "horizontal" ? { width: "100%" } : undefined}
-        />
-        {isAdmin ? (
-          <NavItem
-            orientation={orient}
-            icon="⚙"
-            label="Admin"
-            active={pathname === "/admin"}
-            onClick={() => router.push("/admin")}
-            style={orient === "horizontal" ? { width: "100%" } : undefined}
-          />
-        ) : null}
-        <AuthLoading>
-          <NavItem {...acctProps} icon="RF" label="Akun" />
-        </AuthLoading>
-        <Unauthenticated>
-          <NavItem {...acctProps} icon="RF" label="Masuk" />
-        </Unauthenticated>
-        <Authenticated>
-          <NavItem {...acctProps} icon="✓" label="Akun" active />
-        </Authenticated>
+        <NavUserMenu orientation={orient} />
       </div>
-
-      <AccountModal open={acctOpen} onClose={() => setAcctOpen(false)} />
     </aside>
     {/* Mobile drawer scrim — sibling of .fp-sidebar so `.fp-sidebar.open ~
         .fp-scrim` can light it up; tap to close. Inert (display:none) on desktop. */}

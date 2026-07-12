@@ -1084,18 +1084,22 @@
 }
 .cag-editor .os-actions {
   display: flex;
+  align-items: center;
   gap: 6px;
 }
+/* os-top = exactly TWO rows in the narrow (~206px) sidebar: row 1 = Frame +
+   Update + duration, row 2 = the 6 transport icons + status. nowrap keeps row 2
+   a single line (was wrapping to 4 rows). Mobile drawer re-enables wrap below. */
 .cag-editor .os-transport {
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
+  gap: 3px;
+  flex-wrap: nowrap;
 }
 .cag-editor .os-ico {
   flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -1112,7 +1116,6 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  margin-left: auto;
   font-family: var(--e-mono);
   font-size: 10px;
   color: var(--muted);
@@ -1131,6 +1134,10 @@
   outline: 1px solid var(--accent);
 }
 .cag-editor .os-ind {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 4px;
+  text-align: right;
   font-family: var(--e-mono);
   font-size: 10px;
   color: var(--muted);
@@ -1696,6 +1703,11 @@
   .cag-editor .os-ico {
     width: 38px;
     height: 38px;
+  }
+  /* big touch icons don't fit one line in the drawer — let the transport wrap
+     here (the drawer has its own scroll, so extra rows are fine). */
+  .cag-editor .os-transport {
+    flex-wrap: wrap;
   }
   .cag-editor .os-dur input {
     min-height: 34px;
