@@ -13,7 +13,8 @@ import { EditorFrame, EditorScene, EditorProject, defaultShotMeta, frameDuration
 import { focalLength } from "./editorMath";
 import { encodeShot, encodeScene, encodeProject, toNeutral } from "./prompt/cameraPrompt";
 import { viewLabel } from "./prompt/platforms";
-import type { PlatformId } from "./prompt/types";
+import { ALL_ON } from "./prompt/types";
+import type { PlatformId, ShotOptions } from "./prompt/types";
 
 export type PromptSettings = EditorProject["settings"];
 
@@ -23,18 +24,18 @@ export type PromptSettings = EditorProject["settings"];
 const DEFAULT_PLATFORM: PlatformId = "runway";
 
 // Single shot → paste-ready camera string for the target platform.
-export function framePrompt(f: EditorFrame, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM): string {
-  return encodeShot(toNeutral(f, { aspectRatio: settings.aspectRatio }), platform);
+export function framePrompt(f: EditorFrame, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM, o: ShotOptions = ALL_ON): string {
+  return encodeShot(toNeutral(f, { aspectRatio: settings.aspectRatio }), platform, o);
 }
 
 // One scene → one skinned block per shot ("# Shot\n<camera prompt>").
-export function scenePrompt(sc: EditorScene, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM): string {
-  return encodeScene(sc, platform, { aspectRatio: settings.aspectRatio });
+export function scenePrompt(sc: EditorScene, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM, o: ShotOptions = ALL_ON): string {
+  return encodeScene(sc, platform, { aspectRatio: settings.aspectRatio }, o);
 }
 
 // Whole project → multi-shot skinned output across every scene.
-export function projectPrompt(project: EditorProject, platform: PlatformId = DEFAULT_PLATFORM): string {
-  return encodeProject(project, platform);
+export function projectPrompt(project: EditorProject, platform: PlatformId = DEFAULT_PLATFORM, o: ShotOptions = ALL_ON): string {
+  return encodeProject(project, platform, o);
 }
 
 // ============================================================

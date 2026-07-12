@@ -15,7 +15,7 @@ import { EditorTabBar } from "./EditorTabBar";
 import { PanelTabs } from "./panel/PanelTabs";
 import { EditorViewport } from "./viewport/EditorViewport";
 import { Hud } from "./viewport/Hud";
-import { FramesSection } from "./FramesSection";
+import { OutlineSidebar } from "./OutlineSidebar";
 import { PreviewPanel } from "./PreviewPanel";
 
 export function EditorScreen() {
@@ -28,13 +28,14 @@ export function EditorScreen() {
       <EditorHeaderBar />
       <EditorTabBar />
 
-      {/* ---- Editor page (holds the ONE viewport; never unmounts) ---- */}
+      {/* ---- Editor page: [ scene+frame sidebar | ONE viewport | panel ] ----
+           The viewport never unmounts (keeps its WebGL context across tab swaps). */}
       <div className={"page editor-page" + (tab === "editor" ? " active" : "")}>
+        <OutlineSidebar />
         <EditorViewport />
         <div className="panel">
           <PanelTabs />
         </div>
-        <FramesSection />
       </div>
 
       {/* ---- Full Preview page: the ONE canvas reflows into .pv-viewport ---- */}

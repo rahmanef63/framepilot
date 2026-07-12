@@ -12,12 +12,15 @@ import { Button } from "@/components/ds/Button";
 import { encodeShot, toNeutral } from "@/lib/prompt/cameraPrompt";
 import { projectPrompt, projectDetail } from "@/lib/editorPrompt";
 import { usePlatform } from "./usePlatform";
+import { usePromptOptions } from "./usePromptOptions";
 import { PlatformSelect, PlatformHint } from "./PlatformPicker";
+import { PromptOptionsMenu } from "./PromptOptionsMenu";
 import { copyText } from "./panel/outline/clipboard";
 
 export function CameraPromptDock() {
   const ctx = useEditor();
   const [platform, setPlatform] = usePlatform();
+  const [opts] = usePromptOptions();
   const [copied, setCopied] = useState(false);
 
   const settings = ctx.project.settings;
@@ -25,12 +28,13 @@ export function CameraPromptDock() {
   const totalShots = ctx.project.scenes.reduce((n, s) => n + s.frames.length, 0);
   const hasShots = totalShots > 0;
 
-  // Current selection → the shown, paste-ready camera prompt.
+  // Current selection → the shown, paste-ready camera prompt. `opts` picks which
+  // clauses are folded in, so ticking a box rebuilds this string live.
   const scope = current ? `Shot terpilih · ${current.name}` : `Proyek · ${totalShots} shot`;
   const prompt = current
-    ? encodeShot(toNeutral(current, { aspectRatio: settings.aspectRatio }), platform)
+    ? encodeShot(toNeutral(current, { aspectRatio: settings.aspectRatio }), platform, opts)
     : hasShots
-      ? projectPrompt(ctx.project, platform)
+      ? projectPrompt(ctx.project, platform, opts)
       : "";
 
   const copy = () => {
@@ -63,6 +67,9 @@ export function CameraPromptDock() {
         value={prompt}
         placeholder="Atur kamera + tambah frame — prompt kamera siap-tempel muncul di sini."
       />
+
+      {/* toggles sit BELOW the output so ticking a box rebuilds the prompt in view */}
+      <PromptOptionsMenu />
 
       <PlatformHint value={platform} />
 

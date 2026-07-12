@@ -2,6 +2,7 @@
 import React from "react";
 import type { EditorContextValue } from "@/state/EditorState";
 import type { EditorFrame } from "@/lib/editorModel";
+import { IconCopy } from "@/components/editor/EditorIcons";
 import { IcoButton, ArmDeleteButton } from "./IcoButton";
 
 // One frame row: click loads the camera, inline rename, per-row actions (C/↑↓/✕).
@@ -23,8 +24,14 @@ export function FrameRow({
       onClick={() => ctx.loadFrame(frame.id)}
     >
       <span className="fidx">#{index + 1}</span>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={frame.thumb || undefined} alt="" />
+      {/* Studio-captured frames carry a jpeg thumb; template/import frames don't →
+          show a placeholder tile instead of a broken <img src="">. */}
+      {frame.thumb ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={frame.thumb} alt="" />
+      ) : (
+        <div className="fthumb ph">▦</div>
+      )}
       <input
         className="fname2"
         value={frame.name}
@@ -34,7 +41,7 @@ export function FrameRow({
       />
       <span className="facts">
         <IcoButton title="Duplikat frame" onClick={() => ctx.dupFrame(frame.id)}>
-          C
+          <IconCopy size={12} />
         </IcoButton>
         <IcoButton title="Naik" onClick={() => ctx.moveFrame(frame.id, -1)}>
           ↑

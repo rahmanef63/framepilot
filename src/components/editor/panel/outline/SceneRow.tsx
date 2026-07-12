@@ -5,6 +5,8 @@ import type { EditorScene } from "@/lib/editorModel";
 import { sceneDuration } from "@/lib/editorModel";
 import { scenePrompt } from "@/lib/editorPrompt";
 import { usePlatform } from "@/components/editor/usePlatform";
+import { getPromptOptions } from "@/components/editor/usePromptOptions";
+import { IconPlay, IconClipboard, IconNote, IconCopy } from "@/components/editor/EditorIcons";
 import { IcoButton, ArmDeleteButton } from "./IcoButton";
 import { FrameRow } from "./FrameRow";
 import { copyText } from "./clipboard";
@@ -69,22 +71,22 @@ export function SceneRow({
             ctx.play();
           }}
         >
-          Play
+          <IconPlay size={13} />
         </IcoButton>
         <IcoButton
           title="Salin prompt kamera scene"
           onClick={() => {
-            copyText(scenePrompt(sc, ctx.project.settings, platform));
+            copyText(scenePrompt(sc, ctx.project.settings, platform, getPromptOptions()));
             showToast("Prompt kamera scene disalin");
           }}
         >
-          Prompt
+          <IconClipboard size={13} />
         </IcoButton>
         <IcoButton title="Catatan scene" onClick={() => ctx.toggleSceneNotesOpen(sc.id)}>
-          Note
+          <IconNote size={13} />
         </IcoButton>
         <IcoButton title="Duplikat scene" onClick={() => ctx.dupScene(sc.id)}>
-          Copy
+          <IconCopy size={13} />
         </IcoButton>
         <IcoButton title="Naik" onClick={() => ctx.moveScene(sc.id, -1)}>
           ↑

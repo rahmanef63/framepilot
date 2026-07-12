@@ -74,3 +74,30 @@ export interface NeutralShot {
 export interface ProjectMeta {
   aspectRatio?: string;
 }
+
+// Which optional clauses the user folds INTO the shown/copied camera prompt.
+// Toggled live (checkbox dropdown) in the Prompt dock; every pure encoder takes
+// it and defaults to ALL_ON so all existing call sites stay byte-identical.
+export interface ShotOptions {
+  lens: boolean; // "35mm full-frame lens"
+  dof: boolean; // "shallow depth of field"
+  elevation: boolean; // "above the subject, looking down ~20°"
+  view: boolean; // "three-quarter front view …"
+  distance: boolean; // "~3.0 m from subject"
+  height: boolean; // "~2.4 m high"
+  dutch: boolean; // "dutch tilt ~12°"
+  move: boolean; // the camera movement clause / static wording
+  framing: boolean; // "16:9 framing"
+}
+
+export const ALL_ON: ShotOptions = {
+  lens: true,
+  dof: true,
+  elevation: true,
+  view: true,
+  distance: true,
+  height: true,
+  dutch: true,
+  move: true,
+  framing: true,
+};

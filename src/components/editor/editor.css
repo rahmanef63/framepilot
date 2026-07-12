@@ -314,29 +314,29 @@
   display: grid;
 }
 .cag-editor .editor-page {
-  grid-template-columns: 1fr minmax(320px, 360px);
-  grid-template-rows: 1fr 224px;
+  /* [ scene+frame sidebar | 3D viewport | inspector/prompt panel ] */
+  grid-template-columns: minmax(232px, 272px) 1fr minmax(320px, 360px);
+  grid-template-rows: 1fr;
   gap: 12px;
   padding: 12px 16px;
 }
-.cag-editor .quad-area {
+.cag-editor .outline-side {
   grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.cag-editor .quad-area {
+  grid-column: 2;
   grid-row: 1;
   position: relative;
   min-width: 0;
   min-height: 0;
 }
 .cag-editor .panel {
-  grid-column: 2;
-  grid-row: 1 / 3;
+  grid-column: 3;
+  grid-row: 1;
   min-height: 0;
-}
-.cag-editor .frames-section {
-  grid-column: 1;
-  grid-row: 2;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ---------- quad viewport ---------- */
@@ -987,6 +987,9 @@
   border-radius: 7px;
   padding: 4px 6px;
   cursor: pointer;
+  /* in the narrow (272px) sidebar the name would crush to "Sho…"; let the action
+     icons wrap to a second line instead so the frame name stays readable */
+  flex-wrap: wrap;
 }
 .cag-editor .frow.current {
   border-color: var(--accent);
@@ -1007,8 +1010,8 @@
   width: 18px;
 }
 .cag-editor .frow input.fname2 {
-  flex: 1;
-  min-width: 0;
+  flex: 1 1 84px;
+  min-width: 84px;
   background: transparent;
   border: none;
   border-bottom: 1px dashed transparent;
@@ -1039,30 +1042,107 @@
   padding: 4px 2px;
   line-height: 1.5;
 }
-
-/* ---------- frames strip ---------- */
-.cag-editor .frames-section {
-  min-height: 0;
-}
-.cag-editor .frames-head {
+/* FrameRow placeholder tile when a template/import frame has no jpeg thumb
+   (mirrors the scene .sthumb.ph fallback — never a broken <img>). */
+.cag-editor .frow .fthumb.ph {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 25px;
+  border-radius: 4px;
+  background: var(--secondary);
+  border: 1px solid var(--line);
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+/* ---------- outline sidebar (scene + frame manager, own scroll) ---------- */
+.cag-editor .outline-side {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--e-r);
+  overflow: hidden;
+}
+.cag-editor .os-top {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.cag-editor .os-actions {
+  display: flex;
+  gap: 6px;
+}
+.cag-editor .os-transport {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   flex-wrap: wrap;
 }
-.cag-editor .frames-head h2 {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.cag-editor .os-ico {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: var(--ink);
+}
+.cag-editor .os-ico.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.cag-editor .os-dur {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  font-family: var(--e-mono);
+  font-size: 10px;
   color: var(--muted);
 }
-.cag-editor .frames-head .count {
+.cag-editor .os-dur input {
+  width: 52px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
   font-family: var(--e-mono);
   font-size: 11px;
-  color: var(--accent);
+  padding: 5px 6px;
 }
+.cag-editor .os-dur input:focus {
+  outline: 1px solid var(--accent);
+}
+.cag-editor .os-ind {
+  font-family: var(--e-mono);
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cag-editor .os-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+}
+
+/* ---------- transport bar (Full Preview .pv-bar reuses .pbar) ---------- */
 .cag-editor .pbar {
   display: flex;
   align-items: center;
@@ -1079,148 +1159,6 @@
   font-size: 11px;
   color: var(--muted);
   min-width: 100px;
-}
-.cag-editor .dur {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--e-mono);
-  font-size: 10px;
-  color: var(--muted);
-}
-.cag-editor .dur input {
-  width: 76px;
-}
-.cag-editor .frames-strip {
-  flex: 1;
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 4px 2px 8px;
-  scrollbar-width: thin;
-}
-.cag-editor .frame-card {
-  flex: 0 0 212px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--e-r);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.cag-editor .frame-card.current {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-.cag-editor .frame-card.dirty {
-  border-color: var(--info);
-}
-.cag-editor .frame-thumb {
-  position: relative;
-  cursor: pointer;
-  background: var(--secondary);
-  height: 119px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.cag-editor .frame-thumb img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.cag-editor .frame-thumb .fnum {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  font-family: var(--e-mono);
-  font-size: 10px;
-  background: color-mix(in srgb, var(--card) 78%, transparent);
-  border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
-  padding: 2px 7px;
-  border-radius: 999px;
-  color: var(--accent);
-}
-.cag-editor .frame-thumb:hover::after {
-  content: "▶ Muat";
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: color-mix(in srgb, var(--foreground) 45%, transparent);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--background);
-}
-.cag-editor .frame-body {
-  padding: 7px 9px 9px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.cag-editor .frame-body input.fname {
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed transparent;
-  color: var(--ink);
-  font-family: var(--e-sans);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 2px 0;
-  width: 100%;
-}
-.cag-editor .frame-body input.fname:hover {
-  border-bottom-color: var(--line);
-}
-.cag-editor .frame-body input.fname:focus {
-  outline: none;
-  border-bottom-color: var(--accent);
-}
-.cag-editor .frame-tags {
-  font-family: var(--e-mono);
-  font-size: 9px;
-  color: var(--muted);
-  letter-spacing: 0.03em;
-}
-.cag-editor .frame-body textarea {
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  color: var(--ink);
-  font-family: var(--e-sans);
-  font-size: 12px;
-  padding: 5px 7px;
-  resize: none;
-  height: 38px;
-  line-height: 1.4;
-}
-.cag-editor .frame-body textarea::placeholder {
-  color: var(--muted-foreground);
-}
-.cag-editor .frame-body textarea:focus {
-  outline: 1px solid var(--accent);
-}
-.cag-editor .frame-actions {
-  display: flex;
-  gap: 4px;
-  justify-content: flex-end;
-}
-.cag-editor .empty-frames {
-  flex: 1;
-  border: 1px dashed var(--line);
-  border-radius: var(--e-r);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100px;
-  color: var(--muted);
-  font-size: 13px;
-  text-align: center;
-  padding: 14px;
-  line-height: 1.6;
 }
 
 /* ---------- full preview page ---------- */
@@ -1675,9 +1613,12 @@
     grid-column: 1;
     grid-row: 1;
   }
-  .cag-editor .frames-section {
+  /* scene+frame manager drops under the viewport; keeps its own bounded scroll
+     on tablet so it doesn't push the panel far down the page */
+  .cag-editor .outline-side {
     grid-column: 1;
     grid-row: 2;
+    max-height: 46vh;
   }
   .cag-editor .panel {
     grid-column: 1;
@@ -1745,6 +1686,35 @@
     overflow: visible;
     max-height: none;
     height: auto;
+  }
+  /* same for the scene+frame sidebar: on phone the whole document scrolls
+     naturally (iOS owns the scroll), so no nested overflow, no height cap */
+  .cag-editor .outline-side {
+    overflow: visible;
+    max-height: none;
+    height: auto;
+  }
+  .cag-editor .os-scroll {
+    overflow: visible;
+    min-height: 0;
+  }
+  /* comfortable touch targets on phone — the dense outline/transport controls
+     collapse to ~20-30px otherwise (esp. the arm-to-delete ✕ and the fold). */
+  .cag-editor .os-ico {
+    width: 38px;
+    height: 38px;
+  }
+  .cag-editor .os-dur input {
+    min-height: 34px;
+  }
+  .cag-editor .srow .fold {
+    min-width: 30px;
+    min-height: 30px;
+  }
+  .cag-editor .sacts button,
+  .cag-editor .facts button {
+    min-width: 34px;
+    min-height: 34px;
   }
   /* DRAG Seg ("Subjek/Kamera") clipped off-screen: .tabbar wraps but .modebar /
      .viewbar (holding .seg, min-width:64px buttons) have no width limit so they
@@ -1834,32 +1804,13 @@
   .cag-editor .hdr-history {
     display: none;
   }
-  .cag-editor .frames-head {
-    gap: 6px;
-  }
-  .cag-editor .frames-head .dur,
-  .cag-editor .frames-head .count {
-    display: none;
-  }
-  /* let the transport indicator collapse so Prev/Play/Next/Stop fit one row */
-  .cag-editor .frames-head .pbInd {
-    min-width: 0;
-  }
-  /* push the Loop/Transisi toggles after the primary actions for a tidy wrap */
-  .cag-editor .frames-head [data-pb="loop"],
-  .cag-editor .frames-head [data-pb="smooth"] {
-    order: 5;
-  }
   /* drop the brand (dot + wordmark) and the scene·shot·s stats pill (echoed in
-     the Outline / frames strip) so the header is just ☰ + name + save + menu. */
+     the Outline sidebar) so the header is just ☰ + name + save + menu. */
   .cag-editor .logo {
     display: none;
   }
   .cag-editor .project-meta {
     display: none;
-  }
-  .cag-editor .frame-card {
-    flex-basis: 190px;
   }
   .cag-editor .field-row {
     grid-template-columns: 1fr;

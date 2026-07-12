@@ -12,17 +12,22 @@ import { Button } from "@/components/ds/Button";
 import { activeScene } from "@/lib/editorModel";
 import { projectPrompt, projectDetail } from "@/lib/editorPrompt";
 import { usePlatform } from "./usePlatform";
+import { usePromptOptions } from "./usePromptOptions";
 import { PlatformSelect, PlatformHint } from "./PlatformPicker";
+import { PromptOptionsMenu } from "./PromptOptionsMenu";
+import { IconPrev, IconPlay, IconPause, IconNext, IconStop, IconLoop } from "./EditorIcons";
 import { copyText } from "./panel/outline/clipboard";
 
 export function PreviewPanel() {
   const ctx = useEditor();
   const { playback } = ctx;
   const [platform, setPlatform] = usePlatform();
+  const [opts] = usePromptOptions();
   const [copied, setCopied] = useState(false);
 
-  // whole-project skinned camera prompt for the textarea (platform-tuned hero)
-  const prompt = projectPrompt(ctx.project, platform);
+  // whole-project skinned camera prompt for the textarea (platform-tuned hero),
+  // rebuilt live from the shared prompt-detail toggles
+  const prompt = projectPrompt(ctx.project, platform, opts);
   const projName = ctx.project.name.trim() || "Proyek tanpa nama";
 
   // transport indicator sourced from the active scene (concept updatePlaybackUI)
@@ -59,19 +64,26 @@ export function PreviewPanel() {
           ))}
         </select>
         <div className="pbar">
-          <Button variant="outline" size="sm" onClick={ctx.prevFrame}>Prev</Button>
-          <Button variant="outline" size="sm" onClick={ctx.togglePlay}>
-            {playback.playing ? "Pause" : "Play"}
+          <Button variant="outline" size="sm" title="Frame sebelumnya" onClick={ctx.prevFrame}>
+            <IconPrev />
           </Button>
-          <Button variant="outline" size="sm" onClick={ctx.nextFrame}>Next</Button>
-          <Button variant="outline" size="sm" onClick={ctx.stopPlayback}>Stop</Button>
+          <Button variant="outline" size="sm" title="Play / pause (Space)" onClick={ctx.togglePlay}>
+            {playback.playing ? <IconPause /> : <IconPlay />}
+          </Button>
+          <Button variant="outline" size="sm" title="Frame berikutnya" onClick={ctx.nextFrame}>
+            <IconNext />
+          </Button>
+          <Button variant="outline" size="sm" title="Stop" onClick={ctx.stopPlayback}>
+            <IconStop />
+          </Button>
           <span className="ind pbInd">{ind}</span>
         </div>
         <button
           className={"small" + (playback.loop ? " on" : "")}
+          title={"Loop: " + (playback.loop ? "ON" : "OFF")}
           onClick={() => ctx.setLoop(!playback.loop)}
         >
-          Loop
+          <IconLoop />
         </button>
         <span
           className="count frameCount"
@@ -104,6 +116,8 @@ export function PreviewPanel() {
           value={prompt}
           placeholder="Tambahkan frame di tab Editor, lalu prompt kamera per shot akan muncul di sini."
         />
+        {/* toggles below the output so the live rebuild stays visible while ticking */}
+        <PromptOptionsMenu />
         <PlatformHint value={platform} />
         <div className="row">
           <Button

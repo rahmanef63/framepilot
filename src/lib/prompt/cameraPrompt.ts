@@ -7,7 +7,7 @@ import { EditorFrame, EditorProject, EditorScene } from "../editorModel";
 import { RawFrame } from "../dataPrompt";
 import { deg2rad } from "../editorMath";
 import { ANGLE_EN, MOVE_FROM_LABEL, MOVE_STRINGS, viewLabel } from "./platforms";
-import { NeutralMoveId, NeutralShot, PlatformId, ProjectMeta, Speed } from "./types";
+import { ALL_ON, NeutralMoveId, NeutralShot, PlatformId, ProjectMeta, ShotOptions, Speed } from "./types";
 
 // A frame from either the editor model (has s.subj + meta.movement) or the
 // lightweight AppState/library shape (RawFrame: subj + meta.movement).
@@ -88,66 +88,84 @@ export function toNeutral(f: ShotInput, meta: ProjectMeta = {}): NeutralShot {
   };
 }
 
+// Join only the non-empty clauses with ", " (an OFF toggle yields "" → dropped).
+const J = (parts: (string | false | null | undefined)[]): string =>
+  parts.filter((p): p is string => Boolean(p)).join(", ");
+
+// lens + dof, each independently toggleable (they share one comma-clause,
+// space-joined: "35mm full-frame lens shallow depth of field").
+const lensDof = (n: NeutralShot, o: ShotOptions): string =>
+  [o.lens ? n.lens : "", o.dof ? n.dof : ""].filter(Boolean).join(" ");
+
 // The positional camera clause — the REAL 3D geometry (elevation + azimuth-view
-// + distance + height + optional dutch). Folded into every skin so no platform
-// ever loses the camera position.
-export function cameraLine(n: NeutralShot): string {
-  return (
-    `camera ${n.elevationPhrase}, ${n.view}, ${n.distance}, ${n.height}` +
-    (n.dutch ? `, ${n.dutch}` : "")
-  );
-}
-
-// Natural sentence WITHOUT the move (used by veo/luma/hailuo skins).
-function baseSentence(n: NeutralShot): string {
-  return `${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.framing}`;
-}
-
-// Natural sentence WITH the move woven in (runway/pika + sentence default).
-function fullSentence(n: NeutralShot): string {
-  const mv = MOVE_STRINGS[n.move];
-  return `${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.speed} ${mv.phrase}, ${n.framing}`;
+// + distance + height + optional dutch). Each part is individually toggleable;
+// returns "" when the user unchecks every geometry field. Folded into every skin
+// so no platform ever loses the camera position unless the user opts out.
+export function cameraLine(n: NeutralShot, o: ShotOptions = ALL_ON): string {
+  const parts = J([
+    o.elevation ? n.elevationPhrase : "",
+    o.view ? n.view : "",
+    o.distance ? n.distance : "",
+    o.height ? n.height : "",
+    o.dutch ? n.dutch : "", // n.dutch is already "" when the shot is level
+  ]);
+  return parts ? `camera ${parts}` : "";
 }
 
 // Render one NeutralShot into the paste-ready string for the given platform.
-export function encodeShot(n: NeutralShot, platformId: PlatformId): string {
+// `o` picks which optional clauses are folded in (default = everything).
+export function encodeShot(n: NeutralShot, platformId: PlatformId, o: ShotOptions = ALL_ON): string {
   const mv = MOVE_STRINGS[n.move];
+  const head = `${n.size} ${n.angle} of ${n.subject}`;
+  const ld = lensDof(n, o);
+  const cam = cameraLine(n, o);
+  const fr = o.framing ? n.framing : "";
+
+  // Move hidden → ONE clean base sentence for every platform (no idiom, no
+  // "static"/"locked-off" wording — that IS movement info the user opted out of).
+  if (!o.move) return J([head, ld, cam, fr]);
+
   const isStatic = n.move === "static";
   switch (platformId) {
     case "runway":
-      return isStatic ? `${baseSentence(n)}, locked-off camera` : fullSentence(n);
+      return isStatic ? J([head, ld, cam, fr, "locked-off camera"]) : J([head, ld, cam, `${n.speed} ${mv.phrase}`, fr]);
     case "kling":
       // move in the first ~8-10 words + a pace word (camera geometry after size)
       return isStatic
-        ? `Static ${n.size}, ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.framing}`
-        : `${cap(n.speed)} ${mv.phrase} on ${n.subject}, ${n.size} ${n.angle}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.framing}`;
+        ? J([`Static ${n.size}`, `${n.angle} of ${n.subject}`, ld, cam, fr])
+        : J([`${cap(n.speed)} ${mv.phrase} on ${n.subject}`, `${n.size} ${n.angle}`, ld, cam, fr]);
     case "veo": {
-      // camera move as its OWN short sentence (baseSentence already carries geometry)
-      const b = baseSentence(n);
+      // camera move as its OWN short sentence (the base already carries geometry)
+      const b = J([head, ld, cam, fr]);
       return isStatic ? `${b}. The camera holds static.` : `${b}. The camera ${ADVERB[n.speed]} ${mv.verb}.`;
     }
-    case "sora":
-      // lead with the frame, keep the move a short clause (geometry before the move)
-      return isStatic
-        ? `${cap(n.framing)} frame: ${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, static.`
-        : `${cap(n.framing)} frame: ${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.speed} ${mv.phrase}.`;
+    case "sora": {
+      // lead with the frame, keep the move a short clause (geometry before the move).
+      // n.framing is "16:9 framing" — strip the trailing word so the lead-in reads
+      // "16:9 frame:" not the double-noun "16:9 framing frame:".
+      const framePrefix = fr ? `${cap(n.framing.replace(/ framing$/i, ""))} frame: ` : "";
+      const body = J([head, ld, cam]);
+      return isStatic ? `${framePrefix}${body}, static.` : `${framePrefix}${body}, ${n.speed} ${mv.phrase}.`;
+    }
     case "luma": {
       // EXACT-STRING + STACKABLE: append literal camera string(s).
+      const base = J([head, ld, cam, fr]);
       const moves = [n.move, ...(n.extraMoves || [])];
-      if (isStatic && moves.length === 1) return `${baseSentence(n)}, static camera`;
+      if (isStatic && moves.length === 1) return `${base}, static camera`;
       const strs = moves.map((m) => MOVE_STRINGS[m].luma);
-      let cam = `camera ${strs[0]}`;
-      for (let i = 1; i < strs.length; i++) cam += `, combine ${strs[i - 1]} with ${strs[i]}`;
-      return `${baseSentence(n)}, ${cam}`;
+      let camMoves = `camera ${strs[0]}`;
+      for (let i = 1; i < strs.length; i++) camMoves += `, combine ${strs[i - 1]} with ${strs[i]}`;
+      return `${base}, ${camMoves}`;
     }
     case "hailuo": {
       // BRACKET-TOKEN: end with [Token]s, max 3 combined.
-      if (isStatic) return baseSentence(n);
+      const base = J([head, ld, cam, fr]);
+      if (isStatic) return base;
       const toks = [n.move, ...(n.extraMoves || [])]
         .map((m) => MOVE_STRINGS[m].bracket)
         .filter(Boolean)
         .slice(0, 3);
-      return `${baseSentence(n)} ${toks.map((t) => `[${t}]`).join(" ")}`;
+      return `${base} ${toks.map((t) => `[${t}]`).join(" ")}`;
     }
     case "pika":
     case "higgsfield":
@@ -155,19 +173,19 @@ export function encodeShot(n: NeutralShot, platformId: PlatformId): string {
     case "seedance":
     default:
       // Every sentence-style platform (present + future) inherits the same skin.
-      return isStatic ? `${baseSentence(n)}, static camera` : fullSentence(n);
+      return isStatic ? J([head, ld, cam, fr, "static camera"]) : J([head, ld, cam, `${n.speed} ${mv.phrase}`, fr]);
   }
 }
 
 // One block per shot (each shot on its own — ONE move per shot is respected).
-export function encodeScene(scene: EditorScene, platformId: PlatformId, meta: ProjectMeta = {}): string {
+export function encodeScene(scene: EditorScene, platformId: PlatformId, meta: ProjectMeta = {}, o: ShotOptions = ALL_ON): string {
   return scene.frames
-    .map((f, i) => `# ${f.name || `Shot ${i + 1}`}\n${encodeShot(toNeutral(f, meta), platformId)}`)
+    .map((f, i) => `# ${f.name || `Shot ${i + 1}`}\n${encodeShot(toNeutral(f, meta), platformId, o)}`)
     .join("\n\n");
 }
 
 // Whole project -> multi-shot output, one block per shot across all scenes.
-export function encodeProject(project: EditorProject, platformId: PlatformId): string {
+export function encodeProject(project: EditorProject, platformId: PlatformId, o: ShotOptions = ALL_ON): string {
   const meta: ProjectMeta = { aspectRatio: project.settings?.aspectRatio };
-  return project.scenes.map((sc) => encodeScene(sc, platformId, meta)).join("\n\n");
+  return project.scenes.map((sc) => encodeScene(sc, platformId, meta, o)).join("\n\n");
 }

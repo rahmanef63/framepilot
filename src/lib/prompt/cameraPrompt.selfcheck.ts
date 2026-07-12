@@ -6,6 +6,7 @@
 
 import { RawFrame } from "../dataPrompt";
 import { encodeShot, toNeutral } from "./cameraPrompt";
+import { ALL_ON } from "./types";
 
 function assert(cond: boolean, msg: string): void {
   if (!cond) throw new Error("cameraPrompt selfcheck FAILED: " + msg);
@@ -59,6 +60,26 @@ export function runSelfCheck(): SelfCheckResult {
   const runwayStatic = encodeShot(toNeutral(staticFrame), "runway");
   assert(runwayStatic.includes("m from subject"), `static missing distance: ${runwayStatic}`);
   assert(runwayStatic.includes("m high"), `static missing height: ${runwayStatic}`);
+
+  // ShotOptions: unchecking a clause DROPS exactly that clause (live-toggle behaviour).
+  const noLens = encodeShot(neutral, "runway", { ...ALL_ON, lens: false });
+  assert(!noLens.includes("35mm"), `lens toggle off must drop the lens: ${noLens}`);
+  assert(noLens.includes("looking down"), `lens toggle off must keep the rest: ${noLens}`);
+
+  const noGeom = encodeShot(neutral, "runway", {
+    ...ALL_ON,
+    elevation: false,
+    view: false,
+    distance: false,
+    height: false,
+    dutch: false,
+  });
+  assert(!noGeom.includes("looking down"), `geometry off must drop elevation: ${noGeom}`);
+  assert(!noGeom.includes("from subject"), `geometry off must drop distance: ${noGeom}`);
+  assert(noGeom.includes("push-in"), `geometry off must keep the move: ${noGeom}`);
+
+  const noMove = encodeShot(neutral, "hailuo", { ...ALL_ON, move: false });
+  assert(!noMove.includes("[") && !noMove.includes("Push"), `move toggle off must drop the bracket token: ${noMove}`);
 
   return { runway, luma, hailuo, runwayStatic };
 }

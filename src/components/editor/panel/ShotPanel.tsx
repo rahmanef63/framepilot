@@ -1,15 +1,14 @@
 "use client";
-// ShotPanel.tsx — the merged "Shot" tab. Top→bottom: (i) CameraPromptDock (the
-// paste-ready camera prompt + Copy — the hero, so the core flow stays add-frame →
-// Salin); (ii) the Outline scene→frame tree (embedded <OutlineTree/>, no double
-// wrapper); (iii) the 6-field brief (intent · movement · action · lighting · style
-// · audio) bound to draftMeta via setDraftMetaField, tucked into ONE OPTIONAL
-// collapsed <details> so a user with no extra info never has to open it.
+// ShotPanel.tsx — the "Prompt" tab (tab key "shot"). Just two things now:
+// (i) CameraPromptDock — the paste-ready camera prompt + platform + Detail-prompt
+// checkboxes + Copy (the hero, so the flow stays add-frame → Salin); (ii) the
+// 6-field brief (intent · movement · action · lighting · style · audio) bound to
+// draftMeta, tucked into ONE OPTIONAL collapsed <details> a no-extra-info user
+// never has to open. The scene→frame outline moved to the left OutlineSidebar.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
-import { OutlineTree } from "./OutlineTree";
 import { MOVES } from "@/lib/dataPrompt";
 import { frameDuration } from "@/lib/editorModel";
 import { getOrbit, shotLabel, focalLength, subjHeight } from "@/lib/editorMath";
@@ -29,9 +28,6 @@ export function ShotPanel() {
     <div className="panel-page active">
       {/* ---- output-of-this-tab hero: paste-ready camera prompt ---- */}
       <CameraPromptDock />
-
-      {/* ---- outline scene→frame tree (embedded, no extra wrapper) ---- */}
-      <OutlineTree />
 
       {/* ---- optional brief: one collapsible layer, collapsed by default ---- */}
       <details className="brief-fold">

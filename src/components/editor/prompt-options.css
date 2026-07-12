@@ -1,0 +1,97 @@
+/* prompt-options.css — the "Detail prompt" checkbox dropdown in the Prompt dock.
+   Tokens ONLY (Rupa SSOT), correct in light + [data-theme="dark"]. Native
+   <details> drives open/close; the menu is absolutely positioned under summary. */
+
+.cam-opts {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.cam-opts > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--card);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  transition: border-color 120ms ease;
+}
+.cam-opts > summary::-webkit-details-marker {
+  display: none;
+}
+.cam-opts > summary:hover {
+  border-color: var(--primary);
+}
+.cam-opts[open] > summary {
+  border-color: var(--primary);
+}
+
+.cam-opts__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cam-opts__count {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.cam-opts__chevron {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted-foreground);
+  transition: transform 120ms ease;
+}
+.cam-opts[open] .cam-opts__chevron {
+  transform: rotate(180deg);
+}
+
+/* IN-FLOW (not absolute): opening the list PUSHES the following content down
+   instead of covering the prompt output above it — so the live rebuild stays
+   visible while ticking boxes (that is the whole point of the toggles). */
+.cam-opts__menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.cam-opts__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.cam-opts__row:hover {
+  background: var(--muted);
+}
+.cam-opts__row input {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}

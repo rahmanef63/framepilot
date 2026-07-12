@@ -1,7 +1,8 @@
 "use client";
-// PanelTabs.tsx — the right-panel sub-tabs (concept .panel-tabs): Kontrol / Shot.
-// Renders ControlPanel for "control", the merged ShotPanel (prompt → outline →
-// optional brief) for "shot".
+// PanelTabs.tsx — the right-panel sub-tabs (concept .panel-tabs): Kontrol / Prompt.
+// Renders ControlPanel for "control"; the "shot" key now hosts ShotPanel = JUST
+// the camera prompt + optional brief (the scene/frame outline moved to the left
+// OutlineSidebar). Tab key stays "shot" internally; the label reads "Prompt".
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
@@ -11,7 +12,7 @@ import type { EditorUi } from "@/state/EditorState";
 
 const SUB_TABS: { key: EditorUi["panelTab"]; label: string }[] = [
   { key: "control", label: "Kontrol" },
-  { key: "shot", label: "Shot" },
+  { key: "shot", label: "Prompt" },
 ];
 
 export function PanelTabs() {
