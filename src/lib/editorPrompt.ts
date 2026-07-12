@@ -10,8 +10,9 @@
 // a collapsible "Detail" in the Studio, never the hero. Pure functions — NO React.
 
 import { EditorFrame, EditorScene, EditorProject, defaultShotMeta, frameDuration, sceneDuration } from "./editorModel";
-import { focalLength, norm180 } from "./editorMath";
+import { focalLength } from "./editorMath";
 import { encodeShot, encodeScene, encodeProject, toNeutral } from "./prompt/cameraPrompt";
+import { viewLabel } from "./prompt/platforms";
 import type { PlatformId } from "./prompt/types";
 
 export type PromptSettings = EditorProject["settings"];
@@ -47,16 +48,9 @@ const angleEN: Record<string, string> = {
   "WORM'S EYE": "worm's-eye view",
 };
 
-// rel = norm180(az - subjRot): <=22 front / <=67 3q-front / <=112 side /
-// <=157 3q-back / else back (concept ~2311-2318).
-function viewEN(az: number, subjRot: number): string {
-  const abs = Math.abs(norm180(az - subjRot));
-  if (abs <= 22) return "front view";
-  if (abs <= 67) return "three-quarter front view";
-  if (abs <= 112) return "side profile view";
-  if (abs <= 157) return "three-quarter back view";
-  return "back view";
-}
+// view classification lives in ONE place now — ./prompt/platforms viewLabel
+// (same rel = norm180(az - subjRot) buckets, concept ~2311-2318). It appends a
+// side + off-axis degrees for the off-axis buckets.
 
 // person -> a standing person / object -> a sculptural object on a pedestal.
 function subjEN(subj: string): string {
@@ -67,7 +61,7 @@ function frameDetail(f: EditorFrame, i: number, settings: PromptSettings): strin
   const s = f.s;
   const m = { ...defaultShotMeta(), ...(f.meta || {}) };
   const baseAngle = (f.angle || "EYE LEVEL").replace(" · DUTCH", "");
-  const view = viewEN(f.az, s.subjRot);
+  const view = viewLabel(f.az, s.subjRot);
   const subj = subjEN(s.subj);
   const dutch = Math.abs(s.roll) >= 7 ? `, dutch angle ${Math.round(s.roll)}°` : "";
   const details = [m.action, m.lighting, m.style].filter(Boolean).join(", ");

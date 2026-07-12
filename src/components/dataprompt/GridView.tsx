@@ -8,7 +8,7 @@ import { EntryView } from "@/state/AppState";
 export function GridView({ entries }: { entries: EntryView[] }) {
   return (
     <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 20px 36px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(248px,1fr))", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(248px,100%),1fr))", gap: 14 }}>
         {entries.map((e) => (
           <div
             key={e.id}

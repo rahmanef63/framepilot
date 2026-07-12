@@ -135,7 +135,7 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(min(120px, 100%), 1fr))",
                 gap: 8,
               }}
             >

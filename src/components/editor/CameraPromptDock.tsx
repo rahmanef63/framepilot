@@ -48,12 +48,13 @@ export function CameraPromptDock() {
           <span className="cam-scope">{scope}</span>
         </div>
         <div className="cam-dock-ctl">
-          <PlatformSelect value={platform} onChange={setPlatform} />
           <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
             {copied ? "Tersalin ✓" : hasShots ? "Salin" : "Belum ada shot"}
           </Button>
         </div>
       </div>
+
+      <PlatformSelect value={platform} onChange={setPlatform} />
 
       <textarea
         className="cam-out"

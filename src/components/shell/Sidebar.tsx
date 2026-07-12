@@ -58,7 +58,9 @@ export function Sidebar() {
   const acctProps = { orientation: orient, avatar: true, onClick: () => setAcctOpen(true), style: orient === "horizontal" ? { width: "100%" } : undefined } as const;
 
   return (
+    <>
     <aside
+      className={"fp-sidebar" + (open ? " open" : "")}
       style={{
         width: open ? "246px" : "72px",
         flex: "none",
@@ -178,6 +180,10 @@ export function Sidebar() {
 
       <AccountModal open={acctOpen} onClose={() => setAcctOpen(false)} />
     </aside>
+    {/* Mobile drawer scrim — sibling of .fp-sidebar so `.fp-sidebar.open ~
+        .fp-scrim` can light it up; tap to close. Inert (display:none) on desktop. */}
+    <div className="fp-scrim" onClick={app.toggleSidebar} aria-hidden />
+    </>
   );
 }
 

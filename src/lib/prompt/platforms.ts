@@ -2,7 +2,37 @@
 // Pure DATA module (LOC-exempt). Grounded 2025-2026 platform behaviour: the
 // SAME camera intent must be encoded differently per target. NO React, NO three.
 
+import { norm180 } from "../editorMath";
 import { MoveStrings, NeutralMoveId, Platform } from "./types";
+
+// Azimuth-view label — the horizontal camera direction relative to where the
+// subject faces. SAME buckets as editorPrompt.viewEN (front / three-quarter
+// front / side profile / three-quarter back / back) so there is ONE definition
+// of the view classification (DRY). For the off-axis buckets a side + the
+// off-axis degrees are appended to disambiguate; front/back get no side.
+export function viewLabel(az: number, subjRot: number): string {
+  const rel = norm180(az - subjRot);
+  const abs = Math.abs(rel);
+  let base: string;
+  let sided = true;
+  if (abs <= 22) {
+    base = "front view";
+    sided = false;
+  } else if (abs <= 67) {
+    base = "three-quarter front view";
+  } else if (abs <= 112) {
+    base = "side profile view";
+  } else if (abs <= 157) {
+    base = "three-quarter back view";
+  } else {
+    base = "back view";
+    sided = false;
+  }
+  if (!sided) return base;
+  // ponytail: left/right by rel sign; flip if visually reversed — the ° below keeps it unambiguous.
+  const side = rel > 0 ? "from the left" : "from the right";
+  return `${base} ${side} (~${Math.round(abs)}° off-axis)`;
+}
 
 // The 7 target platforms. `style` drives the skin in encodeShot; `note` is the
 // human-facing guidance shown in the panel picker.
@@ -55,6 +85,27 @@ export const PLATFORMS: Platform[] = [
     style: "sentence",
     oneMove: true,
     note: "Natural sentence, common-denominator vocab (docs sparse — low confidence; treat as generic sentence).",
+  },
+  {
+    id: "higgsfield",
+    label: "Higgsfield",
+    style: "sentence",
+    oneMove: true,
+    note: "Natural sentence + pick ONE named Camera-Motion preset per shot (Dolly In, Crash Zoom, 360 Orbit, Crane Up, Whip Pan, Bullet Time, FPV Drone, Static). The preset drives the camera; keep the move in the text minimal.",
+  },
+  {
+    id: "wan",
+    label: "Wan 2.x",
+    style: "sentence",
+    oneMove: true,
+    note: "Alibaba Wan — natural sentence, ONE move/shot, plain camera verbs (dolly in, pan left, tilt up) + a pace word. Sentence style, no bracket/exact-string tokens.",
+  },
+  {
+    id: "seedance",
+    label: "Seedance",
+    style: "sentence",
+    oneMove: true,
+    note: "ByteDance Seedance — natural sentence, ONE clear move/shot; strong at multi-shot so keep each shot's camera intent explicit. Add a pace word.",
   },
 ];
 

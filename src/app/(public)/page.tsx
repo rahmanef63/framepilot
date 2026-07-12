@@ -32,9 +32,9 @@ function CtaLink({ href, children }: { href: string; children: React.ReactNode }
 
 export default function LandingPage() {
   return (
-    <div style={{ maxWidth: 980, margin: "0 auto", padding: 40, display: "flex", flexDirection: "column", gap: 48 }}>
+    <div className="fp-landing" style={{ maxWidth: 980, margin: "0 auto", padding: 40, display: "flex", flexDirection: "column", gap: 48 }}>
       {/* (a) HERO */}
-      <header style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 680 }}>
+      <header style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 680, minWidth: 0 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {hero.badges.map((b) => (
             <Badge key={b.label} tone={b.tone}>
@@ -42,7 +42,21 @@ export default function LandingPage() {
             </Badge>
           ))}
         </div>
-        <h1 style={{ font: "800 32px/1.2 var(--font-sans)", color: "var(--foreground)", margin: 0 }}>{hero.title}</h1>
+        {/* Fluid heading: fills 32px on desktop (unchanged), shrinks to a wrapping
+            1.55rem floor on phone so the long title reflows instead of clipping. */}
+        <h1
+          style={{
+            margin: 0,
+            color: "var(--foreground)",
+            fontFamily: "var(--font-sans)",
+            fontWeight: 800,
+            fontSize: "clamp(1.55rem, 6.5vw, 32px)",
+            lineHeight: 1.2,
+            overflowWrap: "anywhere",
+          }}
+        >
+          {hero.title}
+        </h1>
         <p style={{ font: "400 15px/1.6 var(--font-sans)", color: "var(--muted-foreground)", margin: 0 }}>
           {hero.purpose}
         </p>
@@ -61,7 +75,7 @@ export default function LandingPage() {
       {/* (b) DUA LAYAR */}
       <section style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <h2 style={sectionH2}>Dua layar terhubung</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(260px,100%),1fr))", gap: 14 }}>
           {screens.map((s) => (
             <div key={s.href} style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
               <div
@@ -102,7 +116,7 @@ export default function LandingPage() {
             Impor → Studio 3D → Ekspor
           </span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(240px,100%),1fr))", gap: 14 }}>
           {steps.map((step, i) => (
             <div key={step.n} style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -126,7 +140,7 @@ export default function LandingPage() {
       {/* (d) FITUR */}
       <section style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <h2 style={sectionH2}>Fitur inti</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(220px,100%),1fr))", gap: 14 }}>
           {features.map((f) => (
             <div key={f.title} style={{ ...card, padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
               <div style={{ font: "700 13px var(--font-sans)", color: "var(--foreground)" }}>{f.title}</div>

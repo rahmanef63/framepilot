@@ -5,7 +5,8 @@
 
 import { EditorFrame, EditorProject, EditorScene } from "../editorModel";
 import { RawFrame } from "../dataPrompt";
-import { ANGLE_EN, MOVE_FROM_LABEL, MOVE_STRINGS } from "./platforms";
+import { deg2rad } from "../editorMath";
+import { ANGLE_EN, MOVE_FROM_LABEL, MOVE_STRINGS, viewLabel } from "./platforms";
 import { NeutralMoveId, NeutralShot, PlatformId, ProjectMeta, Speed } from "./types";
 
 // A frame from either the editor model (has s.subj + meta.movement) or the
@@ -43,6 +44,32 @@ export function toNeutral(f: ShotInput, meta: ProjectMeta = {}): NeutralShot {
   const baseAngle = String(f.angle || "EYE LEVEL").replace(" · DUTCH", "");
   const size = String(f.shot || "MEDIUM SHOT").toLowerCase();
   const lensMm = Math.round(Number(f.lens) || 50);
+
+  // Read the real 3D camera geometry from EITHER shape: EditorFrame keeps
+  // roll/fov/subjRot/camPos in `s`; RawFrame keeps roll/fov top-level (no
+  // subjRot, no camPos). Fall back to synthesising the height from el + dist.
+  const ef = f as EditorFrame;
+  const rf = f as RawFrame;
+  const az = Number(f.az) || 0;
+  const el = Number(f.el) || 0;
+  const dist = Number(f.dist) || 3;
+  const roll = ef.s?.roll ?? rf.roll ?? 0;
+  const subjRot = ef.s?.subjRot ?? 0;
+  const rawSubj = ef.s?.subj ?? rf.subj ?? "person";
+  const targetY = rawSubj === "object" ? 1.0 : 1.35;
+  const camHeight = ef.s?.camPos?.y ?? targetY + dist * Math.sin(deg2rad(el));
+
+  const view = viewLabel(az, subjRot);
+  const elevationPhrase =
+    Math.abs(el) <= 6
+      ? "at eye level"
+      : el > 6
+        ? `above the subject, looking down ~${Math.round(el)}°`
+        : `below the subject, looking up ~${Math.round(-el)}°`;
+  const height = `~${camHeight.toFixed(1)} m high`;
+  const distance = `~${dist.toFixed(1)} m from subject`;
+  const dutch = Math.abs(roll) >= 7 ? `dutch tilt ~${Math.round(Math.abs(roll))}°` : "";
+
   return {
     name: f.name,
     size,
@@ -53,18 +80,33 @@ export function toNeutral(f: ShotInput, meta: ProjectMeta = {}): NeutralShot {
     move,
     speed: speedOf(move),
     framing: `${meta.aspectRatio || "16:9"} framing`,
+    view,
+    elevationPhrase,
+    height,
+    distance,
+    dutch,
   };
 }
 
-// Natural sentence WITHOUT the move (used by luma/hailuo suffix skins).
-function baseSentence(n: NeutralShot): string {
-  return `${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${n.framing}`;
+// The positional camera clause — the REAL 3D geometry (elevation + azimuth-view
+// + distance + height + optional dutch). Folded into every skin so no platform
+// ever loses the camera position.
+export function cameraLine(n: NeutralShot): string {
+  return (
+    `camera ${n.elevationPhrase}, ${n.view}, ${n.distance}, ${n.height}` +
+    (n.dutch ? `, ${n.dutch}` : "")
+  );
 }
 
-// Natural sentence WITH the move woven in (runway/pika default).
+// Natural sentence WITHOUT the move (used by veo/luma/hailuo skins).
+function baseSentence(n: NeutralShot): string {
+  return `${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.framing}`;
+}
+
+// Natural sentence WITH the move woven in (runway/pika + sentence default).
 function fullSentence(n: NeutralShot): string {
   const mv = MOVE_STRINGS[n.move];
-  return `${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${n.speed} ${mv.phrase}, ${n.framing}`;
+  return `${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.speed} ${mv.phrase}, ${n.framing}`;
 }
 
 // Render one NeutralShot into the paste-ready string for the given platform.
@@ -74,23 +116,21 @@ export function encodeShot(n: NeutralShot, platformId: PlatformId): string {
   switch (platformId) {
     case "runway":
       return isStatic ? `${baseSentence(n)}, locked-off camera` : fullSentence(n);
-    case "pika":
-      return isStatic ? `${baseSentence(n)}, static camera` : fullSentence(n);
     case "kling":
-      // move in the first ~8-10 words + a pace word
+      // move in the first ~8-10 words + a pace word (camera geometry after size)
       return isStatic
-        ? `Static ${n.size}, ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${n.framing}`
-        : `${cap(n.speed)} ${mv.phrase} on ${n.subject}, ${n.size} ${n.angle}, ${n.lens} ${n.dof}, ${n.framing}`;
+        ? `Static ${n.size}, ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.framing}`
+        : `${cap(n.speed)} ${mv.phrase} on ${n.subject}, ${n.size} ${n.angle}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.framing}`;
     case "veo": {
-      // camera move as its OWN short sentence
+      // camera move as its OWN short sentence (baseSentence already carries geometry)
       const b = baseSentence(n);
       return isStatic ? `${b}. The camera holds static.` : `${b}. The camera ${ADVERB[n.speed]} ${mv.verb}.`;
     }
     case "sora":
-      // lead with the frame, keep the move a short clause
+      // lead with the frame, keep the move a short clause (geometry before the move)
       return isStatic
-        ? `${cap(n.framing)} frame: ${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, static.`
-        : `${cap(n.framing)} frame: ${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${n.speed} ${mv.phrase}.`;
+        ? `${cap(n.framing)} frame: ${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, static.`
+        : `${cap(n.framing)} frame: ${n.size} ${n.angle} of ${n.subject}, ${n.lens} ${n.dof}, ${cameraLine(n)}, ${n.speed} ${mv.phrase}.`;
     case "luma": {
       // EXACT-STRING + STACKABLE: append literal camera string(s).
       const moves = [n.move, ...(n.extraMoves || [])];
@@ -109,6 +149,13 @@ export function encodeShot(n: NeutralShot, platformId: PlatformId): string {
         .slice(0, 3);
       return `${baseSentence(n)} ${toks.map((t) => `[${t}]`).join(" ")}`;
     }
+    case "pika":
+    case "higgsfield":
+    case "wan":
+    case "seedance":
+    default:
+      // Every sentence-style platform (present + future) inherits the same skin.
+      return isStatic ? `${baseSentence(n)}, static camera` : fullSentence(n);
   }
 }
 

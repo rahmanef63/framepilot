@@ -3,8 +3,10 @@
 // movement+speed+framing string the user pastes INTO an AI video-gen platform.
 // Pure types — NO React, NO three.
 
-// The 7 target AI video platforms we encode for.
-export type PlatformId = "runway" | "kling" | "veo" | "sora" | "luma" | "hailuo" | "pika";
+// The target AI video platforms we encode for.
+export type PlatformId =
+  | "runway" | "kling" | "veo" | "sora" | "luma" | "hailuo" | "pika"
+  | "higgsfield" | "wan" | "seedance";
 
 // How a platform wants the camera move expressed:
 //  - "sentence": one natural-language sentence (move woven in).
@@ -61,6 +63,12 @@ export interface NeutralShot {
   speed: Speed;
   framing: string; // "16:9 framing"
   extraMoves?: NeutralMoveId[]; // luma-only: stacked additional moves
+  // ---- real 3D camera geometry (so every platform prompt carries position) ----
+  view: string; // "three-quarter front view from the left (~35° off-axis)"
+  elevationPhrase: string; // "above the subject, looking down ~20°"
+  height: string; // "~2.4 m high"
+  distance: string; // "~3.0 m from subject"
+  dutch: string; // "dutch tilt ~12°" or "" when level
 }
 
 export interface ProjectMeta {

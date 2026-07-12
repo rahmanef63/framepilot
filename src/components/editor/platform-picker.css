@@ -1,0 +1,61 @@
+/* platform-picker.css — always-visible platform CHIP selector for the Prompt
+   Kamera dock. Tokens ONLY (Rupa SSOT), correct in light + [data-theme="dark"].
+   Fresh class names (cam-plat-picker*) to avoid clashing with editor.css .cam-plat. */
+
+.cam-plat-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.cam-plat-picker__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.cam-plat-picker__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cam-plat-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.cam-plat-chip:hover {
+  border-color: var(--primary);
+  color: var(--foreground);
+}
+
+.cam-plat-chip.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+.cam-plat-chip:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

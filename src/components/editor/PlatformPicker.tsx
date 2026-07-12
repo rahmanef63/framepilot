@@ -7,6 +7,7 @@
 import React from "react";
 import { PLATFORMS } from "@/lib/prompt/platforms";
 import type { PlatformId } from "@/lib/prompt/types";
+import "./platform-picker.css";
 
 export function PlatformSelect({
   value,
@@ -16,16 +17,28 @@ export function PlatformSelect({
   onChange: (id: PlatformId) => void;
 }) {
   return (
-    <label className="cam-plat">
-      <span>Platform</span>
-      <select value={value} onChange={(e) => onChange(e.target.value as PlatformId)} title="Platform AI video tujuan">
-        {PLATFORMS.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className="cam-plat-picker" role="radiogroup" aria-label="Platform AI video tujuan">
+      <span className="cam-plat-picker__label">Platform</span>
+      <div className="cam-plat-picker__chips">
+        {PLATFORMS.map((p) => {
+          const active = p.id === value;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              aria-pressed={active}
+              title={p.note}
+              className={`cam-plat-chip${active ? " is-active" : ""}`}
+              onClick={() => onChange(p.id)}
+            >
+              {p.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

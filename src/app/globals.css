@@ -190,3 +190,63 @@ button { font-family: inherit; }
     border-bottom: var(--border-width) solid var(--border) !important;
   }
 }
+
+/* ---------- responsive: off-canvas sidebar drawer (≤768) ---------- */
+/* Below tablet the in-flow 72/246px sidebar permanently eats the viewport and
+   the content column is clipped by the Shell's overflow:hidden root. Turn the
+   sidebar into an overlay drawer so content spans the full width; the scrim
+   (rendered right after the <aside> inside Sidebar, so `.fp-sidebar.open ~
+   .fp-scrim` can light it) closes it on tap. Desktop keeps the inline styles. */
+.fp-scrim { display: none; }
+@media (max-width: 768px) {
+  .fp-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: 246px !important;
+    transform: translateX(-100%);
+    transition: transform var(--motion) var(--ease);
+    box-shadow: var(--shadow-lg);
+  }
+  .fp-sidebar.open { transform: none; }
+  .fp-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: var(--overlay);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--motion) var(--ease);
+  }
+  .fp-sidebar.open ~ .fp-scrim { opacity: 1; pointer-events: auto; }
+}
+
+/* ---------- responsive: header wrap (library breadcrumb bar) ---------- */
+/* The Shell <Header> is an inline-styled flex row with no wrap: on narrow
+   screens its breadcrumb + stats pill + Skema/Ekspor/Impor buttons overflow-x.
+   Let the row wrap. Safe globally — the public header + editor .e-header already
+   wrap, and the landing hero <header> is a column so wrap is a no-op there. */
+header { flex-wrap: wrap; }
+
+/* ---------- responsive: landing padding (≤640) ---------- */
+/* The landing container's fixed 40px padding steals 80px on a phone. */
+@media (max-width: 640px) {
+  .fp-landing { padding: 24px 16px !important; gap: 32px !important; }
+}
+
+/* ---------- touch targets (coarse pointer only — desktop density unchanged) --- */
+@media (pointer: coarse) {
+  button { min-height: 36px; }
+  .cag-editor button { min-height: 40px; }
+  /* keep dense editor micro-controls (outline folds, row icons, HUD maximise) tight */
+  .cag-editor .fold,
+  .cag-editor .ico,
+  .cag-editor .maxbtn { min-height: 0; }
+}
+
+/* ---------- global horizontal-overflow guard ---------- */
+/* Belt-and-braces after the header-wrap fix above: nothing may scroll the page
+   sideways at any width. Wide content (library table, frames strip) scrolls
+   inside its own overflow container, never the page body. */
+body { overflow-x: hidden; }

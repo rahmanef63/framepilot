@@ -38,10 +38,23 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             gap: 8,
             textDecoration: "none",
             color: "var(--foreground)",
+            minWidth: 0,
+            overflow: "hidden",
           }}
         >
-          <span style={{ font: "700 18px var(--font-mono)", color: "var(--primary)" }}>◉</span>
-          <span style={{ font: "700 15px var(--font-sans)", color: "var(--foreground)" }}>
+          <span style={{ font: "700 18px var(--font-mono)", color: "var(--primary)", flex: "none" }}>◉</span>
+          {/* Brand may shrink/truncate on a narrow phone; the "Buka Aplikasi" CTA
+              in <nav> must never get pushed off-screen. */}
+          <span
+            style={{
+              font: "700 15px var(--font-sans)",
+              color: "var(--foreground)",
+              minWidth: 0,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
             Camera Angle Guide Pro
           </span>
         </Link>
