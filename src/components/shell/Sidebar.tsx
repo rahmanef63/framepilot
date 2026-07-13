@@ -96,6 +96,7 @@ export function Sidebar() {
         >
           {open && isStudio ? (
             <div
+              className="fp-scene-heading"
               style={{
                 font: "700 9.5px var(--font-mono)",
                 letterSpacing: "0.08em",

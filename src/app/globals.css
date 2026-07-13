@@ -168,10 +168,28 @@ html, body { height: 100%; }
    the top inset clears the status bar at scroll-0, the bottom inset clears the
    home indicator at the page end. */
 @media (max-width: 820px) {
+  /* Content routes (library / docs / panduan / landing) scroll the document. */
   .app-shell {
     height: auto;
     min-height: 100dvh;
     overflow: visible;
+  }
+  /* The 3D editor route is the exception: pin the shell to a fixed, non-scrolling
+     frame so the editor's 3-zone grid (strip / canvas / controller) fills exactly
+     one screen and the canvas stays a stable orbit/pinch target (a scrolling page
+     made the small viewport a moving target = "susah digerakan"). :has() scopes
+     the fixed frame to the editor route only. */
+  .app-shell:has(.cag-editor) {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  /* Frame management moved to the in-page top strip on mobile → hide the now-
+     redundant drawer copy + its heading. display:none is a toggle (the element
+     stays in the DOM), so the OutlineSidebar portal target is NOT broken. */
+  #fp-studio-slot,
+  .fp-scene-heading {
+    display: none !important;
   }
 }
 
@@ -227,14 +245,16 @@ button { font-family: inherit; }
   }
 }
 
-/* ---------- responsive: off-canvas sidebar drawer (≤768) ---------- */
+/* ---------- responsive: off-canvas sidebar drawer (≤820) ---------- */
 /* Below tablet the in-flow 72/246px sidebar permanently eats the viewport and
    the content column is clipped by the Shell's overflow:hidden root. Turn the
    sidebar into an overlay drawer so content spans the full width; the scrim
    (rendered right after the <aside> inside Sidebar, so `.fp-sidebar.open ~
-   .fp-scrim` can light it) closes it on tap. Desktop keeps the inline styles. */
+   .fp-scrim` can light it) closes it on tap. Desktop keeps the inline styles.
+   ≤820 (not ≤768) aligns the drawer with the editor's mobile 3-zone layout +
+   the #fp-studio-slot hide, so the 769–820 tablet band has no empty in-flow rail. */
 .fp-scrim { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 820px) {
   .fp-sidebar {
     position: fixed;
     inset: 0 auto 0 0;

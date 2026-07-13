@@ -666,17 +666,52 @@ export class EditorViewportEngine implements EditorEngineHandle {
     let px = 0;
     let py = 0;
     let rect: DOMRect | null = null;
+    // Active touch points. 1 pointer = orbit/pan (existing); 2 = pinch-to-zoom.
+    const pointers = new Map<number, { x: number; y: number }>();
+    let pinching = false;
+    let pinchDist = 0;
+
+    const twoFingerDist = (): number => {
+      const pts = Array.from(pointers.values());
+      if (pts.length < 2) return 0;
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    };
+
+    // ONE zoom path shared by wheel + pinch: factor>1 dollies OUT (further),
+    // factor<1 dollies IN (closer). cam = orbit distance; ortho = view extent.
+    const applyZoom = (factor: number) => {
+      this.pb.playing = false;
+      if (viewId === "cam") {
+        const o = this.getOrbit();
+        this.setOrbit(o.az, o.el, clamp(o.dist * factor, 0.3, 30));
+      } else {
+        const kind = this.slotView[viewId as SlotId] ?? (viewId as ViewKind);
+        if (typeof kind === "string" && kind.startsWith("custom:")) return; // custom = view-only in v1
+        const V = this.views![kind as OrthoId];
+        V.ext = clamp(V.ext * factor, 0.8, 30);
+      }
+      this.updateScene();
+      this.callbacks.onRigChanged?.();
+    };
 
     const onContext = (e: Event) => e.preventDefault();
     const onDown = (e: PointerEvent) => {
       if ((e.target as HTMLElement).closest("button")) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       this.pb.playing = false; // stopPlayback head-guard
-      dragging = true;
-      moved = false;
-      btn = e.button;
-      px = e.clientX;
-      py = e.clientY;
-      rect = el.getBoundingClientRect();
+      if (pointers.size >= 2) {
+        // second finger down → start pinch, suspend the single-finger orbit
+        pinching = true;
+        dragging = false;
+        pinchDist = twoFingerDist();
+      } else {
+        dragging = true;
+        moved = false;
+        btn = e.button;
+        px = e.clientX;
+        py = e.clientY;
+        rect = el.getBoundingClientRect();
+      }
       try {
         el.setPointerCapture(e.pointerId);
       } catch {
@@ -684,6 +719,23 @@ export class EditorViewportEngine implements EditorEngineHandle {
       }
     };
     const onMove = (e: PointerEvent) => {
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      // mouse self-heal: if a non-touch drag lost its button off-element (a
+      // swallowed setPointerCapture means the mouseup never reached us), end the
+      // drag here instead of orbiting on an unpressed hover.
+      if (dragging && e.pointerType !== "touch" && e.buttons === 0) {
+        pointers.delete(e.pointerId);
+        dragging = false;
+        moved = false;
+        return;
+      }
+      // pinch-to-zoom: the two-finger distance ratio drives the dolly (wheel path)
+      if (pinching && pointers.size >= 2) {
+        const d = twoFingerDist();
+        if (pinchDist > 0 && d > 0) applyZoom(pinchDist / d);
+        pinchDist = d;
+        return;
+      }
       if (!dragging) return;
       const dx = e.clientX - px;
       const dy = e.clientY - py;
@@ -700,25 +752,25 @@ export class EditorViewportEngine implements EditorEngineHandle {
       this.updateScene();
       this.callbacks.onRigChanged?.();
     };
-    const onUp = () => {
+    const onUp = (e: PointerEvent) => {
+      pointers.delete(e.pointerId);
+      if (pointers.size >= 2) {
+        // 3+ fingers, one lifted → re-seed the pinch baseline against the
+        // surviving pair so the next move measures a real delta (no zoom snap).
+        pinchDist = twoFingerDist();
+        return;
+      }
+      // ≤1 finger left: end the pinch and any single-finger drag. We deliberately
+      // do NOT auto-resume orbit from a lone remaining finger — its release-drift
+      // would jerk the camera on every pinch-end. A fresh touch restarts orbit.
+      pinching = false;
       if (dragging && moved) this.callbacks.onRigChanged?.();
       dragging = false;
       moved = false;
     };
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      this.pb.playing = false;
-      if (viewId === "cam") {
-        const o = this.getOrbit();
-        this.setOrbit(o.az, o.el, clamp(o.dist * (1 + e.deltaY * 0.001), 0.3, 30));
-      } else {
-        const kind = this.slotView[viewId as SlotId] ?? (viewId as ViewKind);
-        if (typeof kind === "string" && kind.startsWith("custom:")) return; // custom = view-only in v1
-        const V = this.views![kind as OrthoId];
-        V.ext = clamp(V.ext * (1 + e.deltaY * 0.001), 0.8, 30);
-      }
-      this.updateScene();
-      this.callbacks.onRigChanged?.();
+      applyZoom(1 + e.deltaY * 0.001);
     };
 
     el.addEventListener("contextmenu", onContext);

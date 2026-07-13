@@ -16,6 +16,7 @@ import { PanelTabs } from "./panel/PanelTabs";
 import { EditorViewport } from "./viewport/EditorViewport";
 import { Hud } from "./viewport/Hud";
 import { OutlineSidebar } from "./OutlineSidebar";
+import { MobileFrameStrip } from "./MobileFrameStrip";
 import { PreviewPanel } from "./PreviewPanel";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 
@@ -42,6 +43,9 @@ export function EditorScreen() {
       {/* ---- Editor page: [ ONE viewport | panel ] ----
            The viewport never unmounts (keeps its WebGL context across tab swaps). */}
       <div className={"page editor-page" + (tab === "editor" ? " active" : "")}>
+        {/* ROW 1 (mobile ≤820 only): horizontal frame strip — thumbnails + ＋create.
+            Replaces the drawer frame manager on phones; display:none on desktop. */}
+        <MobileFrameStrip />
         <EditorViewport />
         <div className="panel">
           <PanelTabs />

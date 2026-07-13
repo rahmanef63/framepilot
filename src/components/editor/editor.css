@@ -1070,70 +1070,97 @@
   scrollbar-width: thin;
 }
 
-/* ---------- on-screen capture bar (mobile viewport overlay) ----------
-   The scene/frame manager is behind the ☰ drawer on mobile, so a floating bar
-   over the 3D viewport gives the core loop inline: ◀ prev · ＋ Frame · next ▶.
-   Hidden on desktop (the sidebar manager is always visible there). */
-.cag-editor .vp-capture {
+/* ---------- mobile frame strip (editor ROW 1, ≤820 only) ----------
+   Horizontal-scroll frame thumbnails that REPLACE the drawer frame manager on
+   phones: the leading ＋ tile captures the live camera as a new frame (addFrame),
+   tapping a tile jumps the 3D canvas to that shot (loadFrame), and the pinned ▶
+   toggles playback. display:none on desktop (the sidebar OutlineSidebar owns
+   frames there); the ≤820 rule flips it to display:flex as grid ROW 1. */
+.cag-editor .mobile-frame-strip {
   display: none;
 }
-.cag-editor .vp-cap-nav {
+.cag-editor .mfs-play {
   flex: 0 0 auto;
-  pointer-events: auto;
   width: 44px;
   height: 44px;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  background: var(--panel);
+  background: var(--panel-2);
   color: var(--ink);
 }
-.cag-editor .vp-cap-nav:disabled {
-  opacity: 0.4;
-}
-.cag-editor .vp-cap-shot {
-  flex: 0 0 auto;
-  pointer-events: auto;
-  display: inline-flex;
+.cag-editor .mfs-scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  display: flex;
   align-items: center;
-  gap: 7px;
-  height: 44px;
-  padding: 0 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: var(--accent);
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  touch-action: pan-x; /* horizontal scroll only; a vertical drag falls through */
+}
+.cag-editor .mfs-add,
+.cag-editor .mfs-tile {
+  flex: 0 0 auto;
+  position: relative;
+  height: 100%;
+  max-height: 96px;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background: var(--panel-2);
+  color: var(--ink);
+}
+.cag-editor .mfs-add {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-color: var(--accent);
+  color: var(--accent);
+  font: 700 10px var(--e-mono);
+  letter-spacing: 0.04em;
+}
+.cag-editor .mfs-tile {
+  display: block;
+}
+.cag-editor .mfs-tile.current {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.cag-editor .mfs-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cag-editor .mfs-ph {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--muted-foreground);
+}
+.cag-editor .mfs-idx {
+  position: absolute;
+  left: 3px;
+  bottom: 2px;
+  font: 700 9px var(--e-mono);
   color: var(--accent-ink);
-  font: 700 13px var(--e-sans);
-}
-.cag-editor .vp-cap-shot:hover {
-  background: var(--accent);
-  filter: brightness(1.06);
-}
-@media (max-width: 768px) {
-  .cag-editor .vp-capture {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    /* let camera-orbit drags pass THROUGH the bar's gaps/background — only the
-       buttons (pointer-events:auto) capture taps, so the pill never eats an orbit */
-    pointer-events: none;
-    position: absolute;
-    left: 50%;
-    /* sits in the lower third of the cam view, clear of the bottom edge so iOS
-       Safari's URL bar / home indicator doesn't cover it */
-    bottom: 78px;
-    transform: translateX(-50%);
-    z-index: 4;
-    padding: 6px 8px;
-    border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--card) 88%, transparent);
-    backdrop-filter: blur(6px);
-    border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
-    box-shadow: var(--shadow-lg);
-  }
+  background: color-mix(in srgb, var(--foreground) 55%, transparent);
+  border-radius: 4px;
+  padding: 0 4px;
 }
 
 /* ---------- transport bar (Full Preview .pv-bar reuses .pbar) ---------- */
@@ -1441,70 +1468,55 @@
    all it needs — no engine edits. The viewport gets a sane ~52vh so the page
    stays usable and the panel/frames sit below it. */
 @media (max-width: 820px) {
-  /* Natural document scroll: no fixed height, no nested scroll — the page flows
-     and iOS Safari owns the scroll + URL bar (the app-shell is height:auto here,
-     so there is no dvh box to trap the tail in). */
+  /* Fixed 3-zone editor (NO document scroll): frame strip 2/10 · canvas 5/10 ·
+     controller 3/10. A non-scrolling editor keeps the small canvas a STABLE
+     orbit/pinch target — the old scrolling-document model made the viewport a
+     moving target that was "susah digerakan". The shell is pinned to a fixed
+     frame for the editor route via .app-shell:has(.cag-editor) (globals.css);
+     the drawer frame manager (#fp-studio-slot) is hidden — this strip replaces it. */
   .cag-editor {
-    height: auto;
+    height: 100%;
   }
-  .cag-editor .editor-page,
-  .cag-editor .preview-page {
-    height: auto;
-    overflow: visible; /* beats the ≤980 overflow-y:auto — page scrolls, not this box */
-    /* 3D viewport = a fixed block; frames + panel flow beneath it down the page.
-       vh here is iOS's LARGE viewport (stable, doesn't twitch with the URL bar),
-       the correct unit for a fixed block inside a natural-scroll document. */
-    grid-template-rows: min(60vh, 480px) auto auto;
+  .cag-editor .editor-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr 5fr 3fr;
+    height: 100%;
+    overflow: hidden;
+    gap: 8px;
   }
-  /* kill the panel's nested scroll — it just flows at the bottom of the page */
+  .cag-editor .mobile-frame-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    touch-action: pan-x;
+  }
+  .cag-editor .quad-area {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+  }
   .cag-editor .panel {
-    overflow: visible;
+    grid-column: 1;
+    grid-row: 3;
+    overflow-y: auto;
     max-height: none;
+    min-height: 0;
     height: auto;
+    touch-action: pan-y; /* vertical scroll only; the canvas above owns orbit */
   }
-  /* NOTE: the scene+frame manager now lives in the app sidebar drawer (fixed,
-     own scroll) — it must KEEP its nested os-scroll on mobile, so no
-     overflow:visible override here (that belonged to the old in-page column). */
-  /* comfortable touch targets on phone — the dense outline/transport controls
-     collapse to ~20-30px otherwise (esp. the arm-to-delete ✕ and the fold). */
-  .cag-editor .os-ico {
-    width: 38px;
-    height: 38px;
-  }
-  /* comfortable touch: keep the nav trio bigger than the options */
-  .cag-editor .os-nav {
-    width: 42px;
-    height: 42px;
-  }
-  .cag-editor .os-opt {
-    width: 36px;
-    height: 36px;
-  }
-  /* big touch icons don't fit one line in the drawer — let the transport wrap
-     here (the drawer has its own scroll, so extra rows are fine). */
-  .cag-editor .os-transport {
-    flex-wrap: wrap;
-  }
-  /* when the two groups wrap onto separate lines the align-self:stretch divider
-     dangles off the nav row — drop it (mirrors the viewbar-on-wrap rule above). */
-  .cag-editor .os-tdiv {
-    display: none;
-  }
-  .cag-editor .os-dur input {
-    min-height: 34px;
-  }
-  .cag-editor .srow .fold {
-    min-width: 30px;
-    min-height: 30px;
-  }
-  .cag-editor .sacts button,
-  .cag-editor .facts button {
-    min-width: 34px;
-    min-height: 34px;
-  }
-  /* inline scene-name rename field is only ~19px tall otherwise */
-  .cag-editor .srow input.sname {
-    min-height: 30px;
+  /* Full Preview stays a simple internally-scrolling page inside the fixed shell. */
+  .cag-editor .preview-page {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    grid-template-rows: min(60vh, 480px) auto auto;
   }
   /* DRAG Seg ("Subjek/Kamera") clipped off-screen: .tabbar wraps but .modebar /
      .viewbar (holding .seg, min-width:64px buttons) have no width limit so they
@@ -1570,16 +1582,6 @@
     display: none;
   }
   .cag-editor .field-row {
-    grid-template-columns: 1fr;
-  }
-  .cag-editor .guide-hero {
-    padding: 16px;
-  }
-  .cag-editor .guide-hero h2 {
-    font-size: 21px;
-  }
-  .cag-editor .learn-grid,
-  .cag-editor .workflow-grid {
     grid-template-columns: 1fr;
   }
 }
