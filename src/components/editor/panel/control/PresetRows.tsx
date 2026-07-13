@@ -1,10 +1,10 @@
 "use client";
 // PresetRows — the angle (G7), shot-size (G8) and lens (G9) preset chip rows.
-// Chips stay ui/Chip (specialized preset affordances, like a shadcn ToggleGroup).
+// Chips are plain <button>s under .chips (styled by editor.css); they fire-and-apply
+// a preset (momentary, never a persistent toggle) so no active/aria-pressed state.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
-import { Chip, Chips } from "../../ui/Chip";
 
 // G7 · angle presets [el, roll]
 const ANGLE_PRESETS: { label: string; el: number; roll: number }[] = [
@@ -36,36 +36,42 @@ export function PresetRows() {
       {/* ---- angle presets (G7) ---- */}
       <div className="group">
         <h3>Sudut · Angle</h3>
-        <Chips>
+        <div className="chips">
           {ANGLE_PRESETS.map((p) => (
-            <Chip
+            <button
               key={p.label}
-              label={p.label}
+              type="button"
               title={`el ${p.el}° · roll ${p.roll}°`}
               onClick={() => ctx.applyAnglePreset(p.el, p.roll)}
-            />
+            >
+              {p.label}
+            </button>
           ))}
-        </Chips>
+        </div>
       </div>
 
       {/* ---- shot-size presets (G8) ---- */}
       <div className="group">
         <h3>Ukuran Shot</h3>
-        <Chips>
+        <div className="chips">
           {SHOT_PRESETS.map((p) => (
-            <Chip key={p.label} label={p.label} onClick={() => ctx.applyShotPreset(p.r)} />
+            <button key={p.label} type="button" onClick={() => ctx.applyShotPreset(p.r)}>
+              {p.label}
+            </button>
           ))}
-        </Chips>
+        </div>
       </div>
 
       {/* ---- lens presets (G9) ---- */}
       <div className="group">
         <h3>Lensa</h3>
-        <Chips>
+        <div className="chips">
           {LENS_PRESETS.map((mm) => (
-            <Chip key={mm} label={`${mm}mm`} onClick={() => ctx.applyLensPreset(mm)} />
+            <button key={mm} type="button" onClick={() => ctx.applyLensPreset(mm)}>
+              {mm}mm
+            </button>
           ))}
-        </Chips>
+        </div>
       </div>
     </>
   );

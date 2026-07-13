@@ -99,22 +99,6 @@ export const MOVES = [
 export const ARS = ["16:9", "9:16", "4:5", "1:1", "2.39:1"];
 export const FPS = [24, 25, 30, 60];
 
-// [key, label, default, location ("f" = frame field, "m" = meta field)]
-const FIELDS: [string, string, string | number, "f" | "m"][] = [
-  ["angle", "Angle", "EYE LEVEL", "f"],
-  ["shot", "Shot size", "MEDIUM SHOT", "f"],
-  ["lens", "Lens (mm)", 50, "f"],
-  ["az", "Azimuth°", 30, "f"],
-  ["el", "Elevation°", 4, "f"],
-  ["dist", "Distance m", 3, "f"],
-  ["intent", "Intent", "", "m"],
-  ["movement", "Movement", "Static / Locked-off", "m"],
-  ["action", "Action", "", "m"],
-  ["lighting", "Lighting", "", "m"],
-  ["style", "Style", "", "m"],
-  ["audio", "Audio", "", "m"],
-];
-
 // --- deterministic id generator (stable across SSR/CSR before mount) ---
 let _uid = 0;
 export function uid(): string {
@@ -402,34 +386,6 @@ export function entryProject(en: Entry) {
     })),
     activeSceneId: null,
   };
-}
-
-export interface FillRow {
-  label: string;
-  value: string;
-  filled: boolean;
-  tone: "new" | "outline";
-  tag: "AI" | "default";
-}
-
-export function fillRows(en: Entry): FillRow[] {
-  const f = en.data.scenes[0].frames[0];
-  return FIELDS.map((row) => {
-    const k = row[0],
-      label = row[1],
-      def = row[2],
-      loc = row[3];
-    let v: unknown = loc === "m" ? (f.meta as unknown as Record<string, unknown>)[k] : (f as unknown as Record<string, unknown>)[k];
-    const empty = v === undefined || v === null || String(v).trim() === "";
-    const filled = !empty && String(v) !== String(def);
-    return {
-      label,
-      value: empty ? "—" : String(v),
-      filled,
-      tone: filled ? "new" : "outline",
-      tag: filled ? "AI" : "default",
-    } as FillRow;
-  });
 }
 
 export type SchemaMode = "full" | "simplified";

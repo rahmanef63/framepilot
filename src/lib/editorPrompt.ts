@@ -11,7 +11,7 @@
 
 import { EditorFrame, EditorScene, EditorProject, defaultShotMeta, frameDuration, sceneDuration } from "./editorModel";
 import { focalLength } from "./editorMath";
-import { encodeShot, encodeScene, encodeProject, toNeutral } from "./prompt/cameraPrompt";
+import { encodeScene, encodeProject } from "./prompt/cameraPrompt";
 import { viewLabel } from "./prompt/platforms";
 import { ALL_ON } from "./prompt/types";
 import type { PlatformId, ShotOptions } from "./prompt/types";
@@ -22,11 +22,6 @@ export type PromptSettings = EditorProject["settings"];
 // HERO — platform-tuned camera prompt (delegates to the ONE engine)
 // ============================================================
 const DEFAULT_PLATFORM: PlatformId = "runway";
-
-// Single shot → paste-ready camera string for the target platform.
-export function framePrompt(f: EditorFrame, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM, o: ShotOptions = ALL_ON): string {
-  return encodeShot(toNeutral(f, { aspectRatio: settings.aspectRatio }), platform, o);
-}
 
 // One scene → one skinned block per shot ("# Shot\n<camera prompt>").
 export function scenePrompt(sc: EditorScene, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM, o: ShotOptions = ALL_ON): string {

@@ -39,113 +39,9 @@
   box-sizing: border-box;
 }
 
-/* ================= sub-header ================= */
-.cag-editor .e-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  padding: 9px 16px;
-  border-bottom: 1px solid var(--line);
-  flex: 0 0 auto;
-  background: color-mix(in srgb, var(--foreground) 4%, var(--card));
-}
-.cag-editor .logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.cag-editor .logo .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--rec);
-  box-shadow: 0 0 8px var(--rec);
-}
-.cag-editor.playing .logo .dot {
-  animation: cag-tally 1s infinite;
-}
-@keyframes cag-tally {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.25;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cag-editor.playing .logo .dot {
-    animation: none;
-  }
-}
-.cag-editor .logo h1 {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.055em;
-}
-.cag-editor .logo span {
-  font-family: var(--e-mono);
-  font-size: 11px;
-  color: var(--muted);
-}
-.cag-editor .project-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--e-mono);
-  font-size: 10px;
-  color: var(--muted);
-}
-.cag-editor .project-meta .status-pill {
-  border: 1px solid var(--line);
-  background: var(--panel);
-  border-radius: 999px;
-  padding: 4px 8px;
-  white-space: nowrap;
-}
-.cag-editor .project-meta b {
-  color: var(--ink);
-  font-weight: 600;
-}
+/* .spacer — flex filler still used in PreviewPanel / EditorTabBar / OutlineTree. */
 .cag-editor .spacer {
   flex: 1;
-}
-.cag-editor .scene-bar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.cag-editor .scene-bar input[type="text"] {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-family: var(--e-sans);
-  font-size: 13px;
-  width: 180px;
-  min-width: 0;
-  max-width: 100%;
-}
-.cag-editor .scene-bar input[type="text"]:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-.cag-editor .autosave {
-  font-family: var(--e-mono);
-  font-size: 10px;
-  color: var(--muted);
-}
-.cag-editor .autosave.on {
-  color: var(--ok);
-}
-/* Undo/Redo icon pair. display:contents on desktop = the two buttons stay direct
-   flex items of .scene-bar (pixel-identical to before). On mobile this wrapper is
-   display:none'd and the actions live in the Aksi menu instead. */
-.cag-editor .hdr-history {
-  display: contents;
 }
 
 /* ================= buttons / selects ================= */
@@ -283,11 +179,6 @@
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-ink);
-}
-.cag-editor[data-tab="guide"] .modebar,
-.cag-editor[data-tab="guide"] .viewbar,
-.cag-editor[data-tab="guide"] .tabbar > .hint {
-  display: none;
 }
 .cag-editor .hint {
   font-family: var(--e-mono);
@@ -1413,27 +1304,6 @@
   gap: 8px;
   flex-wrap: wrap;
 }
-.cag-editor .cam-plat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1 1 auto;
-  min-width: 0;
-  font-family: var(--e-mono);
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cag-editor .cam-plat select {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: none;
-  padding: 4px 6px;
-  font-size: 12px;
-  text-transform: none;
-  letter-spacing: 0;
-}
 .cag-editor .cam-dock-ctl > button {
   flex: 0 0 auto;
 }
@@ -1491,189 +1361,6 @@
   line-height: 1.5;
   color: var(--muted-foreground);
   white-space: pre;
-}
-
-/* ---------- learning guide ---------- */
-.cag-editor .guide-page.active {
-  display: block;
-  overflow: auto;
-}
-.cag-editor .guide-page {
-  padding: 18px 20px 32px;
-  background: var(--bg);
-}
-.cag-editor .guide-shell {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.cag-editor .guide-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-  gap: 16px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--card), var(--secondary));
-  padding: 22px;
-  overflow: hidden;
-  position: relative;
-}
-.cag-editor .guide-hero::after {
-  content: "";
-  position: absolute;
-  width: 240px;
-  height: 240px;
-  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
-  border-radius: 50%;
-  right: -60px;
-  top: -120px;
-}
-.cag-editor .eyebrow {
-  font-family: var(--e-mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.cag-editor .guide-hero h2 {
-  font-size: 26px;
-  line-height: 1.15;
-  max-width: 680px;
-  margin-bottom: 10px;
-}
-.cag-editor .guide-hero p {
-  font-size: 13px;
-  color: var(--muted-foreground);
-  line-height: 1.65;
-  max-width: 720px;
-}
-.cag-editor .guide-score {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  align-self: center;
-}
-.cag-editor .guide-score div {
-  background: var(--stripe);
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 11px;
-}
-.cag-editor .guide-score b {
-  display: block;
-  font-size: 18px;
-  color: var(--ink);
-}
-.cag-editor .guide-score span {
-  font-family: var(--e-mono);
-  font-size: 9px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-.cag-editor .guide-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.cag-editor .guide-section-head {
-  display: flex;
-  align-items: end;
-  gap: 12px;
-  justify-content: space-between;
-}
-.cag-editor .guide-section h3 {
-  font-size: 15px;
-}
-.cag-editor .guide-section-head p {
-  font-size: 11px;
-  color: var(--muted);
-}
-.cag-editor .learn-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-.cag-editor .learn-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 154px;
-}
-.cag-editor .learn-card:hover {
-  border-color: var(--line-strong);
-}
-.cag-editor .learn-card .card-kicker {
-  font-family: var(--e-mono);
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.cag-editor .learn-card h4 {
-  font-size: 14px;
-}
-.cag-editor .learn-card p {
-  font-size: 12px;
-  color: var(--muted-foreground);
-  line-height: 1.55;
-  flex: 1;
-}
-.cag-editor .learn-card .use {
-  font-size: 10px;
-  color: var(--muted);
-  padding-top: 7px;
-  border-top: 1px solid var(--line);
-}
-.cag-editor .learn-card .use b {
-  color: var(--ink);
-}
-.cag-editor .learn-card button {
-  align-self: flex-start;
-  padding: 5px 9px;
-  font-size: 11px;
-}
-.cag-editor .workflow-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-.cag-editor .workflow-step {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 12px;
-}
-.cag-editor .workflow-step b {
-  display: block;
-  font-family: var(--e-mono);
-  font-size: 10px;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-.cag-editor .workflow-step h4 {
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-.cag-editor .workflow-step p {
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-.cag-editor .guide-note {
-  border-left: 2px solid var(--accent);
-  background: var(--panel);
-  padding: 12px 14px;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--muted-foreground);
 }
 
 /* ---------- toast ---------- */
@@ -1744,15 +1431,6 @@
   .cag-editor .viewbar {
     border-left: none;
     padding-left: 0;
-  }
-  .cag-editor .guide-hero {
-    grid-template-columns: 1fr;
-  }
-  .cag-editor .learn-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .cag-editor .workflow-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 /* ---- tablet + phone: single-column viewport ----
@@ -1887,41 +1565,8 @@
     padding: 2px 6px;
     font-size: 8px;
   }
-  /* Header collapses to ONE tidy row:  ☰ | [name input, flex] | ⤓ save | ⋯ menu.
-     Brand, stats pill, autosave text, spacer and the undo/redo icons are hidden;
-     undo/redo move into the Aksi (⋯) menu. Nothing wraps → a single clean row. */
-  .cag-editor .e-header {
-    gap: 8px;
-    flex-wrap: nowrap;
-  }
-  .cag-editor .scene-bar {
-    flex: 1 1 auto;
-    flex-wrap: nowrap;
-    min-width: 0;
-    gap: 6px;
-  }
-  .cag-editor .scene-bar input[type="text"] {
-    flex: 1 1 auto;
-    width: auto;
-    min-width: 0;
-    min-height: 40px; /* ≥40px tap target */
-  }
-  .cag-editor .scene-bar button {
-    min-height: 40px; /* ⤓ save + ⋯ menu = ≥40px tap targets */
-  }
-  /* Hidden on mobile: verbose autosave text, the flex spacer, and the undo/redo
-     pair (folded into the ⋯ menu). */
-  .cag-editor .autosave,
-  .cag-editor .spacer,
-  .cag-editor .hdr-history {
-    display: none;
-  }
-  /* drop the brand (dot + wordmark) and the scene·shot·s stats pill (echoed in
-     the Outline sidebar) so the header is just ☰ + name + save + menu. */
-  .cag-editor .logo {
-    display: none;
-  }
-  .cag-editor .project-meta {
+  /* the flex spacer collapses on the tight ≤620 layout */
+  .cag-editor .spacer {
     display: none;
   }
   .cag-editor .field-row {

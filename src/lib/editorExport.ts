@@ -14,7 +14,6 @@ import {
   sceneDuration,
 } from "./editorModel";
 import { uid } from "./dataPrompt";
-import { projectPrompt } from "./editorPrompt";
 
 // ============================================================
 // File-name helpers (concept ~2547-2553)
@@ -44,13 +43,6 @@ export function downloadBlob(name: string, blob: Blob): void {
 // ============================================================
 export function exportJSON(project: EditorProject): Blob {
   return new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
-}
-
-// ============================================================
-// Prompt TXT (concept ~2559-2562)
-// ============================================================
-export function exportPromptTxt(project: EditorProject): Blob {
-  return new Blob([projectPrompt(project)], { type: "text/plain;charset=utf-8" });
 }
 
 // ============================================================

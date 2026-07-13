@@ -368,12 +368,6 @@ header { flex-wrap: wrap; }
   }
 }
 
-/* ---------- responsive: landing padding (≤640) ---------- */
-/* The landing container's fixed 40px padding steals 80px on a phone. */
-@media (max-width: 640px) {
-  .fp-landing { padding: 24px 16px !important; gap: 32px !important; }
-}
-
 /* ---------- touch targets (coarse pointer only — desktop density unchanged) --- */
 @media (pointer: coarse) {
   button { min-height: 40px; }
