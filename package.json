@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
@@ -12,15 +12,15 @@
     "@auth/core": "^0.37.4",
     "@convex-dev/auth": "^0.0.91",
     "convex": "^1.32.0",
-    "next": "^15.5.20",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "next": "^16.2.10",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "three": "0.161.0"
   },
   "devDependencies": {
     "@types/node": "22.10.7",
-    "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@types/three": "0.161.0",
     "typescript": "5.7.3"
   }
