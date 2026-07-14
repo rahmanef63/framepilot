@@ -116,6 +116,8 @@ export function EditorStateProvider({
     setAspect,
     setFps,
     setProjectName,
+    setProjectCamera,
+    setGlobalCamera,
   } = useUiActions(core, { afterRigMutate, commitHistory });
 
   const { addSavedView, renameSavedView, deleteSavedView, setCellView } = useViewActions(core, {
@@ -131,6 +133,7 @@ export function EditorStateProvider({
     moveFrame,
     renameFrame,
     setFrameNotes,
+    setFrameCamera,
   } = useFrameActions(core, { stopPlayback, commitHistory, scheduleHistoryCommit, currentFrame });
 
   const {
@@ -301,6 +304,8 @@ export function EditorStateProvider({
       setAspect,
       setFps,
       setProjectName,
+      setProjectCamera,
+      setGlobalCamera,
 
       setDraftMetaField,
       frameIsDirty,
@@ -314,6 +319,7 @@ export function EditorStateProvider({
       moveFrame,
       renameFrame,
       setFrameNotes,
+      setFrameCamera,
 
       addScene,
       setActiveSceneId,

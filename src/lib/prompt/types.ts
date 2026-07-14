@@ -69,10 +69,13 @@ export interface NeutralShot {
   height: string; // "~2.4 m high"
   distance: string; // "~3.0 m from subject"
   dutch: string; // "dutch tilt ~12°" or "" when level
+  cameraGear: string; // "shot on ARRI Alexa 35" or "" when no camera picked
 }
 
 export interface ProjectMeta {
   aspectRatio?: string;
+  camera?: string; // project global camera id (resolved with globalCamera in cameras.ts)
+  globalCamera?: boolean; // true = settings.camera wins for every frame
 }
 
 // Which optional clauses the user folds INTO the shown/copied camera prompt.
@@ -88,6 +91,7 @@ export interface ShotOptions {
   dutch: boolean; // "dutch tilt ~12°"
   move: boolean; // the camera movement clause / static wording
   framing: boolean; // "16:9 framing"
+  camera: boolean; // "shot on <brand/model>" look tag
 }
 
 export const ALL_ON: ShotOptions = {
@@ -100,4 +104,5 @@ export const ALL_ON: ShotOptions = {
   dutch: true,
   move: true,
   framing: true,
+  camera: true,
 };

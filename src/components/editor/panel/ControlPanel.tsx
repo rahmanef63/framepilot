@@ -12,6 +12,8 @@ import { InspectorTabs, type InspectorTab } from "./control/InspectorTabs";
 import { SubjectControls } from "./control/SubjectControls";
 import { RigSliders } from "./control/RigSliders";
 import { PresetRows } from "./control/PresetRows";
+import { CameraSelect } from "./control/CameraSelect";
+import { GlobalCameraSettings } from "./control/GlobalCameraSettings";
 import { ToggleRow } from "./control/ToggleRow";
 import { OutputFrame } from "./control/OutputFrame";
 import { SavedProjects } from "./SavedProjects";
@@ -29,6 +31,7 @@ export function ControlPanel() {
           <>
             <RigSliders />
             <PresetRows />
+            <CameraSelect />
           </>
         )}
         {tab === "subjek" && <SubjectControls />}
@@ -36,6 +39,7 @@ export function ControlPanel() {
           <>
             <ToggleRow />
             <OutputFrame />
+            <GlobalCameraSettings />
           </>
         )}
       </div>

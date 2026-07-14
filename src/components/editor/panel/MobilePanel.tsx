@@ -14,6 +14,8 @@ import { PromptOptionsList } from "@/components/editor/PromptOptionsMenu";
 import { useMobileDock } from "@/components/editor/EditorDock";
 import { RigSliders } from "./control/RigSliders";
 import { PresetRows } from "./control/PresetRows";
+import { CameraSelect } from "./control/CameraSelect";
+import { GlobalCameraSettings } from "./control/GlobalCameraSettings";
 import { SubjectControls } from "./control/SubjectControls";
 import { ToggleRow } from "./control/ToggleRow";
 import { OutputFrame } from "./control/OutputFrame";
@@ -62,6 +64,7 @@ export function MobilePanel() {
         <>
           <AccSection title="Kamera" open>
             <RigSliders />
+            <CameraSelect />
           </AccSection>
           <AccSection title="Subjek">
             <SubjectControls />
@@ -78,6 +81,7 @@ export function MobilePanel() {
           <AccSection title="Viewport" open>
             <ToggleRow />
             <OutputFrame />
+            <GlobalCameraSettings />
           </AccSection>
           <AccSection title="Detail brief (opsional)">
             <ShotBrief />

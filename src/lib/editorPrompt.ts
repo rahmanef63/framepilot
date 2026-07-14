@@ -25,7 +25,7 @@ const DEFAULT_PLATFORM: PlatformId = "runway";
 
 // One scene → one skinned block per shot ("# Shot\n<camera prompt>").
 export function scenePrompt(sc: EditorScene, settings: PromptSettings, platform: PlatformId = DEFAULT_PLATFORM, o: ShotOptions = ALL_ON): string {
-  return encodeScene(sc, platform, { aspectRatio: settings.aspectRatio }, o);
+  return encodeScene(sc, platform, { aspectRatio: settings.aspectRatio, camera: settings.camera, globalCamera: settings.globalCamera }, o);
 }
 
 // Whole project → multi-shot skinned output across every scene.

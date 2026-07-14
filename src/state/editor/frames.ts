@@ -31,6 +31,7 @@ export interface FrameActions {
   moveFrame: (id: string, dir: -1 | 1) => void;
   renameFrame: (id: string, name: string) => void;
   setFrameNotes: (id: string, notes: string) => void;
+  setFrameCamera: (id: string, cameraId: string) => void;
 }
 
 export function useFrameActions(
@@ -73,6 +74,10 @@ export function useFrameActions(
       notes: "",
       ...fields,
     };
+    // authoring-time default: a new frame inherits the project's global camera
+    // (like captureFrameFields reads settings.aspectRatio). NOT a rig capture, so
+    // it stays out of captureFrameFields → updateFrame never clobbers a user pick.
+    f.camera = projectRef.current.settings.camera;
     sc.frames.push(f);
     currentFrameIdRef.current = f.id;
     commitHistory("Tambah frame");
@@ -172,6 +177,19 @@ export function useFrameActions(
     [projectRef, scheduleHistoryCommit, bump]
   );
 
+  // Per-frame camera pick — authored metadata like name/notes (kept out of the rig
+  // capture, so updateFrame never overwrites it).
+  const setFrameCamera = useCallback(
+    (id: string, cameraId: string) => {
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      hit.frame.camera = cameraId;
+      scheduleHistoryCommit("Kamera frame");
+      bump();
+    },
+    [projectRef, scheduleHistoryCommit, bump]
+  );
+
   return {
     addFrame,
     updateFrame,
@@ -181,5 +199,6 @@ export function useFrameActions(
     moveFrame,
     renameFrame,
     setFrameNotes,
+    setFrameCamera,
   };
 }

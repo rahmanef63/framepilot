@@ -19,6 +19,7 @@ const ROWS: { key: keyof ShotOptions; label: string }[] = [
   { key: "dutch", label: "Dutch tilt" },
   { key: "move", label: "Gerakan kamera" },
   { key: "framing", label: "Rasio (framing)" },
+  { key: "camera", label: "Kamera (brand)" },
 ];
 
 // The bare checkbox list — reused by the desktop <details> dropdown AND the mobile

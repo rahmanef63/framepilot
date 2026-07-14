@@ -96,6 +96,9 @@ export interface EditorContextValue {
   setAspect: (a: string) => void;
   setFps: (n: number) => void;
   setProjectName: (name: string) => void;
+  // camera (prompt look tag): global camera + the global-vs-per-frame toggle
+  setProjectCamera: (id: string) => void;
+  setGlobalCamera: (on: boolean) => void;
 
   // data-shot brief
   setDraftMetaField: (k: keyof Meta, v: string | number) => void;
@@ -111,6 +114,7 @@ export interface EditorContextValue {
   moveFrame: (id: string, dir: -1 | 1) => void;
   renameFrame: (id: string, name: string) => void;
   setFrameNotes: (id: string, notes: string) => void;
+  setFrameCamera: (id: string, cameraId: string) => void;
 
   // scene CRUD
   addScene: () => void;

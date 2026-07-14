@@ -18,6 +18,8 @@ export interface UiActions {
   setAspect: (a: string) => void;
   setFps: (n: number) => void;
   setProjectName: (name: string) => void;
+  setProjectCamera: (id: string) => void;
+  setGlobalCamera: (on: boolean) => void;
 }
 
 export function useUiActions(
@@ -113,6 +115,27 @@ export function useUiActions(
     },
     [projectRef, pushAutosave, bump]
   );
+  // Camera is a prompt-only look tag — no engine call (unlike aspect/fps which move
+  // the 3D frustum/HUD). setProjectCamera = the global camera id; setGlobalCamera =
+  // the toggle deciding global-vs-per-frame.
+  const setProjectCamera = useCallback(
+    (id: string) => {
+      projectRef.current.settings.camera = id;
+      pushAutosave();
+      commitHistory("Kamera global");
+      bump();
+    },
+    [projectRef, pushAutosave, commitHistory, bump]
+  );
+  const setGlobalCamera = useCallback(
+    (on: boolean) => {
+      projectRef.current.settings.globalCamera = on;
+      pushAutosave();
+      commitHistory("Mode kamera global");
+      bump();
+    },
+    [projectRef, pushAutosave, commitHistory, bump]
+  );
 
   return {
     setMainTab,
@@ -125,5 +148,7 @@ export function useUiActions(
     setAspect,
     setFps,
     setProjectName,
+    setProjectCamera,
+    setGlobalCamera,
   };
 }

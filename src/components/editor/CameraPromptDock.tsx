@@ -35,7 +35,15 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
   // clauses are folded in, so ticking a box rebuilds this string live.
   const scope = current ? `Shot terpilih · ${current.name}` : `Proyek · ${totalShots} shot`;
   const prompt = current
-    ? encodeShot(toNeutral(current, { aspectRatio: settings.aspectRatio }), platform, opts)
+    ? encodeShot(
+        toNeutral(current, {
+          aspectRatio: settings.aspectRatio,
+          camera: settings.camera,
+          globalCamera: settings.globalCamera,
+        }),
+        platform,
+        opts
+      )
     : hasShots
       ? projectPrompt(ctx.project, platform, opts)
       : "";

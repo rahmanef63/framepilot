@@ -15,6 +15,7 @@ import {
   entryProject,
 } from "./dataPrompt";
 import { clamp, setOrbit } from "./editorMath";
+import { CAMERA_IDS } from "./cameras";
 
 // ============================================================
 // Types — camera-angle-guide/v2 (plan §3.1)
@@ -44,6 +45,10 @@ export interface EditorFrame {
   angle: string;
   shot: string;
   lens: number;
+  // Per-frame camera preset id (a prompt "shot on <brand>" look tag, sibling of
+  // angle/shot/lens — NOT a rig field). Absent/"" = inherit-or-none. Ignored when
+  // settings.globalCamera is on (the project camera wins). Optional for back-compat.
+  camera?: string;
   az: number;
   el: number;
   dist: number;
@@ -81,7 +86,7 @@ export interface SavedView {
 export interface EditorProject {
   schema: "camera-angle-guide/v2";
   name: string;
-  settings: { aspectRatio: string; fps: number; sensor: "Full Frame" };
+  settings: { aspectRatio: string; fps: number; sensor: "Full Frame"; globalCamera: boolean; camera: string };
   scenes: EditorScene[];
   activeSceneId: string | null;
   // Optional origin tag — set by the create-from-image / import flow so the
@@ -119,7 +124,7 @@ const FPS_ENUM = [24, 25, 30, 60];
 // Constructors (concept ~977-1018)
 // ============================================================
 export function defaultProjectSettings(): EditorProject["settings"] {
-  return { aspectRatio: "16:9", fps: 24, sensor: "Full Frame" };
+  return { aspectRatio: "16:9", fps: 24, sensor: "Full Frame", globalCamera: false, camera: "" };
 }
 
 export function defaultShotMeta(): Meta {
@@ -183,6 +188,8 @@ export function ensureProjectShape(input: unknown): EditorProject {
   if (!ASPECTS.includes(settings.aspectRatio)) settings.aspectRatio = "16:9";
   settings.fps = FPS_ENUM.includes(+settings.fps) ? +settings.fps : 24;
   settings.sensor = "Full Frame";
+  settings.globalCamera = !!settings.globalCamera;
+  if (!CAMERA_IDS.has(settings.camera)) settings.camera = "";
   p.settings = settings;
 
   const scenes = p.scenes as Record<string, unknown>[];
@@ -217,6 +224,7 @@ export function ensureProjectShape(input: unknown): EditorProject {
       f.angle = String(f.angle || "EYE LEVEL").slice(0, 80);
       f.shot = String(f.shot || "MEDIUM SHOT").slice(0, 80);
       f.lens = Number.isFinite(+(f.lens as number)) ? Math.round(+(f.lens as number)) : 50;
+      f.camera = CAMERA_IDS.has(f.camera as string) ? f.camera : "";
     });
   });
 
