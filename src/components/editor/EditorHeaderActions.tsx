@@ -57,9 +57,13 @@ export function EditorHeaderActions() {
           style={{ padding: "7px 10px" }}
         />
       </span>
-      <Button variant="primary" size="sm" icon="⤓" title="Simpan Proyek" onClick={saveCurrent} style={{ padding: "7px 11px" }}>
-        Simpan
-      </Button>
+      {/* .ehx-save (display:contents, globals.css) → mobile ≤820 hides it; Simpan is
+          still reachable in the ⋯ menu. Header on phones = undo · redo · ⋯. */}
+      <span className="ehx-save">
+        <Button variant="primary" size="sm" icon="⤓" title="Simpan Proyek" onClick={saveCurrent} style={{ padding: "7px 11px" }}>
+          Simpan
+        </Button>
+      </span>
       <EditorActionMenu
         onSave={saveCurrent}
         onNew={ctx.newProjectAction}

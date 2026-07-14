@@ -1088,6 +1088,11 @@
 .cag-editor .mobile-frame-strip {
   display: none;
 }
+/* Bottom dock is mobile-only (the ≤820 grid gives it row 4); desktop uses the
+   right-hand PanelTabs, so hide it here. */
+.cag-editor .editor-dock {
+  display: none;
+}
 .cag-editor .mfs-play {
   flex: 0 0 auto;
   width: 44px;
@@ -1125,25 +1130,6 @@
   overflow: hidden;
   background: var(--panel-2);
   color: var(--ink);
-}
-/* add-frame: pinned right action (mirrors .mfs-play on the left) — no longer a
-   tile inside the scroll, so play/add bracket the thumbnails: ▶ … thumbs … ＋ */
-.cag-editor .mfs-add {
-  flex: 0 0 auto;
-  width: 48px;
-  height: 44px;
-  padding: 0;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: var(--accent-ink);
-  font: 700 9px var(--e-mono);
-  letter-spacing: 0.04em;
 }
 .cag-editor .mfs-tile {
   display: block;
@@ -1532,20 +1518,22 @@
    all it needs — no engine edits. The viewport gets a sane ~52vh so the page
    stays usable and the panel/frames sit below it. */
 @media (max-width: 820px) {
-  /* Fixed 3-zone editor (NO document scroll): frame strip 2/10 · canvas 5/10 ·
-     controller 3/10. A non-scrolling editor keeps the small canvas a STABLE
-     orbit/pinch target — the old scrolling-document model made the viewport a
-     moving target that was "susah digerakan". The shell is pinned to a fixed
-     frame for the editor route via .app-shell:has(.cag-editor) (globals.css);
+  /* Fixed editor (NO document scroll): frame strip · CANVAS · controller panel
+     (dock-driven, 0 when closed) · dock. A non-scrolling editor keeps the small
+     canvas a STABLE orbit/pinch target — the old scrolling-document model made the
+     viewport a moving target that was "susah digerakan". The shell is pinned to a
+     fixed frame for the editor route via .app-shell:has(.cag-editor) (globals.css);
      the drawer frame manager (#fp-studio-slot) is hidden — this strip replaces it. */
   .cag-editor {
     height: 100%;
   }
   .cag-editor .editor-page {
     grid-template-columns: 1fr;
-    /* strip 1.4 · canvas 6 · controller 3 (was 2·5·3): slimmer frame strip +
-       tighter header hand the canvas the space — ~40%→~50% of the viewport. */
-    grid-template-rows: 1.4fr 6fr 3fr;
+    /* 4 rows: frame strip · CANVAS (1fr, takes everything) · controller panel
+       (auto → 0 when the dock is closed, via .panel:empty) · dock. With the panel
+       closed the canvas fills ~70% of the viewport; tapping a dock section splits
+       the panel in (canvas shrinks only while it's open). */
+    grid-template-rows: 64px minmax(0, 1fr) auto 58px;
     height: 100%;
     overflow: hidden;
     gap: 8px;
@@ -1572,10 +1560,80 @@
     grid-column: 1;
     grid-row: 3;
     overflow-y: auto;
-    max-height: none;
+    max-height: 44vh; /* split-screen cap; the canvas (row 2) keeps the rest */
     min-height: 0;
     height: auto;
+    border-top: 1px solid var(--line);
     touch-action: pan-y; /* vertical scroll only; the canvas above owns orbit */
+  }
+  /* Dock closed → MobilePanel returns null → .panel has no children → collapse the
+     row to 0 so the canvas fills the screen. (:empty is exact — React renders no
+     whitespace text nodes.) */
+  .cag-editor .panel:empty {
+    display: none;
+  }
+  /* ---- bottom dock (mobile control bar, grid row 4) ---- */
+  .cag-editor .editor-dock {
+    grid-column: 1;
+    grid-row: 4;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .cag-editor .dock-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 2px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .cag-editor .dock-btn.active {
+    background: var(--panel-2);
+    color: var(--accent);
+  }
+  .cag-editor .dock-ico {
+    font-size: 17px;
+    line-height: 1;
+  }
+  .cag-editor .dock-lbl {
+    font: 700 9px var(--e-mono);
+    letter-spacing: 0.03em;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* center ＋ — the prominent create-frame action (mirrors a FAB) */
+  .cag-editor .dock-add {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 44px;
+    margin: 0 2px;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.18));
   }
   /* Full Preview stays a simple internally-scrolling page inside the fixed shell. */
   .cag-editor .preview-page {

@@ -17,6 +17,7 @@ import { EditorViewport } from "./viewport/EditorViewport";
 import { Hud } from "./viewport/Hud";
 import { OutlineSidebar } from "./OutlineSidebar";
 import { MobileFrameStrip } from "./MobileFrameStrip";
+import { EditorDock, MobileDockProvider } from "./EditorDock";
 import { PreviewPanel } from "./PreviewPanel";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 
@@ -26,6 +27,7 @@ export function EditorScreen() {
   const tab = ui.mainTab;
 
   return (
+    <MobileDockProvider>
     <div className={"cag-editor" + (playback.playing ? " playing" : "")} data-tab={tab}>
       {/* Project CRUD lives in the app header now (portaled into #fp-header-actions);
           the editor keeps only its working toolbar (tabs / drag / views) below. */}
@@ -50,6 +52,9 @@ export function EditorScreen() {
         <div className="panel">
           <PanelTabs />
         </div>
+        {/* Mobile-only control bar (≤820, display:none on desktop) — pinned as the
+            grid's last row; toggles the .panel split open per section. */}
+        <EditorDock />
       </div>
 
       {/* ---- Full Preview page: the ONE canvas reflows into .pv-viewport ---- */}
@@ -62,6 +67,7 @@ export function EditorScreen() {
         <PreviewPanel />
       </div>
     </div>
+    </MobileDockProvider>
   );
 }
 

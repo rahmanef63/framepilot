@@ -1,17 +1,17 @@
 "use client";
 // MobileFrameStrip — the mobile-only ROW 1 of the editor (≤820). A horizontal-
 // scrolling strip of frame thumbnails ("kotak frame") that REPLACES the drawer
-// frame manager on phones: the leading ＋ tile captures the live camera as a new
-// frame (ctx.addFrame), tapping a thumbnail jumps the 3D canvas to that shot
-// (ctx.loadFrame — applies the frame's rig to the engine), and the pinned ▶
-// toggles sequence playback. Hidden on desktop via CSS (.mobile-frame-strip{
+// frame manager on phones: tapping a thumbnail jumps the 3D canvas to that shot
+// (ctx.loadFrame — applies the frame's rig to the engine) and the pinned ▶ (left)
+// toggles sequence playback. Creating a frame moved to the bottom dock's center ＋
+// (EditorDock). Hidden on desktop via CSS (.mobile-frame-strip{
 // display:none}); there the sidebar <OutlineSidebar/> owns frames. Lives inside
 // EditorStateProvider (rendered by EditorScreen), so useEditor() works directly.
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { activeScene } from "@/lib/editorModel";
-import { IconPlay, IconPause, IconPlus } from "./EditorIcons";
+import { IconPlay, IconPause } from "./EditorIcons";
 
 export function MobileFrameStrip() {
   const ctx = useEditor();
@@ -55,15 +55,6 @@ export function MobileFrameStrip() {
           </button>
         ))}
       </div>
-      <button
-        className="mfs-add"
-        onClick={() => ctx.addFrame()}
-        aria-label="Tangkap frame dari kamera saat ini"
-        title="Tangkap frame dari kamera saat ini → frame baru"
-      >
-        <IconPlus size={20} />
-        <span>Frame</span>
-      </button>
     </div>
   );
 }

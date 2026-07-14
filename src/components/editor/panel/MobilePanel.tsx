@@ -1,14 +1,17 @@
 "use client";
-// MobilePanel — the controller for phones (≤820). Replaces the nested Kontrol/Prompt
-// + Kamera/Subjek/Viewport tabs with ONE scrollable accordion stack (native
-// <details>, in-flow, no overlay). Reuses every existing control component as-is;
-// desktop keeps its tab layout (PanelTabs switches on useMediaQuery). Sections:
-// Prompt (open) · Detail prompt (checkboxes) · Kamera · Preset · Subjek · Viewport
-// · Brief · Proyek.
+// MobilePanel — the controller for phones (≤820), now DRIVEN BY THE BOTTOM DOCK.
+// The dock (EditorDock) sets an active section via useMobileDock; this renders ONLY
+// that section's group of controls as an in-flow split panel (native <details>
+// accordion, no overlay). Section null (default) → returns null so the .panel grid
+// row collapses and the canvas fills the screen. Reuses every existing control
+// component as-is; desktop keeps its tab layout (PanelTabs switches on useMediaQuery).
+// Dock groups: Prompt (prompt+detail) · Kamera (rig+subjek) · Preset · Lainnya
+// (viewport+brief+proyek).
 
 import React from "react";
 import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
 import { PromptOptionsList } from "@/components/editor/PromptOptionsMenu";
+import { useMobileDock } from "@/components/editor/EditorDock";
 import { RigSliders } from "./control/RigSliders";
 import { PresetRows } from "./control/PresetRows";
 import { SubjectControls } from "./control/SubjectControls";
@@ -40,33 +43,50 @@ function AccSection({
 }
 
 export function MobilePanel() {
+  const { section } = useMobileDock();
+  if (!section) return null; // dock closed → panel row collapses, canvas full-screen
+
   return (
-    <div className="panel-page active mobile-acc">
-      <AccSection title="Prompt Kamera" open>
-        <CameraPromptDock showDetailToggles={false} />
-      </AccSection>
-      <AccSection title="Detail prompt">
-        <PromptOptionsList />
-      </AccSection>
-      <AccSection title="Kamera">
-        <RigSliders />
-      </AccSection>
-      <AccSection title="Preset">
-        <PresetRows />
-      </AccSection>
-      <AccSection title="Subjek">
-        <SubjectControls />
-      </AccSection>
-      <AccSection title="Viewport">
-        <ToggleRow />
-        <OutputFrame />
-      </AccSection>
-      <AccSection title="Detail brief (opsional)">
-        <ShotBrief />
-      </AccSection>
-      <AccSection title="Proyek">
-        <SavedProjects />
-      </AccSection>
+    <div className="panel-page active mobile-acc" data-section={section}>
+      {section === "prompt" ? (
+        <>
+          <AccSection title="Prompt Kamera" open>
+            <CameraPromptDock showDetailToggles={false} />
+          </AccSection>
+          <AccSection title="Detail prompt">
+            <PromptOptionsList />
+          </AccSection>
+        </>
+      ) : null}
+      {section === "kamera" ? (
+        <>
+          <AccSection title="Kamera" open>
+            <RigSliders />
+          </AccSection>
+          <AccSection title="Subjek">
+            <SubjectControls />
+          </AccSection>
+        </>
+      ) : null}
+      {section === "preset" ? (
+        <AccSection title="Preset" open>
+          <PresetRows />
+        </AccSection>
+      ) : null}
+      {section === "more" ? (
+        <>
+          <AccSection title="Viewport" open>
+            <ToggleRow />
+            <OutputFrame />
+          </AccSection>
+          <AccSection title="Detail brief (opsional)">
+            <ShotBrief />
+          </AccSection>
+          <AccSection title="Proyek">
+            <SavedProjects />
+          </AccSection>
+        </>
+      ) : null}
     </div>
   );
 }

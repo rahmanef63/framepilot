@@ -7,6 +7,7 @@
 
 import React from "react";
 import { Button } from "@/components/ds/Button";
+import { forceFreshReload } from "@/lib/forceFreshReload";
 
 export function EditorActionMenu({
   onSave,
@@ -106,6 +107,10 @@ export function EditorActionMenu({
           {/* Tur: header 🎓 button is hidden on mobile (≤820) to slim the bar, so it
               lives here too — the only way to relaunch onboarding on a phone. */}
           {onTour ? <MenuOption icon="🎓" title="Tur / Panduan" desc="Pandu langkah demi langkah" onClick={() => pick(onTour)} /> : null}
+          <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
+          {/* Hard reload: unregister SW + purge Cache Storage + cache-busted reload —
+              the fix when a Dokploy deploy leaves the tab on a stale bundle. */}
+          <MenuOption icon="⟳" title="Muat ulang versi" desc="Bersihkan cache & ambil versi terbaru" onClick={() => pick(() => void forceFreshReload())} />
         </div>
       ) : null}
     </div>
