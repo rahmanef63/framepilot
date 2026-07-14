@@ -37,9 +37,10 @@ export const viewport: Viewport = {
   // env(safe-area-inset-*) become real values the shells pad back in.
   viewportFit: "cover",
   // tints the mobile browser chrome to match the app background per theme
+  // match --background per theme (was #ffffff / #0b0b0c — didn't match the Rupa bg)
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0b0c" },
+    { media: "(prefers-color-scheme: light)", color: "#F0EEE6" },
+    { media: "(prefers-color-scheme: dark)", color: "#262624" },
   ],
 };
 

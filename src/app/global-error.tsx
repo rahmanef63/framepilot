@@ -25,8 +25,8 @@ export default function GlobalError({
           display: "grid",
           placeItems: "center",
           fontFamily: "var(--font-sans, system-ui, sans-serif)",
-          background: "var(--background, #0b0b0c)",
-          color: "var(--foreground, #e6e6e6)",
+          background: "var(--background, #262624)",
+          color: "var(--foreground, #F4F3EE)",
         }}
       >
         <div style={{ textAlign: "center", padding: 24, maxWidth: 420 }}>
@@ -42,7 +42,7 @@ export default function GlobalError({
               border: 0,
               cursor: "pointer",
               fontWeight: 700,
-              background: "var(--primary, #4f46e5)",
+              background: "var(--primary, #D97757)",
               color: "var(--primary-foreground, #fff)",
             }}
           >

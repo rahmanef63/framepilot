@@ -127,6 +127,7 @@ export function EditorStateProvider({
   const {
     addFrame,
     updateFrame,
+    updateFrameById,
     loadFrame,
     dupFrame,
     delFrame,
@@ -313,6 +314,7 @@ export function EditorStateProvider({
 
       addFrame,
       updateFrame,
+      updateFrameById,
       loadFrame,
       dupFrame,
       delFrame,

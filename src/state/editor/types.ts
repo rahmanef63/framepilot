@@ -108,6 +108,7 @@ export interface EditorContextValue {
   // frame CRUD
   addFrame: () => void;
   updateFrame: () => void;
+  updateFrameById: (id: string) => void;
   loadFrame: (id: string) => void;
   dupFrame: (id: string) => void;
   delFrame: (id: string) => void;

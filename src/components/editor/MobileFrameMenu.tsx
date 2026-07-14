@@ -26,8 +26,9 @@ export function MobileFrameMenu({
   const [name, setName] = useState(frame.name);
   const [confirmDel, setConfirmDel] = useState(false);
 
-  // anchor below the tile, clamped into the viewport
-  const top = Math.min(rect.bottom + 6, window.innerHeight - 240);
+  // anchor below the tile, clamped so the full menu (~272px with the Perbarui row)
+  // never runs off the bottom and clips the last action.
+  const top = Math.min(rect.bottom + 6, window.innerHeight - 288);
   const left = Math.max(8, Math.min(rect.left, window.innerWidth - 184));
   const run = (fn: () => void) => {
     fn();
@@ -53,6 +54,9 @@ export function MobileFrameMenu({
         ) : (
           <>
             <div className="mfs-menu-head">#{index + 1} · {frame.name}</div>
+            <button role="menuitem" onClick={() => run(() => ctx.updateFrameById(frame.id))}>
+              ⟳ Perbarui (kamera kini)
+            </button>
             <button role="menuitem" onClick={() => setRenaming(true)}>✎ Ganti nama</button>
             <button role="menuitem" onClick={() => run(() => ctx.dupFrame(frame.id))}>⧉ Duplikat</button>
             <button role="menuitem" disabled={index === 0} onClick={() => run(() => ctx.moveFrame(frame.id, -1))}>

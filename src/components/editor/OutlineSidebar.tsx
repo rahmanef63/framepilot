@@ -130,10 +130,20 @@ export function OutlineSidebar() {
             />
             s
           </label>
-          {current && dirty ? (
-            <Button variant="primary" size="sm" title="Terapkan kamera saat ini ke frame terpilih" onClick={ctx.updateFrame}>
+          {current ? (
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={!dirty}
+              title={
+                dirty
+                  ? "Tulis kamera + subjek saat ini ke frame terpilih"
+                  : "Ubah kamera dulu — lalu klik untuk menyimpannya ke frame ini"
+              }
+              onClick={ctx.updateFrame}
+            >
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                <IconUpdate size={13} /> Terapkan
+                <IconUpdate size={13} /> Perbarui
               </span>
             </Button>
           ) : null}

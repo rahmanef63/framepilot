@@ -1226,7 +1226,7 @@
 }
 .cag-editor .mfs-menu-del.armed {
   background: var(--destructive);
-  color: #fff;
+  color: var(--destructive-foreground);
 }
 .cag-editor .mfs-menu-rename {
   display: flex;
@@ -1669,7 +1669,9 @@
     align-items: stretch;
     justify-content: space-between;
     gap: 4px;
-    padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
+    /* the root .app-shell already pads env(safe-area-inset-bottom) — don't re-add it
+       here or a notched phone double-counts the inset and clips the icons/labels. */
+    padding: 4px 8px;
     border-top: 1px solid var(--line);
     background: var(--panel);
   }
@@ -1731,6 +1733,11 @@
     overflow-x: hidden;
     grid-template-rows: min(60vh, 480px) auto auto;
   }
+  /* the merged top bar hosts boxed buttons (☰ + Alat) — give the row vertical
+     breathing room (desktop keeps its flush 0 16px underline-tab strip). */
+  .cag-editor .tabbar {
+    padding: 6px 12px;
+  }
   /* ☰ drawer trigger — the app header is hidden on the mobile editor, so the tabbar
      IS the top bar. Big touch target. */
   .cag-editor .tabbar-burger {
@@ -1761,6 +1768,8 @@
     gap: 6px;
     padding: 9px 13px;
     font-size: 14px;
+    /* push Alat to the right edge (fills the dead space left of the hidden hint) */
+    margin-left: auto;
   }
   .cag-editor .tabbar-alat.open {
     background: var(--accent);

@@ -25,6 +25,7 @@ import type { EditorCore } from "./core";
 export interface FrameActions {
   addFrame: () => void;
   updateFrame: () => void;
+  updateFrameById: (id: string) => void;
   loadFrame: (id: string) => void;
   dupFrame: (id: string) => void;
   delFrame: (id: string) => void;
@@ -92,6 +93,20 @@ export function useFrameActions(
     commitHistory("Perbarui frame");
     bump();
   }, [currentFrame, stopPlayback, captureFrameFields, commitHistory, bump]);
+
+  // Write the live camera into a SPECIFIC frame by id (used by the mobile long-press
+  // menu, which targets the held thumbnail rather than the active frame).
+  const updateFrameById = useCallback(
+    (id: string) => {
+      const hit = findFrame(projectRef.current, id);
+      if (!hit) return;
+      stopPlayback();
+      Object.assign(hit.frame, captureFrameFields());
+      commitHistory("Perbarui frame");
+      bump();
+    },
+    [projectRef, stopPlayback, captureFrameFields, commitHistory, bump]
+  );
 
   const loadFrame = useCallback(
     (id: string) => {
@@ -193,6 +208,7 @@ export function useFrameActions(
   return {
     addFrame,
     updateFrame,
+    updateFrameById,
     loadFrame,
     dupFrame,
     delFrame,

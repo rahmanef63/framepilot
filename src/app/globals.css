@@ -419,6 +419,8 @@ header { flex-wrap: wrap; }
 @media (pointer: coarse) {
   button { min-height: 40px; }
   .cag-editor button { min-height: 40px; }
+  /* selects (aspect/fps + the camera-brand pickers) were ~32px — bump to the touch min */
+  .cag-editor select { min-height: 40px; }
   /* keep dense editor micro-controls (outline folds, row icons, HUD maximise) tight */
   .cag-editor .fold,
   .cag-editor .ico,
