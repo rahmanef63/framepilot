@@ -34,15 +34,6 @@ export function MobileFrameStrip() {
         {playing ? <IconPause size={18} /> : <IconPlay size={18} />}
       </button>
       <div className="mfs-scroll">
-        <button
-          className="mfs-add"
-          onClick={() => ctx.addFrame()}
-          aria-label="Tangkap frame dari kamera saat ini"
-          title="Tangkap frame dari kamera saat ini → frame baru"
-        >
-          <IconPlus size={20} />
-          <span>Frame</span>
-        </button>
         {frames.map((f, i) => (
           <button
             key={f.id}
@@ -64,6 +55,15 @@ export function MobileFrameStrip() {
           </button>
         ))}
       </div>
+      <button
+        className="mfs-add"
+        onClick={() => ctx.addFrame()}
+        aria-label="Tangkap frame dari kamera saat ini"
+        title="Tangkap frame dari kamera saat ini → frame baru"
+      >
+        <IconPlus size={20} />
+        <span>Frame</span>
+      </button>
     </div>
   );
 }

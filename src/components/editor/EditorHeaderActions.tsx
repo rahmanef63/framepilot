@@ -43,14 +43,20 @@ export function EditorHeaderActions() {
         <Button variant="ghost" size="sm" icon="↶" title="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={ctx.undo} style={{ padding: "7px 10px" }} />
         <Button variant="ghost" size="sm" icon="↷" title="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={ctx.redo} style={{ padding: "7px 10px" }} />
       </span>
-      <Button
-        variant="ghost"
-        size="sm"
-        icon="🎓"
-        title="Tur / onboarding — pandu langkah demi langkah"
-        onClick={() => window.dispatchEvent(new Event("cag:start-tour"))}
-        style={{ padding: "7px 10px" }}
-      />
+      {/* .ehx-tour is display:contents (globals.css) so desktop lays it out inline as
+          before; the mobile ≤820 rule flips it to display:none (folded into ⋯). The
+          contents value MUST live in CSS, not inline — an inline style would outrank
+          the media-query display:none and the button would never hide. */}
+      <span className="ehx-tour">
+        <Button
+          variant="ghost"
+          size="sm"
+          icon="🎓"
+          title="Tur / onboarding — pandu langkah demi langkah"
+          onClick={() => window.dispatchEvent(new Event("cag:start-tour"))}
+          style={{ padding: "7px 10px" }}
+        />
+      </span>
       <Button variant="primary" size="sm" icon="⤓" title="Simpan Proyek" onClick={saveCurrent} style={{ padding: "7px 11px" }}>
         Simpan
       </Button>
@@ -62,6 +68,7 @@ export function EditorHeaderActions() {
         onSchema={app.openSchema}
         onUndo={ctx.undo}
         onRedo={ctx.redo}
+        onTour={() => window.dispatchEvent(new Event("cag:start-tour"))}
         canUndo={canUndo}
         canRedo={canRedo}
       />

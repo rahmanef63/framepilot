@@ -16,6 +16,7 @@ export function EditorActionMenu({
   onSchema,
   onUndo,
   onRedo,
+  onTour,
   canUndo,
   canRedo,
 }: {
@@ -26,6 +27,7 @@ export function EditorActionMenu({
   onSchema: () => void;
   onUndo: () => void;
   onRedo: () => void;
+  onTour?: () => void;
   canUndo: boolean;
   canRedo: boolean;
 }) {
@@ -101,6 +103,9 @@ export function EditorActionMenu({
           <MenuOption icon="+" title="Impor" desc="Tempel / unggah data" onClick={() => pick(onImport)} />
           <MenuOption icon="↧" title="Ekspor proyek" desc="Unduh JSON proyek" onClick={() => pick(onExport)} />
           <MenuOption icon="{ }" title="Skema" desc="Lihat & unduh skema" onClick={() => pick(onSchema)} />
+          {/* Tur: header 🎓 button is hidden on mobile (≤820) to slim the bar, so it
+              lives here too — the only way to relaunch onboarding on a phone. */}
+          {onTour ? <MenuOption icon="🎓" title="Tur / Panduan" desc="Pandu langkah demi langkah" onClick={() => pick(onTour)} /> : null}
         </div>
       ) : null}
     </div>

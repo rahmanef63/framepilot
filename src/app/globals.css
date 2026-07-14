@@ -196,12 +196,16 @@ html, body { height: 100%; }
      library/docs mobile headers keep their own layout. */
   .app-shell:has(.cag-editor) .app-header {
     flex-wrap: nowrap;
+    padding: 6px 12px;
   }
   .app-shell:has(.cag-editor) .app-header-center,
   .app-shell:has(.cag-editor) .app-header-brand,
   .app-shell:has(.cag-editor) .app-header-brandword,
   .app-shell:has(.cag-editor) .app-header-sep,
-  .app-shell:has(.cag-editor) .app-header-crumb {
+  .app-shell:has(.cag-editor) .app-header-crumb,
+  /* 🎓 tour folded into the ⋯ menu on phones (see EditorActionMenu) → drop the
+     standalone header button so the editor bar stays a tight single row. */
+  .app-shell:has(.cag-editor) .ehx-tour {
     display: none;
   }
   .app-shell:has(.cag-editor) .fp-drawer-nav {
@@ -361,6 +365,10 @@ header { flex-wrap: wrap; }
 /* editor project CRUD portaled into #fp-header-actions (both are display:contents,
    so these lay out as direct flex items of .app-header-right) */
 .ehx { display: contents; }
+/* contents = the wrapped 🎓 button lays out inline in the header (desktop); the
+   ≤820 editor rule flips this to display:none. Kept in CSS (not inline) so that
+   media-query override can win. */
+.ehx-tour { display: contents; }
 .ehx-name {
   width: 180px;
   min-width: 90px;

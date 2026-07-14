@@ -1113,7 +1113,6 @@
   scrollbar-width: thin;
   touch-action: pan-x; /* horizontal scroll only; a vertical drag falls through */
 }
-.cag-editor .mfs-add,
 .cag-editor .mfs-tile {
   flex: 0 0 auto;
   position: relative;
@@ -1127,15 +1126,23 @@
   background: var(--panel-2);
   color: var(--ink);
 }
+/* add-frame: pinned right action (mirrors .mfs-play on the left) — no longer a
+   tile inside the scroll, so play/add bracket the thumbnails: ▶ … thumbs … ＋ */
 .cag-editor .mfs-add {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 44px;
+  padding: 0;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  border-color: var(--accent);
-  color: var(--accent);
-  font: 700 10px var(--e-mono);
+  gap: 1px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 9px var(--e-mono);
   letter-spacing: 0.04em;
 }
 .cag-editor .mfs-tile {
@@ -1536,7 +1543,9 @@
   }
   .cag-editor .editor-page {
     grid-template-columns: 1fr;
-    grid-template-rows: 2fr 5fr 3fr;
+    /* strip 1.4 · canvas 6 · controller 3 (was 2·5·3): slimmer frame strip +
+       tighter header hand the canvas the space — ~40%→~50% of the viewport. */
+    grid-template-rows: 1.4fr 6fr 3fr;
     height: 100%;
     overflow: hidden;
     gap: 8px;
