@@ -63,7 +63,13 @@ self.addEventListener("fetch", (event) => {
         const cached = await caches.match(req);
         const network = fetch(req)
           .then((res) => {
-            if (res && res.ok) caches.open(CACHE).then((c) => c.put(req, res.clone()));
+            // clone SYNCHRONOUSLY — caches.open() is async, so cloning inside its
+            // .then() runs after res is already returned + its body consumed → throws
+            // "Response body is already used". Clone now, stash the copy later.
+            if (res && res.ok) {
+              const copy = res.clone();
+              caches.open(CACHE).then((c) => c.put(req, copy));
+            }
             return res;
           })
           .catch(() => cached);

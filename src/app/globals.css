@@ -500,3 +500,50 @@ body { overflow-x: hidden; }
   .docs-toc-a { border-left: none; border-bottom: 2px solid transparent; padding: 6px 9px; }
   .docs-toc-a.active { border-left: none; border-bottom-color: var(--primary); }
 }
+
+/* "New version available" toast (UpdateToast). Top-center so it never collides with
+   the mobile bottom dock; pinned above the safe-area inset. */
+.fp-update-toast {
+  position: fixed;
+  z-index: 300;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 24px);
+  padding: 8px 8px 8px 16px;
+  background: var(--popover, var(--card));
+  color: var(--foreground);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-lg);
+  font: 600 13px var(--font-sans);
+  animation: fp-ut-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes fp-ut-in {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.fp-update-toast .fp-ut-msg { white-space: nowrap; }
+.fp-update-toast button { border: 0; cursor: pointer; font-family: var(--font-sans); }
+.fp-update-toast .fp-ut-reload {
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 700;
+  font-size: 13px;
+}
+.fp-update-toast .fp-ut-close {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+.fp-update-toast .fp-ut-close:hover { color: var(--foreground); }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/convex-provider";
 import { RegisterSW } from "@/components/RegisterSW";
+import { UpdateToast } from "@/components/UpdateToast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body>
           <ConvexClientProvider>{children}</ConvexClientProvider>
           <RegisterSW />
+          <UpdateToast />
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
