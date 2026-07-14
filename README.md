@@ -8,10 +8,11 @@
 
 **[Live → frame-pilot.rahmanef.com](https://frame-pilot.rahmanef.com)**
 
-![Next.js](https://img.shields.io/badge/Next.js-15-000000)
-![React](https://img.shields.io/badge/React-19-149ECA)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000)
+![React](https://img.shields.io/badge/React-19.2-149ECA)
 ![Three.js](https://img.shields.io/badge/Three.js-0.161-000000)
 ![Convex](https://img.shields.io/badge/Convex-Cloud-EE342F)
+![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6)
 
 </div>
@@ -22,18 +23,22 @@
 
 Camera Angle Guide Pro (package `camera-angle-guide-data-prompt`) turns the vague job of "describe the shot you want" into a concrete, repeatable workflow. You block out a shot in a real 3D viewport — orbit the camera, set the lens, place the subject — and the app reads that camera geometry back out as a paste-ready prompt, re-skinned for whichever AI video platform you target.
 
-Because the shot is real 3D data (azimuth, elevation, distance, roll, FOV, subject transform), the same intent can be re-encoded for **10 different platforms** without you rewriting a word. Anonymous use runs entirely on `localStorage`; sign in and your projects sync to Convex Cloud.
+Because the shot is real 3D data (azimuth, elevation, distance, roll, FOV, subject transform), the same intent can be re-encoded for **11 different platforms** without you rewriting a word — and a real camera-body look tag can ride along. Anonymous use runs entirely on `localStorage`; sign in and your projects sync to Convex Cloud.
 
 The UI is in **Bahasa Indonesia**.
 
 ## Features
 
 - **3D shot planner (`/`)** — one persistent WebGL canvas rendering a scissor multi-viewport quad (cam / top / left / right), or a single focused view, or a full-bleed preview. WASD fly-nav, drag modes for Navigation / Subject / Camera, and rig sliders for azimuth, elevation, distance, FOV/lens, roll, plus raw camera and anchor positions.
-- **Live Prompt Kamera** — the Prompt tab shows the paste-ready prompt for the current selection (active frame → single shot; otherwise the whole project), with a platform picker, a Copy button, per-platform hints, and a collapsible bilingual production detail dump.
+- **Live Prompt Kamera** — the Prompt tab shows the paste-ready prompt for the current selection (active frame → single shot; otherwise the whole project), with an **11-platform** picker, a Copy button, per-platform hints, and a collapsible bilingual production detail dump.
 
-  <img width="420" src="docs/assets/prompt.png" alt="Prompt tab: platform picker, live Prompt Kamera output, and the nine detail toggle checkboxes" />
+  <img width="420" src="docs/assets/prompt.png" alt="Prompt tab: LTX Studio platform, the live Prompt Kamera output with an ARRI Alexa 35 look tag, and the 10 detail toggles" />
 
-- **9 prompt-detail toggles** — checkboxes for lens, depth-of-field, elevation, view, distance, height, dutch tilt, movement, and framing. Each folds one clause into the prompt live; the state is persisted per browser and shared by the Prompt dock and the Full Preview panel.
+- **Camera brands** — pick a real camera body (ARRI Alexa 35, RED V-Raptor, Sony Venice 2, Blackmagic, Canon C300, DJI Ronin/Mavic drone, iPhone 15 Pro, GoPro) and its signature look folds into the prompt (`shot on ARRI Alexa 35, REVEAL filmic color, natural skin tones, gentle highlight rolloff`). Each frame can use a **different** camera, or flip a **global toggle** to set one camera once for the whole project. Look descriptors are web-researched per brand; engineering specs stay in the UI, out of the prompt.
+
+  <img width="360" src="docs/assets/camera.png" alt="The camera-brand picker showing ARRI Alexa 35 and its Super 35 · REVEAL filmic look hint" />
+
+- **10 prompt-detail toggles** — checkboxes for lens, depth-of-field, elevation, view, distance, height, dutch tilt, movement, framing, and camera-brand. Each folds one clause into the prompt live; the state is persisted per browser and shared by the Prompt dock and the Full Preview panel.
 - **Scene / frame manager** — add frames from the current camera, update dirty frames, per-frame duration, and a transport row (prev / play-pause / next / stop / loop / smooth transition) with playback indicator, portaled into the Studio sidebar.
 - **Pustaka library (`/library`)** — saved projects over the SSOT store with Grid / Table / Split views. Import camera-angle-guide/v2 JSON (paste, upload, or via an AI extraction-prompt helper for Photo / YouTube / File / Text sources), or start from presets at `/template`.
 - **Export** — Project JSON, Shot List CSV, Prompt TXT (skinned at the selected platform), and Storyboard PNG.
@@ -43,14 +48,22 @@ The UI is in **Bahasa Indonesia**.
   <img width="420" src="docs/assets/docs.png" alt="The standalone /docs page with a two-column TOC and scroll-spy" />
 
 - **Auth + cloud sync** — Convex Cloud with `@convex-dev/auth` (Password). Signed-in users get per-user cloud projects; anonymous users stay fully local. An admin panel (`/admin`) is gated by a server-side email allowlist.
-- **Responsive** — the Studio works down to a 390px mobile editor.
+- **Mobile editor** — a purpose-built ≤820px layout: a slim one-row header, a horizontal frame strip with square thumbnails, a big 3D canvas, and a **bottom dock** (Prompt · Kamera · **＋** · Preset · Lainnya) that opens each controller section as an in-flow split panel. Two-finger **pinch-zoom + pan**, and a **long-press** on any frame thumbnail opens a rename / duplicate / move / delete menu.
 
-  <img width="240" src="docs/assets/mobile.png" alt="Mobile editor at 390px width" />
+  <p>
+    <img width="220" src="docs/assets/mobile.png" alt="Mobile editor: slim header, square frame strip, 3D canvas, and the 5-button bottom dock" />
+    <img width="220" src="docs/assets/mobile-menu.png" alt="Long-press a frame thumbnail on mobile for the rename / duplicate / move / delete menu" />
+  </p>
+
+- **Installable PWA** — a web-manifest + a conservative service worker (network-first navigations, cache-first static, Convex left untouched) make it installable to the home screen with an offline shell. A "Muat ulang versi" action force-purges the cache after a deploy.
+- **Auth + cloud sync** — Convex Cloud with `@convex-dev/auth` (Password). Signed-in users get per-user cloud projects; anonymous users stay fully local. An admin panel (`/admin`) is gated by a server-side email allowlist.
 
 ### Recent
 
-- The sidebar footer (theme + Docs + Panduan + Admin + account) collapsed into a **single user dropdown** so the nav breathes.
-- The scene/frame manager's action + transport strip is now a tidy **two-row bar**.
+- **LTX Studio** joins the platform list (11 total) — flowing present-tense prose with an end-state camera sentence, per its prompt guide.
+- **Camera brands** — per-frame or global camera body whose look is web-researched and folded into the prompt.
+- **Next.js 16 + React 19.2**, and an **installable PWA**.
+- A rebuilt **mobile editor**: one-row header, bottom dock, long-press frame CRUD, pinch-zoom + pan.
 
 ## How it works
 
@@ -63,7 +76,8 @@ flowchart TD
   E --> F[toNeutral]
   B -->|RawFrame library shape| F
   F --> G[NeutralShot - 3D geometry + one move]
-  H[Platform pick - 10 targets] --> I[encodeShot]
+  H[Platform pick - 11 targets] --> I[encodeShot]
+  N[Camera brand pick] --> I
   J[ShotOptions - 9 toggles] --> I
   G --> I
   I --> K[Per-platform skin - sentence luma bracket]
@@ -105,8 +119,11 @@ Nine `ShotOptions` toggles (default all-on, persisted to `localStorage` `cag.pro
 | Higgsfield | sentence |
 | Wan 2.x | sentence |
 | Seedance | sentence |
+| LTX Studio | sentence (present-tense prose + an end-state camera sentence) |
 
 Selection is persisted per browser (`localStorage` `cag.platform`, default `runway`).
+
+A tenth toggle folds an optional **camera-brand** look tag (`shot on ARRI Alexa 35, …`) after the geometry clause. The camera can be set per-frame, or a project-wide **global camera** toggle applies one body to every frame. The look phrase per brand is web-researched (`src/lib/cameras.ts`); with no camera picked the output is byte-identical to before.
 
 ## Routes
 
@@ -122,13 +139,14 @@ Selection is persisted per browser (`localStorage` `cag.platform`, default `runw
 
 ## Tech stack
 
-- **Next.js 15** (App Router, `output: "standalone"`, strict mode) + **React 19**
+- **Next.js 16** (App Router, `output: "standalone"`, `build --webpack`) + **React 19.2**
 - **TypeScript** strict, path alias `@/* → ./src/*`
 - **Three.js 0.161** — one persistent WebGL canvas, scissor multi-viewport quad, dynamically imported to stay out of the shared bundle
 - **Convex Cloud** + **@convex-dev/auth** (Password provider) + `@auth/core`
-- Hand-rolled design system in `src/components/ds/*` (Button, Badge, Modal, Tabs, NavItem)
+- **PWA** — `app/manifest.ts` + a hand-rolled `public/sw.js` (no `next-pwa` dependency)
+- Hand-rolled design system in `src/components/ds/*` (Button, Badge, Modal, NavItem)
 - Rupa CSS design tokens in `globals.css` with Light / Dark / System theming
-- **Playwright** (dev dependency)
+- **Playwright** (local dev dependency, kept out of the committed manifest)
 
 ## Getting started
 
@@ -144,7 +162,7 @@ npm run dev
 
 There is no `convex` npm script — run `npx convex dev` directly. Anonymous use works on `localStorage` without a backend, but auth and cloud sync require Convex to be running with a valid client URL.
 
-Scripts: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`.
+Scripts: `npm run dev` (Turbopack), `npm run build` (webpack standalone), `npm run start`. Production deploys as a Docker `output: "standalone"` image (see `Dockerfile`).
 
 ### Environment variables
 

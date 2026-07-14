@@ -78,7 +78,7 @@ export const DOCS: DocSection[] = [
   {
     id: "platform",
     title: "Platform video-AI",
-    lead: "10 target didukung; masing-masing pakai best-practice-nya sendiri.",
+    lead: "11 target didukung; masing-masing pakai best-practice-nya sendiri.",
     blocks: [
       {
         type: "list",
@@ -93,7 +93,12 @@ export const DOCS: DocSection[] = [
           "Higgsfield — kalimat + satu preset Camera-Motion.",
           "Wan 2.x — kalimat natural, verba kamera polos + tempo.",
           "Seedance — kalimat natural, satu gerakan jelas/shot.",
+          "LTX Studio — prosa present-tense mengalir; gerakan kamera jadi kalimat sendiri + END-STATE (“…settling on the medium shot”).",
         ],
+      },
+      {
+        type: "p",
+        text: "Opsional: tag kamera brand (mis. “shot on ARRI Alexa 35, REVEAL filmic color…”) bisa ikut di prompt — per-frame atau satu kamera global untuk seluruh proyek.",
       },
     ],
   },
