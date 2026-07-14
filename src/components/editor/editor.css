@@ -1801,9 +1801,10 @@
   .cag-editor .tabbar-alat {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 9px 13px;
-    font-size: 14px;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 11px;
+    min-height: 40px;
   }
   .cag-editor .tabbar-alat.open {
     background: var(--accent);
@@ -1811,7 +1812,7 @@
     color: var(--accent-ink);
   }
   .cag-editor .tabbar-alat-chev {
-    transition: transform 0.15s;
+    transition: transform 0.22s var(--ease, ease);
   }
   .cag-editor .tabbar-alat.open .tabbar-alat-chev {
     transform: rotate(180deg);

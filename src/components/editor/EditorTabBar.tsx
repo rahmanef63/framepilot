@@ -82,10 +82,12 @@ export function EditorTabBar() {
           className={"tabbar-alat" + (toolsOpen ? " open" : "")}
           aria-expanded={toolsOpen}
           aria-controls="tabbar-tools"
+          aria-label="Alat"
+          title="Alat"
           onClick={() => setToolsOpen((v) => !v)}
         >
-          <Settings size={15} aria-hidden /> Alat
-          <ChevronDown size={13} className="tabbar-alat-chev" aria-hidden />
+          <Settings size={16} aria-hidden />
+          <ChevronDown size={14} className="tabbar-alat-chev" aria-hidden />
         </button>
       </div>
 

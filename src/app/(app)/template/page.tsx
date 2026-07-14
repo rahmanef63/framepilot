@@ -13,6 +13,7 @@
 //      EditorStateProvider saat mount (loadAutosave -> swapProject).
 //   4. router.push("/") — Studio 3D mount ulang & memuat dokumen tadi.
 
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CagCardPreview } from "@/shared/viewport3d/CagCardPreview";
 import { Badge } from "@/components/ds/Badge";
@@ -20,9 +21,41 @@ import { Button } from "@/components/ds/Button";
 import { toEditorProject } from "@/lib/editorModel";
 import { AUTOKEY, saveProject } from "@/lib/editorStorage";
 import { STARTER_TEMPLATES, type StarterTemplate } from "./templates";
+import "./template.css";
+
+type SortKey = "name" | "shots-desc" | "shots-asc";
+
+// Total frames across all scenes — the "shot count" used by the header meta and
+// the shot-count sort options (matches the per-card "{shots} shot" figure).
+const shotCount = (t: StarterTemplate) =>
+  t.project.scenes.reduce((n, s) => n + s.frames.length, 0);
 
 export default function TemplatePage() {
   const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortKey>("name");
+  const [ratio, setRatio] = useState("all");
+
+  // Distinct aspect ratios present in the data, sorted — drives the filter <select>.
+  const ratios = useMemo(
+    () => Array.from(new Set(STARTER_TEMPLATES.map((t) => t.aspectRatio))).sort(),
+    [],
+  );
+
+  // Visible list: filter by ratio → search (title+description) → sort.
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = STARTER_TEMPLATES.filter((t) => {
+      if (ratio !== "all" && t.aspectRatio !== ratio) return false;
+      if (!q) return true;
+      return (t.title + " " + t.description).toLowerCase().includes(q);
+    });
+    const sorted = [...list];
+    if (sort === "name") sorted.sort((a, b) => a.title.localeCompare(b.title));
+    else if (sort === "shots-desc") sorted.sort((a, b) => shotCount(b) - shotCount(a));
+    else sorted.sort((a, b) => shotCount(a) - shotCount(b));
+    return sorted;
+  }, [query, sort, ratio]);
 
   const useTemplate = (t: StarterTemplate) => {
     const project = toEditorProject(t.project);
@@ -44,21 +77,54 @@ export default function TemplatePage() {
           <h1 style={{ font: "800 24px/1.25 var(--font-sans)", color: "var(--foreground)", margin: 0 }}>
             Template
           </h1>
-          <Badge tone="outline">{STARTER_TEMPLATES.length} preset</Badge>
+          <Badge tone="outline">
+            {visible.length} / {STARTER_TEMPLATES.length} preset
+          </Badge>
         </div>
         <p style={{ font: "400 14px/1.6 var(--font-sans)", color: "var(--muted-foreground)", margin: "0 0 8px" }}>
           Titik awal cepat untuk Studio 3D — pilih satu, langsung dibuka & tersimpan di Pustaka sebagai proyek yang
           bisa kamu ubah.
         </p>
 
-        <div
-          style={{
-            display: "grid",
-            gap: 18,
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          }}
-        >
-          {STARTER_TEMPLATES.map((t) => {
+        <div className="tpl-toolbar">
+          <input
+            className="tpl-search"
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Cari template…"
+            aria-label="Cari template"
+          />
+          <select
+            className="tpl-select"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            aria-label="Urutkan"
+          >
+            <option value="name">Nama (A–Z)</option>
+            <option value="shots-desc">Shot terbanyak</option>
+            <option value="shots-asc">Shot paling sedikit</option>
+          </select>
+          <select
+            className="tpl-select"
+            value={ratio}
+            onChange={(e) => setRatio(e.target.value)}
+            aria-label="Filter rasio"
+          >
+            <option value="all">Semua rasio</option>
+            {ratios.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {visible.length === 0 ? (
+          <div className="tpl-empty">Tidak ada template yang cocok.</div>
+        ) : (
+          <div className="tpl-grid">
+            {visible.map((t) => {
             const f0 = t.project.scenes[0].frames[0];
             const scenes = t.project.scenes.length;
             const shots = t.project.scenes.reduce((n, s) => n + s.frames.length, 0);
@@ -123,8 +189,9 @@ export default function TemplatePage() {
                 </div>
               </div>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

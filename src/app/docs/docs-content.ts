@@ -21,7 +21,7 @@ export const DOCS: DocSection[] = [
       {
         type: "p",
         text:
-          "Buat sineas, kreator konten, dan storyboard artist: rancang tiap angle di studio 3D interaktif — ukuran shot, sudut, subjek, lensa, satu gerakan kamera, dan speed — lalu pilih platform video-AI dan salin Prompt Kamera yang tinggal ditempel ke Runway, Kling, Luma, Sora, Veo, atau Hailuo.",
+          "Buat sineas, kreator konten, dan storyboard artist: rancang tiap angle di studio 3D interaktif — ukuran shot, sudut, subjek, lensa, satu gerakan kamera, dan speed — lalu pilih platform video-AI dan salin Prompt Kamera yang tinggal ditempel ke Runway, Kling, Luma, Veo, atau Hailuo.",
       },
       {
         type: "p",
@@ -47,7 +47,7 @@ export const DOCS: DocSection[] = [
           {
             n: "02",
             t: "Pilih platform video-AI",
-            d: "Tentukan target: Runway, Kling, Luma, Sora, Veo, Hailuo, dan lainnya. Prompt langsung di-tune mengikuti gaya platform.",
+            d: "Tentukan target: Runway, Kling, Luma, Veo, Hailuo, dan lainnya. Prompt langsung di-tune mengikuti gaya platform.",
           },
           {
             n: "03",
@@ -78,7 +78,7 @@ export const DOCS: DocSection[] = [
   {
     id: "platform",
     title: "Platform video-AI",
-    lead: "11 target didukung; masing-masing pakai best-practice-nya sendiri.",
+    lead: "10 target didukung; masing-masing pakai best-practice-nya sendiri.",
     blocks: [
       {
         type: "list",
@@ -86,7 +86,6 @@ export const DOCS: DocSection[] = [
           "Runway — kalimat natural, satu gerakan/shot, selalu ada speed.",
           "Kling — gerakan di 8–10 kata pertama + kata tempo.",
           "Google Veo — gerakan kamera jadi kalimat pendek tersendiri.",
-          "Sora — pimpin dengan frame, gerakan 5–10 kata.",
           "Luma — string-eksak + bisa di-stack (“camera push in”).",
           "Hailuo / MiniMax — token [Push in] / [Truck left], maks 3.",
           "Pika — kalimat natural, kosakata umum.",

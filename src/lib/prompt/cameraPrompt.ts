@@ -145,14 +145,6 @@ export function encodeShot(n: NeutralShot, platformId: PlatformId, o: ShotOption
       const b = J([head, ld, cam, gear, fr]);
       return isStatic ? `${b}. The camera holds static.` : `${b}. The camera ${ADVERB[n.speed]} ${mv.verb}.`;
     }
-    case "sora": {
-      // lead with the frame, keep the move a short clause (geometry before the move).
-      // n.framing is "16:9 framing" — strip the trailing word so the lead-in reads
-      // "16:9 frame:" not the double-noun "16:9 framing frame:".
-      const framePrefix = fr ? `${cap(n.framing.replace(/ framing$/i, ""))} frame: ` : "";
-      const body = J([head, ld, cam, gear]);
-      return isStatic ? `${framePrefix}${body}, static.` : `${framePrefix}${body}, ${n.speed} ${mv.phrase}.`;
-    }
     case "luma": {
       // EXACT-STRING + STACKABLE: append literal camera string(s).
       const base = J([head, ld, cam, gear, fr]);

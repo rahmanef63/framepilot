@@ -48,7 +48,7 @@ const STEPS: Step[] = [
     target: "platform",
     promptTab: true,
     title: "6 · Pilih platform video-AI",
-    body: "Runway, Kling, Veo, Sora, Luma, Hailuo, dll. Prompt langsung di-tune mengikuti gaya platform yang kamu pilih.",
+    body: "Runway, Kling, Veo, Luma, Hailuo, dll. Prompt langsung di-tune mengikuti gaya platform yang kamu pilih.",
   },
   {
     target: "detail-prompt",

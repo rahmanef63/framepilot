@@ -59,13 +59,6 @@ export const PLATFORMS: Platform[] = [
     note: "Natural sentence, ONE move, write the camera move as its OWN short sentence (\"The camera slowly dollies in.\").",
   },
   {
-    id: "sora",
-    label: "Sora",
-    style: "sentence",
-    oneMove: true,
-    note: "Natural sentence, lead with the frame, one clause size+angle+lens+move, keep the move 5-10 words.",
-  },
-  {
     id: "luma",
     label: "Luma",
     style: "luma",
@@ -112,7 +105,7 @@ export const PLATFORMS: Platform[] = [
     label: "LTX Studio",
     style: "sentence",
     oneMove: true,
-    note: "LTX Studio / LTX-2 (Lightricks) — flowing PRESENT-TENSE prose (like Veo/Sora), never tokens. The camera move is its OWN sentence with a pace word + an END-STATE (\"The camera slowly dollies in, settling on the medium close-up\") — end-state is LTX's biggest coherence lever. In-app you can also seed motion from a Gen Space camera preset.",
+    note: "LTX Studio / LTX-2 (Lightricks) — flowing PRESENT-TENSE prose (like Veo), never tokens. The camera move is its OWN sentence with a pace word + an END-STATE (\"The camera slowly dollies in, settling on the medium close-up\") — end-state is LTX's biggest coherence lever. In-app you can also seed motion from a Gen Space camera preset.",
   },
 ];
 

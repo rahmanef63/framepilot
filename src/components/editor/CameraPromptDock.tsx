@@ -17,6 +17,7 @@ import { usePromptOptions } from "./usePromptOptions";
 import { PlatformSelect, PlatformHint } from "./PlatformPicker";
 import { PromptOptionsMenu } from "./PromptOptionsMenu";
 import { copyText } from "./panel/outline/clipboard";
+import { CopyButton } from "./CopyButton";
 
 // showDetailToggles: the desktop dock shows the "Detail prompt" checkboxes inline;
 // on mobile MobilePanel hosts them in a dedicated accordion section, so it passes
@@ -70,6 +71,7 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
         <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
           {copied ? <>Tersalin <Check size={14} aria-hidden /></> : hasShots ? "Salin" : "Belum ada shot"}
         </Button>
+        <CopyButton variant="ghost" text={() => projectDetail(ctx.project)} label="Salin detail" disabled={!hasShots} />
       </div>
 
       <textarea

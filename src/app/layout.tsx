@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
   title: "Camera Angle Guide Pro — studio 3D → prompt kamera AI",
   description:
-    "Susun sudut kamera di studio 3D lalu ekspor prompt kamera siap-tempel untuk 10+ platform video AI (Runway, Kling, Veo, Sora, Luma, …).",
+    "Susun sudut kamera di studio 3D lalu ekspor prompt kamera siap-tempel untuk 10+ platform video AI (Runway, Kling, Veo, Luma, …).",
   openGraph: {
     type: "website",
     url: "/",

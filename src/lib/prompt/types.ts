@@ -5,7 +5,7 @@
 
 // The target AI video platforms we encode for.
 export type PlatformId =
-  | "runway" | "kling" | "veo" | "sora" | "luma" | "hailuo" | "pika"
+  | "runway" | "kling" | "veo" | "luma" | "hailuo" | "pika"
   | "higgsfield" | "wan" | "seedance" | "ltx";
 
 // How a platform wants the camera move expressed:

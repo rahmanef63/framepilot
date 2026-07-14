@@ -18,6 +18,7 @@ import { PlatformSelect, PlatformHint } from "./PlatformPicker";
 import { PromptOptionsMenu } from "./PromptOptionsMenu";
 import { IconPrev, IconPlay, IconPause, IconNext, IconStop, IconLoop } from "./EditorIcons";
 import { copyText } from "./panel/outline/clipboard";
+import { CopyButton } from "./CopyButton";
 
 export function PreviewPanel() {
   const ctx = useEditor();
@@ -130,6 +131,7 @@ export function PreviewPanel() {
           >
             {copied ? <>Tersalin <Check size={16} aria-hidden /></> : hasShots ? "Salin Prompt" : "Belum ada shot"}
           </Button>
+          <CopyButton variant="ghost" size="md" text={() => projectDetail(ctx.project)} label="Salin detail" disabled={!hasShots} />
         </div>
         {hasShots ? (
           <details className="cam-detail">
