@@ -1164,6 +1164,92 @@
   padding: 0 4px;
 }
 
+/* ---------- long-press frame menu (MobileFrameMenu, mobile only) ----------
+   A fixed popover anchored under the held thumbnail; the strip is display:none on
+   desktop so this only ever renders on touch. */
+.cag-editor .mfs-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: transparent;
+}
+.cag-editor .mfs-menu {
+  position: fixed;
+  z-index: 71;
+  min-width: 176px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--e-r);
+  box-shadow: var(--shadow-lg, 0 10px 28px rgba(0, 0, 0, 0.3));
+}
+.cag-editor .mfs-menu-head {
+  font: 700 10px var(--e-mono);
+  color: var(--muted);
+  padding: 4px 8px 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cag-editor .mfs-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  min-height: 42px;
+  border: 0;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  color: var(--ink);
+  font: 600 12.5px var(--e-sans);
+  cursor: pointer;
+}
+.cag-editor .mfs-menu button:disabled {
+  opacity: 0.38;
+}
+.cag-editor .mfs-menu button:not(:disabled):active {
+  background: var(--panel-2);
+}
+.cag-editor .mfs-menu-del {
+  color: var(--destructive);
+}
+.cag-editor .mfs-menu-del.armed {
+  background: var(--destructive);
+  color: #fff;
+}
+.cag-editor .mfs-menu-rename {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+}
+.cag-editor .mfs-menu-rename input {
+  flex: 1;
+  min-width: 0;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px;
+  color: var(--ink);
+  font: 500 12.5px var(--e-sans);
+}
+.cag-editor .mfs-menu-rename button {
+  flex: none;
+  min-height: 0;
+  width: auto;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 12px var(--e-sans);
+}
+
 /* ---------- mobile controller accordion (MobilePanel, ≤820) ----------
    Native <details> sections, in-flow (no overlay): tap a header to expand it,
    pushing the rest down. Replaces the desktop nested tabs on phones. */
