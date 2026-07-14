@@ -6,7 +6,7 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
-import { CAMERAS } from "@/lib/cameras";
+import { CAMERAS, cameraById } from "@/lib/cameras";
 
 const hint: React.CSSProperties = { font: "400 11px var(--e-sans)", color: "var(--muted)", margin: "5px 0 0" };
 
@@ -17,6 +17,7 @@ export function CameraSelect() {
   const global = settings.globalCamera;
   const value = global ? settings.camera : current?.camera ?? "";
   const disabled = global || !current;
+  const preset = cameraById(value);
 
   return (
     <div className="group">
@@ -34,6 +35,7 @@ export function CameraSelect() {
             </option>
           ))}
         </select>
+        {preset?.look ? <p style={hint}>◈ {preset.sensor} · {preset.look}</p> : null}
         {global ? (
           <p style={hint}>Ikut kamera global — atur di Viewport.</p>
         ) : !current ? (

@@ -173,6 +173,15 @@ export function encodeShot(n: NeutralShot, platformId: PlatformId, o: ShotOption
         .slice(0, 3);
       return `${base} ${toks.map((t) => `[${t}]`).join(" ")}`;
     }
+    case "ltx": {
+      // LTX Studio / LTX-2 (Lightricks): flowing PRESENT-TENSE prose (like veo), and
+      // the camera move is its OWN sentence with a pace word + an END-STATE
+      // ("settling on the …") — LTX's single biggest coherence lever per its prompt
+      // guide (ltx.io/model, film.fun). Reuses ADVERB + MOVE_STRINGS.verb.
+      const b = J([head, ld, cam, gear, fr]);
+      if (isStatic) return `${cap(b)}. The camera holds static.`;
+      return `${cap(b)}. The camera ${ADVERB[n.speed]} ${mv.verb}, settling on the ${n.size}.`;
+    }
     case "pika":
     case "higgsfield":
     case "wan":

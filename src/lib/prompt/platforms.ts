@@ -107,6 +107,13 @@ export const PLATFORMS: Platform[] = [
     oneMove: true,
     note: "ByteDance Seedance — natural sentence, ONE clear move/shot; strong at multi-shot so keep each shot's camera intent explicit. Add a pace word.",
   },
+  {
+    id: "ltx",
+    label: "LTX Studio",
+    style: "sentence",
+    oneMove: true,
+    note: "LTX Studio / LTX-2 (Lightricks) — flowing PRESENT-TENSE prose (like Veo/Sora), never tokens. The camera move is its OWN sentence with a pace word + an END-STATE (\"The camera slowly dollies in, settling on the medium close-up\") — end-state is LTX's biggest coherence lever. In-app you can also seed motion from a Gen Space camera preset.",
+  },
 ];
 
 // neutral move id -> { luma exact-string, hailuo bracket token, inline phrase, veo verb }.
