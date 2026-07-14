@@ -48,11 +48,12 @@ The UI is in **Bahasa Indonesia**.
   <img width="420" src="docs/assets/docs.png" alt="The standalone /docs page with a two-column TOC and scroll-spy" />
 
 - **Auth + cloud sync** — Convex Cloud with `@convex-dev/auth` (Password). Signed-in users get per-user cloud projects; anonymous users stay fully local. An admin panel (`/admin`) is gated by a server-side email allowlist.
-- **Mobile editor** — a purpose-built ≤820px layout: a slim one-row header, a horizontal frame strip with square thumbnails, a big 3D canvas, and a **bottom dock** (Prompt · Kamera · **＋** · Preset · Lainnya) that opens each controller section as an in-flow split panel. Two-finger **pinch-zoom + pan**, and a **long-press** on any frame thumbnail opens a rename / duplicate / move / delete menu.
+- **Mobile editor** — a purpose-built ≤820px layout where the tabbar **is** the top bar (`☰ · Editor · Full Preview · ⚙ Alat` — no separate app header), a square-thumbnail frame strip, a big 3D canvas, and a **bottom dock** (Prompt · Kamera · **＋** · Preset · Lainnya) that opens each controller section as an in-flow split panel. Two-finger **pinch-zoom + pan**; a **long-press** on any frame thumbnail opens a rename / duplicate / move / delete menu; and the **☰ drawer** holds the app nav plus every project action (undo/redo, save, import/export, schema, tour, reload) that lives in the desktop ⋯ menu.
 
   <p>
-    <img width="220" src="docs/assets/mobile.png" alt="Mobile editor: slim header, square frame strip, 3D canvas, and the 5-button bottom dock" />
-    <img width="220" src="docs/assets/mobile-menu.png" alt="Long-press a frame thumbnail on mobile for the rename / duplicate / move / delete menu" />
+    <img width="200" src="docs/assets/mobile.png" alt="Mobile editor: merged top bar, square frame strip, 3D canvas, and the 5-button bottom dock" />
+    <img width="200" src="docs/assets/mobile-menu.png" alt="Long-press a frame thumbnail on mobile for the rename / duplicate / move / delete menu" />
+    <img width="200" src="docs/assets/mobile-drawer.png" alt="The ☰ drawer with the app nav and all project actions" />
   </p>
 
 - **Installable PWA** — a web-manifest + a conservative service worker (network-first navigations, cache-first static, Convex left untouched) make it installable to the home screen with an offline shell. A "Muat ulang versi" action force-purges the cache after a deploy.

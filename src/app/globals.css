@@ -191,34 +191,19 @@ html, body { height: 100%; }
   .fp-scene-heading {
     display: none !important;
   }
-  /* Editor mobile header = ONE row: hide brand + breadcrumb + the center app-nav
-     (nav moves into the ☰ drawer, .fp-drawer-nav). Editor-scoped via :has so the
-     library/docs mobile headers keep their own layout. */
+  /* Editor mobile: the tabbar becomes the SINGLE top bar (it grows a ☰ drawer
+     trigger, .tabbar-burger), so hide the whole app header entirely — its project
+     actions (the old ⋯ menu) move into the ☰ drawer via #fp-drawer-actions. The app
+     nav + actions fill the otherwise-empty drawer. Editor-scoped via :has so the
+     library/docs mobile headers keep their own header. */
   .app-shell:has(.cag-editor) .app-header {
-    flex-wrap: nowrap;
-    padding: 6px 12px;
-  }
-  .app-shell:has(.cag-editor) .app-header-center,
-  .app-shell:has(.cag-editor) .app-header-brand,
-  .app-shell:has(.cag-editor) .app-header-brandword,
-  .app-shell:has(.cag-editor) .app-header-sep,
-  .app-shell:has(.cag-editor) .app-header-crumb,
-  /* Phone editor header = ☰ · undo · redo · ⋯ ONLY. The project name, Simpan, and
-     🎓 tour all fold into the ⋯ Aksi menu → drop them here so the bar is a tight
-     single row and the canvas keeps the height. */
-  .app-shell:has(.cag-editor) .ehx-tour,
-  .app-shell:has(.cag-editor) .ehx-save,
-  .app-shell:has(.cag-editor) .ehx-name,
-  .app-shell:has(.cag-editor) .ehx-autosave {
     display: none;
-  }
-  /* undo/redo are hidden <1180 globally, but the phone editor wants them visible in
-     the header (the two most-used actions) — higher specificity re-shows them. */
-  .app-shell:has(.cag-editor) .ehx-history {
-    display: inline-flex;
   }
   .app-shell:has(.cag-editor) .fp-drawer-nav {
     display: flex;
+  }
+  .app-shell:has(.cag-editor) .fp-drawer-actions-wrap {
+    display: block;
   }
 }
 
@@ -286,6 +271,12 @@ button { font-family: inherit; }
 /* Mobile drawer nav (rendered in Sidebar on Studio) — hidden on desktop; the ≤820
    editor rule flips it to display:flex. A column of horizontal NavItems. */
 .fp-drawer-nav { display: none; flex-direction: column; gap: 2px; margin-bottom: 8px; flex: none; }
+/* Mobile editor: the project actions (portaled from EditorHeaderActions) live in the
+   drawer since the header is hidden. Both hidden on desktop (the ⋯ header menu owns
+   them there); the ≤820 editor rule flips them on. */
+.fp-drawer-actions-wrap { display: none; flex: none; margin: 2px 0 8px; }
+.fp-drawer-heading { font: 700 9.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); padding: 6px 6px 4px; }
+#fp-drawer-actions { display: flex; flex-direction: column; gap: 2px; }
 @media (max-width: 820px) {
   .fp-sidebar {
     position: fixed;

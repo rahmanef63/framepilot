@@ -11,7 +11,7 @@ import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { Button } from "@/components/ds/Button";
 import { useProjectSync } from "./useProjectSync";
-import { EditorActionMenu } from "./EditorActionMenu";
+import { EditorActionMenu, EditorActionRows } from "./EditorActionMenu";
 
 export function EditorHeaderActions() {
   const ctx = useEditor();
@@ -20,9 +20,14 @@ export function EditorHeaderActions() {
   const { saveCurrent } = useProjectSync();
 
   const [slot, setSlot] = useState<HTMLElement | null>(null);
+  // On the mobile editor the app header is hidden and the ⋯ actions live in the ☰
+  // drawer instead — portal the shared action rows into the sidebar's slot.
+  const [drawerSlot, setDrawerSlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
     setSlot(document.getElementById("fp-header-actions"));
+    setDrawerSlot(document.getElementById("fp-drawer-actions"));
   }, []);
+  const startTour = () => window.dispatchEvent(new Event("cag:start-tour"));
 
   const content = (
     <div className="ehx">
@@ -79,6 +84,25 @@ export function EditorHeaderActions() {
     </div>
   );
 
-  if (!slot) return null;
-  return createPortal(content, slot);
+  const drawerActions = (
+    <EditorActionRows
+      onSave={saveCurrent}
+      onNew={ctx.newProjectAction}
+      onImport={() => app.openImport("paste")}
+      onExport={app.exportProject}
+      onSchema={app.openSchema}
+      onUndo={ctx.undo}
+      onRedo={ctx.redo}
+      onTour={startTour}
+      canUndo={canUndo}
+      canRedo={canRedo}
+    />
+  );
+
+  return (
+    <>
+      {slot ? createPortal(content, slot) : null}
+      {drawerSlot ? createPortal(drawerActions, drawerSlot) : null}
+    </>
+  );
 }

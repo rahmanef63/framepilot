@@ -96,24 +96,69 @@ export function EditorActionMenu({
             ...menuPos,
           }}
         >
-          <MenuOption icon="↶" title="Urungkan" desc="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={() => pick(onUndo)} />
-          <MenuOption icon="↷" title="Ulangi" desc="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={() => pick(onRedo)} />
-          <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
-          <MenuOption icon="⤓" title="Simpan Proyek" desc="Tulis ke penyimpanan" onClick={() => pick(onSave)} />
-          <MenuOption icon="✦" title="Proyek Baru" desc="Mulai proyek kosong" onClick={() => pick(onNew)} />
-          <MenuOption icon="+" title="Impor" desc="Tempel / unggah data" onClick={() => pick(onImport)} />
-          <MenuOption icon="↧" title="Ekspor proyek" desc="Unduh JSON proyek" onClick={() => pick(onExport)} />
-          <MenuOption icon="{ }" title="Skema" desc="Lihat & unduh skema" onClick={() => pick(onSchema)} />
-          {/* Tur: header 🎓 button is hidden on mobile (≤820) to slim the bar, so it
-              lives here too — the only way to relaunch onboarding on a phone. */}
-          {onTour ? <MenuOption icon="🎓" title="Tur / Panduan" desc="Pandu langkah demi langkah" onClick={() => pick(onTour)} /> : null}
-          <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
-          {/* Hard reload: unregister SW + purge Cache Storage + cache-busted reload —
-              the fix when a Dokploy deploy leaves the tab on a stale bundle. */}
-          <MenuOption icon="⟳" title="Muat ulang versi" desc="Bersihkan cache & ambil versi terbaru" onClick={() => pick(() => void forceFreshReload())} />
+          <EditorActionRows
+            onSave={onSave}
+            onNew={onNew}
+            onImport={onImport}
+            onExport={onExport}
+            onSchema={onSchema}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            onTour={onTour}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onPick={pick}
+          />
         </div>
       ) : null}
     </div>
+  );
+}
+
+// The shared action rows — used by the desktop ⋯ popover AND (on mobile) portaled
+// into the ☰ drawer (see EditorHeaderActions), so the same actions live in both.
+// onPick lets the popover close itself before running; the drawer just runs the fn.
+export function EditorActionRows({
+  onSave,
+  onNew,
+  onImport,
+  onExport,
+  onSchema,
+  onUndo,
+  onRedo,
+  onTour,
+  canUndo,
+  canRedo,
+  onPick,
+}: {
+  onSave: () => void;
+  onNew: () => void;
+  onImport: () => void;
+  onExport: () => void;
+  onSchema: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  onTour?: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onPick?: (fn: () => void) => void;
+}) {
+  const pick = onPick ?? ((fn: () => void) => fn());
+  return (
+    <>
+      <MenuOption icon="↶" title="Urungkan" desc="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={() => pick(onUndo)} />
+      <MenuOption icon="↷" title="Ulangi" desc="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={() => pick(onRedo)} />
+      <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
+      <MenuOption icon="⤓" title="Simpan Proyek" desc="Tulis ke penyimpanan" onClick={() => pick(onSave)} />
+      <MenuOption icon="✦" title="Proyek Baru" desc="Mulai proyek kosong" onClick={() => pick(onNew)} />
+      <MenuOption icon="+" title="Impor" desc="Tempel / unggah data" onClick={() => pick(onImport)} />
+      <MenuOption icon="↧" title="Ekspor proyek" desc="Unduh JSON proyek" onClick={() => pick(onExport)} />
+      <MenuOption icon="{ }" title="Skema" desc="Lihat & unduh skema" onClick={() => pick(onSchema)} />
+      {onTour ? <MenuOption icon="🎓" title="Tur / Panduan" desc="Pandu langkah demi langkah" onClick={() => pick(onTour)} /> : null}
+      <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
+      {/* Hard reload: unregister SW + purge Cache Storage + cache-busted reload. */}
+      <MenuOption icon="⟳" title="Muat ulang versi" desc="Bersihkan cache & ambil versi terbaru" onClick={() => pick(() => void forceFreshReload())} />
+    </>
   );
 }
 

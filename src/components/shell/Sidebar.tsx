@@ -103,6 +103,16 @@ export function Sidebar() {
           </nav>
         ) : null}
 
+        {/* Mobile editor: the app header (and its ⋯ menu) is hidden, so the project
+            actions portal here (EditorHeaderActions → #fp-drawer-actions). Hidden on
+            desktop via CSS (there the ⋯ header menu owns them). */}
+        {isStudio ? (
+          <div className="fp-drawer-actions-wrap">
+            <div className="fp-drawer-heading">Aksi proyek</div>
+            <div id="fp-drawer-actions" />
+          </div>
+        ) : null}
+
         {/* MAIN — the scene & frame manager (portaled into #fp-studio-slot on Studio).
             The divider + spacing only read when the rail is expanded (the collapsed
             72px rail has no MAIN content, so a lone border would just be a stray line). */}
