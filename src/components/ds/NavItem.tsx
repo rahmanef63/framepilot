@@ -11,9 +11,7 @@ export function NavItem({
   icon = "◦",
   label,
   active = false,
-  badge = null,
   chevron = false,
-  crown = false,
   accent = false,
   avatar = false,
   orientation = "vertical",
@@ -25,9 +23,7 @@ export function NavItem({
   icon?: ReactNode;
   label?: ReactNode;
   active?: boolean;
-  badge?: ReactNode;
   chevron?: boolean;
-  crown?: boolean;
   accent?: boolean;
   avatar?: boolean;
   orientation?: "vertical" | "horizontal";
@@ -81,24 +77,10 @@ export function NavItem({
           {icon}
         </span>
         {label}
-        {badge ? (
-          <span
-            style={{
-              font: "700 8px var(--font-mono)",
-              background: "var(--primary)",
-              color: "var(--primary-foreground)",
-              borderRadius: "var(--radius-sm)",
-              padding: "1px 5px",
-              marginLeft: "auto",
-            }}
-          >
-            {badge}
-          </span>
-        ) : null}
         {chevron ? (
           <span
             style={{
-              marginLeft: badge ? "6px" : "auto",
+              marginLeft: "auto",
               fontFamily: "var(--font-mono)",
               color: "var(--subtle-foreground)",
             }}
@@ -167,23 +149,6 @@ export function NavItem({
         }}
       >
         {icon}
-        {crown ? (
-          <span
-            style={{
-              position: "absolute",
-              top: "-5px",
-              right: "-6px",
-              font: "700 8px var(--font-mono)",
-              background: "var(--highlight)",
-              color: "var(--highlight-foreground)",
-              border: "1px solid var(--highlight-foreground)",
-              borderRadius: "var(--radius-sm)",
-              padding: "0 3px",
-            }}
-          >
-            {"★"}
-          </span>
-        ) : null}
       </span>
       <span style={{ font: "400 9.5px/1.1 var(--font-sans)", textAlign: "center", color: "inherit" }}>
         {label}

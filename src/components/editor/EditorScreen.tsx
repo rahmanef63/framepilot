@@ -70,5 +70,3 @@ export function EditorScreen() {
     </MobileDockProvider>
   );
 }
-
-export default EditorScreen;

@@ -82,5 +82,3 @@ export function EditorHeaderActions() {
   if (!slot) return null;
   return createPortal(content, slot);
 }
-
-export default EditorHeaderActions;

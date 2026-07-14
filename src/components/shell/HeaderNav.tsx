@@ -72,5 +72,3 @@ function HeaderTab({
     </button>
   );
 }
-
-export default HeaderNav;

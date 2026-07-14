@@ -26,7 +26,7 @@ import { useSceneActions } from "./editor/scenes";
 import { useIoActions, swapProject } from "./editor/io";
 
 // Re-export the value-shape types so consumers keep importing them from here.
-export type { EditorContextValue, EditorUi, EditorPlayback } from "./editor/types";
+export type { EditorContextValue, EditorUi } from "./editor/types";
 
 const EditorContext = createContext<EditorContextValue | null>(null);
 
@@ -61,7 +61,6 @@ export function EditorStateProvider({
     savedRef,
     autosaveOnRef,
     version,
-    bump,
   } = core;
 
   // Forward ref breaks the history<->playback cycle: restoreHistory stops

@@ -32,7 +32,7 @@ function subscribe(cb: () => void): () => void {
   return () => listeners.delete(cb);
 }
 
-export function setPlatform(id: PlatformId): void {
+function setPlatform(id: PlatformId): void {
   if (id === current) return;
   current = id;
   hydrated = true;

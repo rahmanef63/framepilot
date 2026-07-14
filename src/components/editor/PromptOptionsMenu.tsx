@@ -41,7 +41,7 @@ export function PromptOptionsList() {
   );
 }
 
-export function promptOptionsOnCount(opts: ShotOptions): number {
+function promptOptionsOnCount(opts: ShotOptions): number {
   return ROWS.filter((r) => opts[r.key]).length;
 }
 
@@ -64,5 +64,3 @@ export function PromptOptionsMenu() {
     </details>
   );
 }
-
-export default PromptOptionsMenu;

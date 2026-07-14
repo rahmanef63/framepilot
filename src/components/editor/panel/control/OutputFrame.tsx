@@ -42,5 +42,3 @@ export function OutputFrame() {
     </div>
   );
 }
-
-export default OutputFrame;

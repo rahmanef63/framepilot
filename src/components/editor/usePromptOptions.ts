@@ -39,7 +39,7 @@ export function getPromptOptions(): ShotOptions {
   return read();
 }
 
-export function setPromptOption(key: keyof ShotOptions, val: boolean): void {
+function setPromptOption(key: keyof ShotOptions, val: boolean): void {
   current = { ...current, [key]: val };
   hydrated = true;
   if (typeof window !== "undefined") window.localStorage.setItem(KEY, JSON.stringify(current));

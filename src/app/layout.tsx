@@ -43,7 +43,7 @@ const THEME_MODE_BOOT = `(function(){try{var m=localStorage.getItem("framepilot:
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="id" data-preset="rupa" data-theme="light">
+      <html lang="id" data-theme="light">
         <head>
           <script dangerouslySetInnerHTML={{ __html: THEME_MODE_BOOT }} />
         </head>

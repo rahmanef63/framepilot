@@ -11,15 +11,13 @@ export function Seg<T extends string>({
   options,
   value,
   onChange,
-  className,
 }: {
   options: SegOption<T>[];
   value: T;
   onChange: (v: T) => void;
-  className?: string;
 }) {
   return (
-    <div className={className ? `seg ${className}` : "seg"}>
+    <div className="seg">
       {options.map((o) => (
         <button
           key={o.value}

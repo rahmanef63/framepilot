@@ -104,5 +104,3 @@ export function ShotBrief() {
     </>
   );
 }
-
-export default ShotBrief;

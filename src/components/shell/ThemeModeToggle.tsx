@@ -15,13 +15,8 @@ const OPTS: { mode: Mode; icon: string; label: string; title: string }[] = [
   { mode: "system", icon: "⌂", label: "Sistem", title: "Ikut sistem" },
 ];
 
-export function ThemeModeToggle({
-  orientation = "horizontal",
-}: {
-  orientation?: "horizontal" | "vertical";
-}) {
+export function ThemeModeToggle() {
   const [mode, setModeState] = useState<Mode>("system");
-  const compact = orientation === "vertical";
 
   useEffect(() => {
     bootMode();
@@ -64,7 +59,7 @@ export function ThemeModeToggle({
               justifyContent: "center",
               gap: "5px",
               minWidth: 0,
-              padding: compact ? "6px 0" : "6px 8px",
+              padding: "6px 8px",
               borderRadius: "var(--radius-pill)",
               border: "none",
               cursor: "pointer",
@@ -77,7 +72,7 @@ export function ThemeModeToggle({
             }}
           >
             <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.95em" }}>{o.icon}</span>
-            {compact ? null : o.label}
+            {o.label}
           </button>
         );
       })}

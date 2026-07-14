@@ -176,5 +176,3 @@ function MenuOption({
     </button>
   );
 }
-
-export default EditorActionMenu;

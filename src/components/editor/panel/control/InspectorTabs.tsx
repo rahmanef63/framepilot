@@ -36,5 +36,3 @@ export function InspectorTabs({
     </div>
   );
 }
-
-export default InspectorTabs;

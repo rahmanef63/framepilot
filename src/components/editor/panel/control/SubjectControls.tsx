@@ -57,5 +57,3 @@ export function SubjectControls() {
     </>
   );
 }
-
-export default SubjectControls;

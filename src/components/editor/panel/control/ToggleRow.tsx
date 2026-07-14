@@ -39,5 +39,3 @@ export function ToggleRow() {
     </div>
   );
 }
-
-export default ToggleRow;

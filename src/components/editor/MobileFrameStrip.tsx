@@ -58,5 +58,3 @@ export function MobileFrameStrip() {
     </div>
   );
 }
-
-export default MobileFrameStrip;

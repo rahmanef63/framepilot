@@ -76,5 +76,3 @@ export function PresetRows() {
     </>
   );
 }
-
-export default PresetRows;

@@ -71,7 +71,7 @@ export const DEF: Meta = {
 };
 
 export const ANGLES = ["BIRD'S EYE", "HIGH ANGLE", "EYE LEVEL", "LOW ANGLE", "WORM'S EYE"];
-export const SHOTS = [
+const SHOTS = [
   "EXTREME CLOSE-UP",
   "CLOSE-UP",
   "MEDIUM CLOSE-UP",

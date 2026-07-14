@@ -144,5 +144,3 @@ export function PreviewPanel() {
     </>
   );
 }
-
-export default PreviewPanel;

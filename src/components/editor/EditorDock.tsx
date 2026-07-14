@@ -11,7 +11,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { useEditor } from "@/state/EditorState";
 
-export type DockSection = "prompt" | "kamera" | "preset" | "more" | null;
+type DockSection = "prompt" | "kamera" | "preset" | "more" | null;
 
 const MobileDockCtx = createContext<{
   section: DockSection;
@@ -87,5 +87,3 @@ function DockBtn({
     </button>
   );
 }
-
-export default EditorDock;

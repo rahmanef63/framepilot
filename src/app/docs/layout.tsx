@@ -69,7 +69,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 
         <nav style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <div style={{ width: 168 }}>
-            <ThemeModeToggle orientation="horizontal" />
+            <ThemeModeToggle />
           </div>
           <Link href="/panduan" style={{ textDecoration: "none" }}>
             <Button variant="ghost" size="sm">

@@ -4,7 +4,7 @@
 import { EditorProject, ensureProjectShape, newProject, deepCopy } from "./editorModel";
 
 export const AUTOKEY = "camguide-pro-autosave";
-export const LISTKEY = "camguide-pro-projects";
+const LISTKEY = "camguide-pro-projects";
 
 // Fired whenever the saved-projects list changes (save/delete). The Pustaka
 // (AppState) listens for this so an anonymous Studio 3D save shows up live —

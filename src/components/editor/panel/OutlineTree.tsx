@@ -47,5 +47,3 @@ export function OutlineTree() {
     </>
   );
 }
-
-export default OutlineTree;

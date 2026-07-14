@@ -54,7 +54,6 @@ class Controller {
   _target: THREE;
   _dist = 3;
   _ro: ResizeObserver | null = null;
-  _disposed = false;
   _cleanupDrag: (() => void) | null = null;
   _thirds: HTMLElement | null = null;
 
@@ -363,7 +362,6 @@ class Controller {
   }
 
   dispose() {
-    this._disposed = true;
     try {
       if (this._cleanupDrag) this._cleanupDrag();
       if (this._thirds && this._thirds.parentNode) this._thirds.parentNode.removeChild(this._thirds);

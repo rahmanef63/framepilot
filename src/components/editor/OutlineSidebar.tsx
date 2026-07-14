@@ -152,5 +152,3 @@ export function OutlineSidebar() {
   if (!slot) return null;
   return createPortal(<div className="cag-editor fp-outline-portal">{content}</div>, slot);
 }
-
-export default OutlineSidebar;

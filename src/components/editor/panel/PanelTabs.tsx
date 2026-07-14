@@ -44,5 +44,3 @@ export function PanelTabs() {
     </>
   );
 }
-
-export default PanelTabs;

@@ -9,12 +9,10 @@ export type BadgeTone = "default" | "new" | "highlight" | "outline";
 
 export function Badge({
   tone = "default",
-  icon = null,
   children,
   style = {},
 }: {
   tone?: BadgeTone;
-  icon?: ReactNode;
   children?: ReactNode;
   style?: CSSProperties;
 }) {
@@ -54,7 +52,6 @@ export function Badge({
         ...style,
       }}
     >
-      {icon ? <span>{icon}</span> : null}
       {children}
     </span>
   );

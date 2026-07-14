@@ -95,5 +95,3 @@ export function EditorTabBar() {
     </div>
   );
 }
-
-export default EditorTabBar;

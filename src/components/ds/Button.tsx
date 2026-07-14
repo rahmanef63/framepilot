@@ -3,10 +3,10 @@ import React, { CSSProperties, ReactNode, useState } from "react";
 
 /**
  * Button — the wireframe's primary action affordance.
- * Variants: primary (accent fill), outline, ghost, dark.
+ * Variants: primary (accent fill), outline, ghost.
  * Ported from ds-a components/actions/Button.jsx.
  */
-export type ButtonVariant = "primary" | "outline" | "ghost" | "dark";
+export type ButtonVariant = "primary" | "outline" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export function Button({
@@ -48,11 +48,6 @@ export function Button({
       background: hover ? "var(--muted)" : "transparent",
       color: "var(--muted-foreground)",
       borderColor: "transparent",
-    },
-    dark: {
-      background: "var(--foreground)",
-      color: "var(--card)",
-      borderColor: "var(--foreground)",
     },
   };
   return (

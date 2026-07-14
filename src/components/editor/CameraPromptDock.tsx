@@ -85,5 +85,3 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
     </section>
   );
 }
-
-export default CameraPromptDock;

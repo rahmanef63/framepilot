@@ -209,5 +209,3 @@ export function SavedProjects() {
     </div>
   );
 }
-
-export default SavedProjects;

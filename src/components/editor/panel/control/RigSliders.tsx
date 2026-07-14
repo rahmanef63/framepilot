@@ -136,5 +136,3 @@ export function RigSliders() {
     </>
   );
 }
-
-export default RigSliders;

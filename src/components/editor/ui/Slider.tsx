@@ -12,7 +12,6 @@ export function Slider({
   value,
   format = (v) => String(v),
   onInput,
-  onCommit,
 }: {
   label: string;
   min: number;
@@ -21,7 +20,6 @@ export function Slider({
   value: number;
   format?: (v: number) => string;
   onInput: (v: number) => void; // fired every input tick (imperative)
-  onCommit?: (v: number) => void; // fired on change (pointer up / keyboard commit)
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const outRef = useRef<HTMLOutputElement | null>(null);
@@ -61,7 +59,6 @@ export function Slider({
           paint(v);
           onInput(v);
         }}
-        onChange={(e) => onCommit?.(+(e.target as HTMLInputElement).value)}
       />
     </div>
   );

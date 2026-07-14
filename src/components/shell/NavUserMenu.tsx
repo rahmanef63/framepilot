@@ -95,7 +95,7 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
             ...pos,
           }}
         >
-          <ThemeModeToggle orientation="horizontal" />
+          <ThemeModeToggle />
           <Divider />
           <MenuLink icon="▤" label="Docs" active={pathname.startsWith("/docs")} onClick={() => go("/docs")} />
           <MenuLink icon="?" label="Panduan" active={pathname === "/panduan"} onClick={() => go("/panduan")} />

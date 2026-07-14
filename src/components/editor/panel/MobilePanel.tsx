@@ -90,5 +90,3 @@ export function MobilePanel() {
     </div>
   );
 }
-
-export default MobilePanel;

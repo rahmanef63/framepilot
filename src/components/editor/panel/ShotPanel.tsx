@@ -23,5 +23,3 @@ export function ShotPanel() {
     </div>
   );
 }
-
-export default ShotPanel;

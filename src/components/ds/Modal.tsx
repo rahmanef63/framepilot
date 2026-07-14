@@ -4,11 +4,9 @@ import React, { CSSProperties, ReactNode, useEffect, useState } from "react";
 /** Backdrop — the scrim behind modals. Ported from ds-a. */
 export function Backdrop({
   onClick,
-  dark = true,
   style = {},
 }: {
   onClick?: () => void;
-  dark?: boolean;
   style?: CSSProperties;
 }) {
   return (
@@ -17,7 +15,7 @@ export function Backdrop({
       style={{
         position: "fixed",
         inset: 0,
-        background: dark ? "var(--overlay)" : "transparent",
+        background: "var(--overlay)",
         animation: "ds-fade var(--motion) var(--ease)",
         ...style,
       }}
