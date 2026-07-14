@@ -25,6 +25,8 @@ export interface CagViewportProps {
   roll?: number;
   subj?: string;
   camview?: CamView;
+  /** when true, the orbit view camera auto-rotates (a "play"/preview spin). */
+  autoRotate?: boolean;
   style?: CSSProperties;
   className?: string;
 }
@@ -56,6 +58,7 @@ class Controller {
   _ro: ResizeObserver | null = null;
   _cleanupDrag: (() => void) | null = null;
   _thirds: HTMLElement | null = null;
+  _spin: number | null = null;
 
   constructor(host: HTMLElement, T: THREE, props: Required<Omit<CagViewportProps, "style" | "className">>) {
     this.host = host;
@@ -70,6 +73,25 @@ class Controller {
       this._render();
     });
     this._ro.observe(host);
+    if (this.props.autoRotate) this._startSpin();
+  }
+
+  // Auto-rotate the orbit VIEW camera (the "play" preview spin). rAF-driven so it
+  // is smooth and pauses when the tab is hidden. Only meaningful for camview "orbit".
+  _startSpin() {
+    if (this._spin != null || (this.props.camview || "orbit") !== "orbit") return;
+    const loop = () => {
+      this._viewAz += 0.4;
+      this._render();
+      this._spin = requestAnimationFrame(loop);
+    };
+    this._spin = requestAnimationFrame(loop);
+  }
+  _stopSpin() {
+    if (this._spin != null) {
+      cancelAnimationFrame(this._spin);
+      this._spin = null;
+    }
   }
 
   _rgb(name: string, fb: string): string {
@@ -356,6 +378,8 @@ class Controller {
       this._update();
       this._render();
     }
+    if (props.autoRotate) this._startSpin();
+    else this._stopSpin();
   }
   _T() {
     return this.T;
@@ -363,6 +387,7 @@ class Controller {
 
   dispose() {
     try {
+      this._stopSpin();
       if (this._cleanupDrag) this._cleanupDrag();
       if (this._thirds && this._thirds.parentNode) this._thirds.parentNode.removeChild(this._thirds);
       this._thirds = null;
@@ -389,13 +414,14 @@ export function CagViewport({
   roll = 0,
   subj = "person",
   camview = "orbit",
+  autoRotate = false,
   style,
   className,
 }: CagViewportProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const ctrlRef = useRef<Controller | null>(null);
-  const propsRef = useRef({ az, el, dist, lens, roll, subj, camview });
-  propsRef.current = { az, el, dist, lens, roll, subj, camview };
+  const propsRef = useRef({ az, el, dist, lens, roll, subj, camview, autoRotate });
+  propsRef.current = { az, el, dist, lens, roll, subj, camview, autoRotate };
 
   // build once on mount (lazy-load three)
   useEffect(() => {
@@ -424,8 +450,8 @@ export function CagViewport({
 
   // push prop changes to the live controller
   useEffect(() => {
-    if (ctrlRef.current) ctrlRef.current.setProps({ az, el, dist, lens, roll, subj, camview });
-  }, [az, el, dist, lens, roll, subj, camview]);
+    if (ctrlRef.current) ctrlRef.current.setProps({ az, el, dist, lens, roll, subj, camview, autoRotate });
+  }, [az, el, dist, lens, roll, subj, camview, autoRotate]);
 
   return (
     <div
