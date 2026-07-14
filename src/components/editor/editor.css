@@ -321,7 +321,7 @@
   align-items: center;
   gap: 8px;
   pointer-events: none;
-  z-index: 2;
+  z-index: 4;
 }
 .cag-editor .cell-head .vname {
   pointer-events: auto;

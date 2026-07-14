@@ -8,7 +8,7 @@
 // detail/description + its actions. One card open at a time.
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Play, Pause, ChevronDown } from "lucide-react";
+import { Play, Pause, ChevronDown, Film, Image } from "lucide-react";
 import { Badge, type BadgeTone } from "@/components/ds/Badge";
 import { Button, type ButtonVariant } from "@/components/ds/Button";
 import { CagCardPreview } from "@/shared/viewport3d/CagCardPreview";
@@ -22,6 +22,7 @@ export interface GalleryFrame {
   lens: number;
   roll?: number;
   subj?: string;
+  name?: string;
 }
 export interface GalleryAction {
   label: string;
@@ -38,6 +39,7 @@ export interface GalleryItem {
   filterValue: string; // aspectRatio (template) / source (library) — drives the filter select
   shotCount: number; // for the shot-count sort
   preview: GalleryFrame; // representative frame shown in the card + expand preview
+  frames?: GalleryFrame[]; // full ordered shot list (>1 = a "video" that plays through)
   description?: string;
   thumbCaption?: string; // off-screen placeholder for the lazy preview
   actions: GalleryAction[];
@@ -169,6 +171,22 @@ export function CardGallery({
                         <Badge tone={it.badge.tone}>{it.badge.label}</Badge>
                       </span>
                     ) : null}
+                    {(() => {
+                      const isVideo = (it.frames?.length ?? 1) > 1;
+                      return (
+                        <div className={"cg-card-tag" + (isVideo ? " video" : "")}>
+                          {isVideo ? (
+                            <>
+                              <Film size={12} aria-hidden /> Video
+                            </>
+                          ) : (
+                            <>
+                              <Image size={12} aria-hidden /> 1 frame
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div className="cg-card-body">
                     <div className="cg-card-title">{it.title}</div>
@@ -190,20 +208,39 @@ export function CardGallery({
 }
 
 function ExpandPanel({ item, playing, onPlay }: { item: GalleryItem; playing: boolean; onPlay: () => void }) {
-  const p = item.preview;
+  // A multi-shot template is a "video": playing PLAYS THROUGH the shot sequence
+  // (cutting between frames). A single-frame item just spins the camera as before.
+  const frames = item.frames && item.frames.length ? item.frames : [item.preview];
+  const isVideo = frames.length > 1;
+  const [idx, setIdx] = useState(0);
+
+  // Advance through the shot list while playing a "video".
+  useEffect(() => {
+    if (!playing || !isVideo) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % frames.length), 1100);
+    return () => clearInterval(t);
+  }, [playing, isVideo, frames.length]);
+
+  // Reset to the first shot whenever we pause.
+  useEffect(() => {
+    if (!playing) setIdx(0);
+  }, [playing]);
+
+  const cur = frames[Math.min(idx, frames.length - 1)];
+
   return (
     <div className="cg-expand">
       <div className="cg-expand-preview">
         {/* keyed by id so switching cards mounts a fresh viewport (frees the old WebGL context) */}
         <CagViewport
           key={item.id}
-          az={p.az}
-          el={p.el}
-          dist={p.dist}
-          lens={p.lens}
-          roll={p.roll ?? 0}
-          subj={p.subj ?? "person"}
-          autoRotate={playing}
+          az={cur.az}
+          el={cur.el}
+          dist={cur.dist}
+          lens={cur.lens}
+          roll={cur.roll ?? 0}
+          subj={cur.subj ?? "person"}
+          autoRotate={playing && !isVideo}
           style={{ width: "100%", height: "100%" }}
         />
       </div>
@@ -215,6 +252,10 @@ function ExpandPanel({ item, playing, onPlay }: { item: GalleryItem; playing: bo
               <>
                 <Pause size={14} aria-hidden /> Jeda
               </>
+            ) : isVideo ? (
+              <>
+                <Play size={14} aria-hidden /> Putar animasi
+              </>
             ) : (
               <>
                 <Play size={14} aria-hidden /> Putar preview
@@ -222,17 +263,23 @@ function ExpandPanel({ item, playing, onPlay }: { item: GalleryItem; playing: bo
             )}
           </button>
         </div>
+        {isVideo ? (
+          <span className="cg-shotind">
+            Shot {Math.min(idx, frames.length - 1) + 1}/{frames.length}
+            {cur.name ? " · " + cur.name : ""}
+          </span>
+        ) : null}
         {item.description ? <p className="cg-expand-desc">{item.description}</p> : null}
         <div className="cg-readout">
-          <span>AZ {Math.round(p.az)}°</span>
-          <span>EL {Math.round(p.el)}°</span>
-          <span>JARAK {p.dist.toFixed(1)}m</span>
-          <span>LENSA {Math.round(p.lens)}mm</span>
-          {p.roll ? <span>ROLL {Math.round(p.roll)}°</span> : null}
+          <span>AZ {Math.round(cur.az)}°</span>
+          <span>EL {Math.round(cur.el)}°</span>
+          <span>JARAK {cur.dist.toFixed(1)}m</span>
+          <span>LENSA {Math.round(cur.lens)}mm</span>
+          {cur.roll ? <span>ROLL {Math.round(cur.roll)}°</span> : null}
         </div>
         <div className="cg-actions">
-          {item.actions.map((a, idx) => (
-            <Button key={idx} variant={a.variant || "outline"} size="sm" icon={a.icon} onClick={a.onClick} title={a.title}>
+          {item.actions.map((a, ai) => (
+            <Button key={ai} variant={a.variant || "outline"} size="sm" icon={a.icon} onClick={a.onClick} title={a.title}>
               {a.label}
             </Button>
           ))}

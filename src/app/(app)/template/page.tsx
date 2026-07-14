@@ -28,9 +28,12 @@ export default function TemplatePage() {
   };
 
   const items: GalleryItem[] = STARTER_TEMPLATES.map((t) => {
-    const f0 = t.project.scenes[0].frames[0];
     const scenes = t.project.scenes.length;
     const shots = t.project.scenes.reduce((n, s) => n + s.frames.length, 0);
+    // Full ordered shot list — a >1-frame template plays through as an animation.
+    const frames = t.project.scenes
+      .flatMap((s) => s.frames)
+      .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll, subj: f.subj, name: f.name }));
     return {
       id: t.id,
       title: t.title,
@@ -38,7 +41,8 @@ export default function TemplatePage() {
       badge: { label: t.aspectRatio, tone: "outline" },
       filterValue: t.aspectRatio,
       shotCount: shots,
-      preview: { az: f0.az, el: f0.el, dist: f0.dist, lens: f0.lens, roll: f0.roll, subj: f0.subj },
+      preview: frames[0],
+      frames,
       description: t.description,
       actions: [
         {

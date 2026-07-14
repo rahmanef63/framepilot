@@ -18,6 +18,7 @@ export function GridView({ entries }: { entries: EntryView[] }) {
     filterValue: e.sourceLabel,
     shotCount: e.frameCount,
     preview: { az: e.pAz, el: e.pEl, dist: e.pDist, lens: e.pLens, roll: e.pRoll, subj: e.pSubj },
+    frames: e.frames,
     thumbCaption: e.thumbCaption,
     actions: [
       {

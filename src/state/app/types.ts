@@ -22,6 +22,8 @@ export interface EntryView {
   pRoll: number;
   pLens: number;
   pSubj: string;
+  /** full ordered shot list — a >1-frame entry plays through as an animation. */
+  frames: { az: number; el: number; dist: number; lens: number; roll: number; subj: string; name?: string }[];
   /** true = a read-only "Contoh" seed demo (shown only when the store is empty). */
   example: boolean;
   onOpenStudio: () => void;

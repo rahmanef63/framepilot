@@ -82,6 +82,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         pRoll: f0.roll ?? 0,
         pLens: f0.lens,
         pSubj: f0.subj ?? "person",
+        frames: scenes
+          .flatMap((sc) => sc.frames)
+          .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll ?? 0, subj: f.subj ?? "person", name: f.name })),
         example: store.showingExamples,
         onOpenStudio: () => store.openInStudio3d(en.id),
         onDelete: () => store.del(en.id),

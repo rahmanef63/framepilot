@@ -89,6 +89,27 @@
   right: 8px;
   z-index: 2;
 }
+/* single-frame vs video tag pill, pinned to the media's bottom-left corner */
+.cg-card-tag {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font: 700 10px var(--font-mono);
+  letter-spacing: 0.03em;
+  background: color-mix(in srgb, var(--card) 82%, transparent);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+}
+.cg-card-tag.video {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
 .cg-card-body {
   flex: 1;
   min-width: 0;
@@ -173,6 +194,11 @@
 .cg-play[aria-pressed="true"] {
   color: var(--primary);
   background: transparent;
+}
+.cg-shotind {
+  font: 600 11px var(--font-mono);
+  color: var(--muted-foreground);
+  letter-spacing: 0.02em;
 }
 .cg-expand-desc {
   margin: 0;
