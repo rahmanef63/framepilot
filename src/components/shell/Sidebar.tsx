@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { NavUserMenu } from "@/components/shell/NavUserMenu";
 import { BrandMark } from "@/components/shell/BrandMark";
+import { NavItem } from "@/components/ds/NavItem";
 import { useApp } from "@/state/AppState";
 
 /**
@@ -19,6 +20,16 @@ export function Sidebar() {
   const orient: "horizontal" | "vertical" = open ? "horizontal" : "vertical";
   const itemAlign = open ? "stretch" : "center";
   const isStudio = pathname === "/";
+
+  // Mobile only: close the ☰ drawer on navigation so a tapped destination isn't
+  // left covered by the fixed drawer + scrim. Gated to ≤820 (the drawer breakpoint)
+  // so the in-flow desktop rail is never collapsed by a route change.
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 820px)").matches && app.sidebarOpen) {
+      app.toggleSidebar();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   return (
     <>
@@ -79,6 +90,18 @@ export function Sidebar() {
             </div>
           ) : null}
         </div>
+
+        {/* Mobile drawer nav (≤820, Studio only) — the header-center nav is hidden on
+            the mobile editor, so the primary destinations live here in the ☰ drawer.
+            display:none on desktop (there the header owns the nav). */}
+        {isStudio ? (
+          <nav className="fp-drawer-nav" aria-label="Navigasi utama">
+            {/* only rendered on Studio (isStudio), so Studio 3D is the active one */}
+            <NavItem orientation="horizontal" icon="◈" label="Studio 3D" active onClick={() => router.push("/")} />
+            <NavItem orientation="horizontal" icon="▧" label="Pustaka" onClick={() => router.push("/library")} />
+            <NavItem orientation="horizontal" icon="▦" label="Template" onClick={() => router.push("/template")} />
+          </nav>
+        ) : null}
 
         {/* MAIN — the scene & frame manager (portaled into #fp-studio-slot on Studio).
             The divider + spacing only read when the rail is expanded (the collapsed

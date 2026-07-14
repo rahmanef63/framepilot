@@ -670,17 +670,22 @@ export class EditorViewportEngine implements EditorEngineHandle {
     const pointers = new Map<number, { x: number; y: number }>();
     let pinching = false;
     let pinchDist = 0;
+    let pinchMid = { x: 0, y: 0 };
 
     const twoFingerDist = (): number => {
       const pts = Array.from(pointers.values());
       if (pts.length < 2) return 0;
       return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
     };
+    const twoFingerMid = (): { x: number; y: number } => {
+      const pts = Array.from(pointers.values());
+      if (pts.length < 2) return { x: 0, y: 0 };
+      return { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+    };
 
-    // ONE zoom path shared by wheel + pinch: factor>1 dollies OUT (further),
-    // factor<1 dollies IN (closer). cam = orbit distance; ortho = view extent.
-    const applyZoom = (factor: number) => {
-      this.pb.playing = false;
+    // Zoom MUTATION only (no render/notify) so a pinch can combine it with a pan
+    // in one update. factor>1 dollies OUT; cam = orbit distance, ortho = extent.
+    const zoomMutate = (factor: number) => {
       if (viewId === "cam") {
         const o = this.getOrbit();
         this.setOrbit(o.az, o.el, clamp(o.dist * factor, 0.3, 30));
@@ -690,6 +695,11 @@ export class EditorViewportEngine implements EditorEngineHandle {
         const V = this.views![kind as OrthoId];
         V.ext = clamp(V.ext * factor, 0.8, 30);
       }
+    };
+    // Wheel path: zoom + render + notify in one shot.
+    const applyZoom = (factor: number) => {
+      this.pb.playing = false;
+      zoomMutate(factor);
       this.updateScene();
       this.callbacks.onRigChanged?.();
     };
@@ -700,10 +710,13 @@ export class EditorViewportEngine implements EditorEngineHandle {
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       this.pb.playing = false; // stopPlayback head-guard
       if (pointers.size >= 2) {
-        // second finger down → start pinch, suspend the single-finger orbit
+        // second finger down → start pinch/pan, suspend the single-finger orbit
         pinching = true;
         dragging = false;
+        moved = false;
         pinchDist = twoFingerDist();
+        pinchMid = twoFingerMid();
+        rect = el.getBoundingClientRect();
       } else {
         dragging = true;
         moved = false;
@@ -729,11 +742,33 @@ export class EditorViewportEngine implements EditorEngineHandle {
         moved = false;
         return;
       }
-      // pinch-to-zoom: the two-finger distance ratio drives the dolly (wheel path)
+      // two-finger gesture = pinch-zoom (distance ratio) + pan (midpoint delta),
+      // simultaneously, applied in one render — like a map viewer.
       if (pinching && pointers.size >= 2) {
         const d = twoFingerDist();
-        if (pinchDist > 0 && d > 0) applyZoom(pinchDist / d);
+        const mid = twoFingerMid();
+        this.pb.playing = false;
+        // only zoom when the pinch distance ACTUALLY changed — a pure 2-finger pan
+        // (factor≈1) must not round-trip getOrbit/setOrbit, which would re-clamp the
+        // elevation and pop the camera when it's tilted past the orbit clamp.
+        const zf = pinchDist > 0 && d > 0 ? pinchDist / d : 1;
+        if (Math.abs(zf - 1) > 1e-3) zoomMutate(zf);
+        // pan: btn=2 forces the pan branch of the drag handlers regardless of the
+        // active drag-tool mode (standard 2-finger pan). Reuses existing pan math.
+        const mdx = mid.x - pinchMid.x;
+        const mdy = mid.y - pinchMid.y;
+        if (mdx || mdy) {
+          if (viewId === "cam") this.handleCamViewDrag(mdx, mdy, 2);
+          else {
+            const kind = this.slotView[viewId as SlotId] ?? (viewId as ViewKind);
+            if (!(typeof kind === "string" && kind.startsWith("custom:")))
+              this.handleOrthoDrag(kind as OrthoId, mdx, mdy, 2, rect!);
+          }
+        }
+        this.updateScene();
+        this.callbacks.onRigChanged?.();
         pinchDist = d;
+        pinchMid = mid;
         return;
       }
       if (!dragging) return;
@@ -755,9 +790,10 @@ export class EditorViewportEngine implements EditorEngineHandle {
     const onUp = (e: PointerEvent) => {
       pointers.delete(e.pointerId);
       if (pointers.size >= 2) {
-        // 3+ fingers, one lifted → re-seed the pinch baseline against the
-        // surviving pair so the next move measures a real delta (no zoom snap).
+        // 3+ fingers, one lifted → re-seed the pinch/pan baseline against the
+        // surviving pair so the next move measures a real delta (no jump).
         pinchDist = twoFingerDist();
+        pinchMid = twoFingerMid();
         return;
       }
       // ≤1 finger left: end the pinch and any single-finger drag. We deliberately

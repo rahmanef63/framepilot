@@ -21,9 +21,33 @@ const ROWS: { key: keyof ShotOptions; label: string }[] = [
   { key: "framing", label: "Rasio (framing)" },
 ];
 
-export function PromptOptionsMenu() {
+// The bare checkbox list — reused by the desktop <details> dropdown AND the mobile
+// controller accordion (always-visible, no dropdown wrapper there).
+export function PromptOptionsList() {
   const [opts, set] = usePromptOptions();
-  const on = ROWS.filter((r) => opts[r.key]).length;
+  return (
+    <div className="cam-opts__menu" role="group" aria-label="Detail prompt kamera">
+      {ROWS.map((r) => (
+        <label key={r.key} className="cam-opts__row">
+          <input
+            type="checkbox"
+            checked={opts[r.key]}
+            onChange={(e) => set(r.key, e.target.checked)}
+          />
+          <span>{r.label}</span>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+export function promptOptionsOnCount(opts: ShotOptions): number {
+  return ROWS.filter((r) => opts[r.key]).length;
+}
+
+export function PromptOptionsMenu() {
+  const [opts] = usePromptOptions();
+  const on = promptOptionsOnCount(opts);
 
   return (
     <details className="cam-opts" data-tour="detail-prompt">
@@ -36,18 +60,7 @@ export function PromptOptionsMenu() {
           ▾
         </span>
       </summary>
-      <div className="cam-opts__menu" role="group" aria-label="Detail prompt kamera">
-        {ROWS.map((r) => (
-          <label key={r.key} className="cam-opts__row">
-            <input
-              type="checkbox"
-              checked={opts[r.key]}
-              onChange={(e) => set(r.key, e.target.checked)}
-            />
-            <span>{r.label}</span>
-          </label>
-        ))}
-      </div>
+      <PromptOptionsList />
     </details>
   );
 }

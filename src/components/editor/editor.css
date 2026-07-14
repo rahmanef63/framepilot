@@ -180,6 +180,15 @@
   border-color: var(--accent);
   color: var(--accent-ink);
 }
+/* "Alat" toggle collapses the DRAG-mode + View bars on mobile. Desktop: the toggle
+   is hidden and .tabbar-tools is display:contents, so the bars lay out inline in
+   .tabbar exactly as before (desktop untouched). */
+.cag-editor .tabbar-alat {
+  display: none;
+}
+.cag-editor .tabbar-tools {
+  display: contents;
+}
 .cag-editor .hint {
   font-family: var(--e-mono);
   font-size: 10px;
@@ -1163,6 +1172,54 @@
   padding: 0 4px;
 }
 
+/* ---------- mobile controller accordion (MobilePanel, ≤820) ----------
+   Native <details> sections, in-flow (no overlay): tap a header to expand it,
+   pushing the rest down. Replaces the desktop nested tabs on phones. */
+.cag-editor .mobile-acc {
+  gap: 8px;
+}
+.cag-editor .acc-sec {
+  border: 1px solid var(--line);
+  border-radius: var(--e-r);
+  background: var(--panel);
+  overflow: hidden;
+  flex: none;
+}
+.cag-editor .acc-sec > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 12px;
+  min-height: 44px;
+  font: 700 12px var(--e-sans);
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.cag-editor .acc-sec > summary::-webkit-details-marker {
+  display: none;
+}
+.cag-editor .acc-sec[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+.cag-editor .acc-chevron {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+.cag-editor .acc-sec[open] .acc-chevron {
+  transform: rotate(180deg);
+}
+.cag-editor .acc-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 /* ---------- transport bar (Full Preview .pv-bar reuses .pbar) ---------- */
 .cag-editor .pbar {
   display: flex;
@@ -1517,6 +1574,36 @@
     overflow-y: auto;
     overflow-x: hidden;
     grid-template-rows: min(60vh, 480px) auto auto;
+  }
+  /* Alat toggle: the tabbar is ONE row on mobile; tapping Alat splits the DRAG +
+     View bars in-flow below (the canvas shrinks only while it's open). */
+  .cag-editor .tabbar-alat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    font-size: 12px;
+  }
+  .cag-editor .tabbar-alat.open {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .cag-editor .tabbar-alat-chev {
+    transition: transform 0.15s;
+  }
+  .cag-editor .tabbar-alat.open .tabbar-alat-chev {
+    transform: rotate(180deg);
+  }
+  .cag-editor .tabbar-tools {
+    display: none;
+  }
+  .cag-editor .tabbar-tools.open {
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
   }
   /* DRAG Seg ("Subjek/Kamera") clipped off-screen: .tabbar wraps but .modebar /
      .viewbar (holding .seg, min-width:64px buttons) have no width limit so they

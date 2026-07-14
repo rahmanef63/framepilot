@@ -8,6 +8,8 @@ import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { ControlPanel } from "./ControlPanel";
 import { ShotPanel } from "./ShotPanel";
+import { MobilePanel } from "./MobilePanel";
+import { useMediaQuery } from "../useMediaQuery";
 import type { EditorUi } from "@/state/EditorState";
 
 const SUB_TABS: { key: EditorUi["panelTab"]; label: string }[] = [
@@ -18,6 +20,9 @@ const SUB_TABS: { key: EditorUi["panelTab"]; label: string }[] = [
 export function PanelTabs() {
   const ctx = useEditor();
   const tab = ctx.ui.panelTab;
+  // Mobile (≤820): one accordion stack instead of the nested tabs. Desktop untouched.
+  const mobile = useMediaQuery("(max-width: 820px)");
+  if (mobile) return <MobilePanel />;
 
   return (
     <>

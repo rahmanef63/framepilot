@@ -4,7 +4,7 @@
 // hint. Uses editor.css classes for dark-studio fidelity. (The old Guide Belajar
 // tab was folded into the /panduan cookbook — Ship B slim.)
 
-import React from "react";
+import React, { useState } from "react";
 import { useEditor } from "@/state/EditorState";
 import { Seg } from "./ui/Seg";
 import type { DragMode, MainTab, ViewId } from "./viewport/engineApi";
@@ -31,6 +31,10 @@ const VIEWS: { key: ViewId; label: string }[] = [
 export function EditorTabBar() {
   const ctx = useEditor();
   const { ui } = ctx;
+  // Mobile only: the DRAG-mode + View bars collapse behind this "Alat" toggle so
+  // the tabbar is one row (button hidden on desktop, tools show inline there). When
+  // opened on mobile the tools panel splits in-flow below (canvas shrinks while open).
+  const [toolsOpen, setToolsOpen] = useState(false);
 
   return (
     <div className="tabbar">
@@ -46,27 +50,42 @@ export function EditorTabBar() {
         ))}
       </div>
 
-      <div className="modebar" data-tour="drag">
-        <span className="mlab">DRAG</span>
-        <Seg options={DRAG_OPTIONS} value={ui.dragToolMode} onChange={ctx.setDragMode} />
-      </div>
+      <button
+        type="button"
+        className={"tabbar-alat" + (toolsOpen ? " open" : "")}
+        aria-expanded={toolsOpen}
+        aria-controls="tabbar-tools"
+        onClick={() => setToolsOpen((v) => !v)}
+      >
+        <span aria-hidden>⚙</span> Alat
+        <span className="tabbar-alat-chev" aria-hidden>
+          ▾
+        </span>
+      </button>
 
-      <div className="viewbar" aria-label="Pilih view">
-        <button
-          className={ui.focusView === null ? "active" : undefined}
-          onClick={() => ctx.setFocusView(null)}
-        >
-          QUAD
-        </button>
-        {VIEWS.map((v) => (
+      <div id="tabbar-tools" className={"tabbar-tools" + (toolsOpen ? " open" : "")}>
+        <div className="modebar" data-tour="drag">
+          <span className="mlab">DRAG</span>
+          <Seg options={DRAG_OPTIONS} value={ui.dragToolMode} onChange={ctx.setDragMode} />
+        </div>
+
+        <div className="viewbar" aria-label="Pilih view">
           <button
-            key={v.key}
-            className={ui.focusView === v.key ? "active" : undefined}
-            onClick={() => ctx.setFocusView(ui.focusView === v.key ? null : v.key)}
+            className={ui.focusView === null ? "active" : undefined}
+            onClick={() => ctx.setFocusView(null)}
           >
-            {v.label}
+            QUAD
           </button>
-        ))}
+          {VIEWS.map((v) => (
+            <button
+              key={v.key}
+              className={ui.focusView === v.key ? "active" : undefined}
+              onClick={() => ctx.setFocusView(ui.focusView === v.key ? null : v.key)}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="spacer" />

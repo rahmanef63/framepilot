@@ -17,7 +17,10 @@ import { PlatformSelect, PlatformHint } from "./PlatformPicker";
 import { PromptOptionsMenu } from "./PromptOptionsMenu";
 import { copyText } from "./panel/outline/clipboard";
 
-export function CameraPromptDock() {
+// showDetailToggles: the desktop dock shows the "Detail prompt" checkboxes inline;
+// on mobile MobilePanel hosts them in a dedicated accordion section, so it passes
+// false here to avoid a duplicate.
+export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggles?: boolean } = {}) {
   const ctx = useEditor();
   const [platform, setPlatform] = usePlatform();
   const [opts] = usePromptOptions();
@@ -69,7 +72,7 @@ export function CameraPromptDock() {
       />
 
       {/* toggles sit BELOW the output so ticking a box rebuilds the prompt in view */}
-      <PromptOptionsMenu />
+      {showDetailToggles ? <PromptOptionsMenu /> : null}
 
       <PlatformHint value={platform} />
 

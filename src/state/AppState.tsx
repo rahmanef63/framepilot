@@ -150,11 +150,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // the projects-changed event that editorStorage dispatches on every save.
   const [localSaved, setLocalSaved] = useState<SavedEntry[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  // Below the tablet breakpoint the 246px open sidebar eats the viewport and the
-  // content column gets clipped by the Shell's overflow:hidden root. Auto-collapse
-  // once on mount when narrow (SSR renders open → hydration matches → then collapses).
+  // At/below the off-canvas drawer breakpoint (≤820, matching globals.css) the open
+  // sidebar becomes a fixed drawer that would otherwise cover the content on load.
+  // Auto-collapse once on mount when narrow (SSR renders open → hydration matches →
+  // then collapses). MUST stay in sync with the drawer media query in globals.css.
   useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth <= 768) setSidebarOpen(false);
+    if (typeof window !== "undefined" && window.innerWidth <= 820) setSidebarOpen(false);
   }, []);
   const [view, setView] = useState<LibraryView>("grid");
 
