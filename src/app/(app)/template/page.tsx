@@ -71,6 +71,7 @@ export default function TemplatePage() {
           filterLabel="Semua rasio"
           searchPlaceholder="Cari template…"
           emptyText="Tidak ada template yang cocok."
+          cameraViewOnPlay
         />
       </div>
     </div>

@@ -52,11 +52,15 @@ export function CardGallery({
   filterLabel = "Semua",
   searchPlaceholder = "Cari…",
   emptyText = "Tidak ada yang cocok.",
+  cameraViewOnPlay = false,
 }: {
   items: GalleryItem[];
   filterLabel?: string;
   searchPlaceholder?: string;
   emptyText?: string;
+  /** when true, playing switches the preview from the ISO/orbit view to the
+   *  camera POV (what the shot camera sees) — used by the template gallery. */
+  cameraViewOnPlay?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("name");
@@ -196,7 +200,12 @@ export function CardGallery({
                 </div>
 
                 {showPanel ? (
-                  <ExpandPanel item={visible[openIdx]} playing={playing} onPlay={() => setPlaying((p) => !p)} />
+                  <ExpandPanel
+                    item={visible[openIdx]}
+                    playing={playing}
+                    onPlay={() => setPlaying((p) => !p)}
+                    cameraViewOnPlay={cameraViewOnPlay}
+                  />
                 ) : null}
               </React.Fragment>
             );
@@ -207,12 +216,26 @@ export function CardGallery({
   );
 }
 
-function ExpandPanel({ item, playing, onPlay }: { item: GalleryItem; playing: boolean; onPlay: () => void }) {
+function ExpandPanel({
+  item,
+  playing,
+  onPlay,
+  cameraViewOnPlay,
+}: {
+  item: GalleryItem;
+  playing: boolean;
+  onPlay: () => void;
+  cameraViewOnPlay: boolean;
+}) {
   // A multi-shot template is a "video": playing PLAYS THROUGH the shot sequence
   // (cutting between frames). A single-frame item just spins the camera as before.
   const frames = item.frames && item.frames.length ? item.frames : [item.preview];
   const isVideo = frames.length > 1;
   const [idx, setIdx] = useState(0);
+
+  // Template preview: while playing, swap the ISO/orbit view for the camera POV
+  // (what the shot camera actually sees), so you watch the shots through the lens.
+  const camview = playing && cameraViewOnPlay ? "pov" : "orbit";
 
   // Advance through the shot list while playing a "video".
   useEffect(() => {
@@ -240,7 +263,8 @@ function ExpandPanel({ item, playing, onPlay }: { item: GalleryItem; playing: bo
           lens={cur.lens}
           roll={cur.roll ?? 0}
           subj={cur.subj ?? "person"}
-          autoRotate={playing && !isVideo}
+          camview={camview}
+          autoRotate={playing && !isVideo && camview === "orbit"}
           style={{ width: "100%", height: "100%" }}
         />
       </div>
