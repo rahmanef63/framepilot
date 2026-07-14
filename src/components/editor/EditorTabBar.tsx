@@ -5,6 +5,7 @@
 // tab was folded into the /panduan cookbook — Ship B slim.)
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { Seg } from "./ui/Seg";
@@ -63,18 +64,40 @@ export function EditorTabBar() {
         ))}
       </div>
 
-      <button
-        type="button"
-        className={"tabbar-alat" + (toolsOpen ? " open" : "")}
-        aria-expanded={toolsOpen}
-        aria-controls="tabbar-tools"
-        onClick={() => setToolsOpen((v) => !v)}
-      >
-        <span aria-hidden>⚙</span> Alat
-        <span className="tabbar-alat-chev" aria-hidden>
-          ▾
-        </span>
-      </button>
+      {/* Mobile top-bar actions grouped to the right (desktop: display:contents +
+          the help buttons hidden, so this collapses to just the inline tools). Tur
+          replays the onboarding coach-marks; Panduan opens the camera-grammar cookbook. */}
+      <div className="tabbar-help">
+        <button
+          type="button"
+          className="tabbar-helpbtn"
+          onClick={() => window.dispatchEvent(new Event("cag:start-tour"))}
+          aria-label="Tur"
+          title="Tur / onboarding — pandu langkah demi langkah"
+        >
+          <span aria-hidden>🎓</span>
+        </button>
+        <Link
+          href="/panduan"
+          className="tabbar-helpbtn"
+          aria-label="Panduan"
+          title="Panduan — kamus grammar kamera"
+        >
+          <span aria-hidden>📖</span>
+        </Link>
+        <button
+          type="button"
+          className={"tabbar-alat" + (toolsOpen ? " open" : "")}
+          aria-expanded={toolsOpen}
+          aria-controls="tabbar-tools"
+          onClick={() => setToolsOpen((v) => !v)}
+        >
+          <span aria-hidden>⚙</span> Alat
+          <span className="tabbar-alat-chev" aria-hidden>
+            ▾
+          </span>
+        </button>
+      </div>
 
       <div id="tabbar-tools" className={"tabbar-tools" + (toolsOpen ? " open" : "")}>
         <div className="modebar" data-tour="drag">

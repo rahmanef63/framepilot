@@ -88,7 +88,7 @@ function frameDetail(f: EditorFrame, i: number, settings: PromptSettings): strin
   return lines.join("\n");
 }
 
-export function sceneDetail(sc: EditorScene, settings: PromptSettings): string {
+function sceneDetail(sc: EditorScene, settings: PromptSettings): string {
   const head =
     `SCENE: ${sc.name}\n` +
     (sc.notes && sc.notes.trim() ? `Catatan scene: ${sc.notes.trim()}\n` : "") +

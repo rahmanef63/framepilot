@@ -10,7 +10,7 @@ import React, { useEffect, useRef } from "react";
 import { useEditor } from "@/state/EditorState";
 import { ViewCell } from "./ViewCell";
 import { CellViewMenu } from "./CellViewMenu";
-import { CamPresetMenu } from "./CamPresetMenu";
+import { ViewportCameraMenu } from "./ViewportCameraMenu";
 import { Hud } from "./Hud";
 import type { EditorViewportEngine as EngineType } from "./editorViewportEngine";
 import type { EngineHudRefs, ViewId, SlotId, ViewKind } from "@/lib/editor/engineApi";
@@ -167,9 +167,9 @@ export function EditorViewport() {
               onMax={() => toggleFocus(m.id)}
               head={
                 m.id === "cam" ? (
-                  // the CAM cell's corner chip is the camera-BRAND picker (the
-                  // direct-from-preview equivalent of the ortho view dropdowns).
-                  <CamPresetMenu />
+                  // the CAM cell's corner chip is the consolidated camera control:
+                  // rasio · sudut · posisi tersimpan · ukuran shot · preset kamera.
+                  <ViewportCameraMenu />
                 ) : isSlot ? (
                   <CellViewMenu
                     slot={slot}

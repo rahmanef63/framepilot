@@ -5,6 +5,10 @@
 .cell-viewmenu {
   position: relative;
   pointer-events: auto;
+  /* Active/open label color. --accent remaps to --primary (#D97757) inside
+     .cag-editor, which is only ~3:1 on --card in light theme (fails AA for 11-12px
+     text); mixing 28% --foreground in clears 4.5:1 in both themes while staying on-brand. */
+  --cvm-accent-text: color-mix(in srgb, var(--primary) 72%, var(--foreground));
 }
 
 .cell-viewmenu .cvm-trigger {
@@ -75,11 +79,13 @@
   cursor: pointer;
 }
 .cell-viewmenu .cvm-item:hover {
-  background: var(--muted);
+  /* NOT var(--muted): inside .cag-editor --muted is remapped to the muted TEXT color,
+     so it would paint a low-contrast bar under the label. Use a faint surface wash. */
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
 }
 .cell-viewmenu .cvm-item[data-active="true"] {
   border-color: color-mix(in srgb, var(--primary) 45%, transparent);
-  color: var(--accent);
+  color: var(--cvm-accent-text);
 }
 .cell-viewmenu .cvm-item .cvm-name {
   flex: 1;
@@ -132,4 +138,139 @@
   height: 1px;
   margin: 4px 2px;
   background: var(--border);
+}
+
+/* ===== ViewportCameraMenu accordion (the CAM cell's consolidated control) ===== */
+.cell-viewmenu .cvm-pop.cvm-acc {
+  min-width: 212px;
+}
+/* section header row — click to expand its option list below (one open at a time) */
+.cell-viewmenu .cvm-acc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+.cell-viewmenu .cvm-acc-row:hover {
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+.cell-viewmenu .cvm-acc-row.open {
+  background: color-mix(in srgb, var(--primary) 16%, transparent);
+  color: var(--cvm-accent-text);
+}
+.cell-viewmenu .cvm-acc-label {
+  flex: 1;
+  white-space: nowrap;
+}
+.cell-viewmenu .cvm-acc-val {
+  font-family: var(--e-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cell-viewmenu .cvm-acc-chev {
+  font-size: 8px;
+  opacity: 0.7;
+  transition: transform var(--motion) var(--ease);
+}
+.cell-viewmenu .cvm-acc-row.open .cvm-acc-chev {
+  transform: rotate(180deg);
+}
+/* expanded option body — indented block under the open row */
+.cell-viewmenu .cvm-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0 0 3px 8px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+}
+.cell-viewmenu .cvm-sub.cvm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 3px 0 4px 6px;
+}
+.cell-viewmenu .cvm-chip {
+  font-family: var(--e-mono);
+  font-size: 11px;
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: border-color var(--motion) var(--ease), color var(--motion) var(--ease);
+}
+.cell-viewmenu .cvm-chip:hover {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  color: var(--cvm-accent-text);
+}
+.cell-viewmenu .cvm-item[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.cell-viewmenu .cvm-item .cvm-tag {
+  flex: none;
+  font-family: var(--e-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity var(--motion) var(--ease);
+}
+.cell-viewmenu .cvm-item:hover .cvm-tag {
+  opacity: 0.8;
+}
+.cell-viewmenu .cvm-empty {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 5px 7px 6px;
+}
+/* always-visible ON/OFF pill for the in-menu global-camera toggle */
+.cell-viewmenu .cvm-item .cvm-state {
+  flex: none;
+  font-family: var(--e-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+.cell-viewmenu .cvm-item[data-active="true"] .cvm-state {
+  color: var(--cvm-accent-text);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+/* Mobile: the CAM camera menu is a real touch surface (full-bleed cam cell ≤820), so
+   the accordion rows + chips need ≥40px targets (project convention). Desktop keeps
+   the dense menu untouched. */
+@media (max-width: 820px) {
+  .cell-viewmenu .cvm-acc-row {
+    min-height: 40px;
+  }
+  .cell-viewmenu .cvm-sub.cvm-grid .cvm-chip {
+    min-height: 40px;
+  }
+  .cell-viewmenu .cvm-item {
+    min-height: 38px;
+  }
 }

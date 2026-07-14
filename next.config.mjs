@@ -2,12 +2,18 @@
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
-  // A per-build id, baked into BOTH the client bundle and the server at build time.
-  // The client compares its baked id against /api/build-id (the running server's id);
-  // after a deploy the ids diverge → the "new version" toast. Date.now() runs once
-  // per `next build`, so every deploy gets a fresh id (override via env in CI if ever).
+  // A per-build id, baked into BOTH the client bundle and the /api/build-id route at
+  // build time. The client compares its baked id against the running server's id; after
+  // a deploy they diverge → the "new version" toast.
+  //   MUST be a single value shared by the client + server compile passes. Do NOT use
+  //   Date.now() here — next.config is evaluated once PER webpack pass, so Date.now()
+  //   would bake a different id into client vs server and fire the toast on every load.
+  //   The real id is injected ONCE via the env var by the Dockerfile build step
+  //   (NEXT_PUBLIC_BUILD_ID=$(date +%s) npm run build); a constant env value is read
+  //   identically by both passes. Local/dev builds (no env) get the stable "dev" literal
+  //   → client == server → no false toast.
   env: {
-    NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID ?? Date.now().toString(36),
+    NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID ?? "dev",
   },
 };
 

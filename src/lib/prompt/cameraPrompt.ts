@@ -104,7 +104,7 @@ const lensDof = (n: NeutralShot, o: ShotOptions): string =>
 // + distance + height + optional dutch). Each part is individually toggleable;
 // returns "" when the user unchecks every geometry field. Folded into every skin
 // so no platform ever loses the camera position unless the user opts out.
-export function cameraLine(n: NeutralShot, o: ShotOptions = ALL_ON): string {
+function cameraLine(n: NeutralShot, o: ShotOptions = ALL_ON): string {
   const parts = J([
     o.elevation ? n.elevationPhrase : "",
     o.view ? n.view : "",

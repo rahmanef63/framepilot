@@ -186,6 +186,14 @@
 .cag-editor .tabbar-alat {
   display: none;
 }
+/* Tur/Panduan/Alat group — mobile only. Desktop: contents (no box) + the help
+   buttons hidden, so it collapses away and the inline tools lay out as before. */
+.cag-editor .tabbar-help {
+  display: contents;
+}
+.cag-editor .tabbar-helpbtn {
+  display: none;
+}
 /* ☰ drawer trigger in the tabbar — mobile only (the ≤820 rule shows it). */
 .cag-editor .tabbar-burger {
   display: none;
@@ -1760,6 +1768,34 @@
     padding: 9px 14px;
     font-size: 14px;
   }
+  /* Tur · Panduan · Alat grouped at the right edge of the one-row tabbar. */
+  .cag-editor .tabbar-help {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .cag-editor .tabbar-helpbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 40px;
+    min-height: 40px;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+    border: 1px solid var(--line);
+    border-radius: var(--e-r);
+    background: var(--panel-2);
+    color: var(--ink);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .cag-editor .tabbar-helpbtn:active {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
   /* Alat toggle: the tabbar is ONE row on mobile; tapping Alat splits the DRAG +
      View bars in-flow below (the canvas shrinks only while it's open). */
   .cag-editor .tabbar-alat {
@@ -1768,8 +1804,6 @@
     gap: 6px;
     padding: 9px 13px;
     font-size: 14px;
-    /* push Alat to the right edge (fills the dead space left of the hidden hint) */
-    margin-left: auto;
   }
   .cag-editor .tabbar-alat.open {
     background: var(--accent);

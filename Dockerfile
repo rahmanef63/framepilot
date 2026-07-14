@@ -18,7 +18,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN test -n "$NEXT_PUBLIC_CONVEX_URL" || (echo "ERROR: NEXT_PUBLIC_CONVEX_URL build arg required" >&2; exit 1)
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN mkdir -p public && npm run build
+# NEXT_PUBLIC_BUILD_ID: one epoch-seconds id for THIS build, read identically by the
+# client + server compile passes (a constant env var, unlike Date.now()). Powers the
+# "new version" toast — it changes each deploy so stale tabs get prompted to reload.
+RUN mkdir -p public && NEXT_PUBLIC_BUILD_ID=$(date +%s) npm run build
 
 FROM base AS runner
 ENV NODE_ENV=production
