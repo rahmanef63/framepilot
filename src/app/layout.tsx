@@ -1,11 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/convex-provider";
+import { RegisterSW } from "@/components/RegisterSW";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://frame-pilot.rahmanef.com"),
   applicationName: "Camera Angle Guide Pro",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "CAG Pro" },
+  icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
   title: "Camera Angle Guide Pro — studio 3D → prompt kamera AI",
   description:
     "Susun sudut kamera di studio 3D lalu ekspor prompt kamera siap-tempel untuk 10+ platform video AI (Runway, Kling, Veo, Sora, Luma, …).",
@@ -32,6 +36,11 @@ export const viewport: Viewport = {
   // cover = content extends under the iOS status bar / home indicator so
   // env(safe-area-inset-*) become real values the shells pad back in.
   viewportFit: "cover",
+  // tints the mobile browser chrome to match the app background per theme
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0b0c" },
+  ],
 };
 
 // Anti-FOUC: runs BEFORE first paint. Reads the saved theme mode
@@ -49,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </head>
         <body>
           <ConvexClientProvider>{children}</ConvexClientProvider>
+          <RegisterSW />
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
