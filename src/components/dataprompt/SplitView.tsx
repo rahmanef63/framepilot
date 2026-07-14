@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
-import { CagViewport } from "@/components/CagViewport";
+import { CagViewport } from "@/shared/viewport3d/CagViewport";
 import { EntryView } from "@/state/AppState";
 
 // Split view: a narrow list on the left + a live-3D inspector on the right.

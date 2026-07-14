@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { CagViewport } from "@/components/CagViewport";
+import { CagViewport } from "./CagViewport";
 
 // Shared lazy 3D card preview. Browsers cap live WebGL contexts (~16) before
 // evicting the oldest and firing context-loss; a page can hold arbitrarily many

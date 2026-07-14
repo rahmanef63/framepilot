@@ -3,7 +3,7 @@
 // setters lean on pushAutosave + commitHistory.
 
 import { useCallback } from "react";
-import type { DragMode, FocusView, MainTab } from "@/components/editor/viewport/engineApi";
+import type { DragMode, FocusView, MainTab } from "@/lib/editor/engineApi";
 import type { EditorCore } from "./core";
 import type { EditorUi } from "./types";
 

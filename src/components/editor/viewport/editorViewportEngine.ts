@@ -32,7 +32,7 @@ import {
   buildFacingCone,
   buildTargetDot,
   sampleToken,
-} from "./scene-kit";
+} from "@/shared/viewport3d/scene-kit";
 import type { RigState, RigSnapshot, Vec3 } from "@/lib/editorModel";
 import type {
   EditorEngineHandle,
@@ -48,7 +48,7 @@ import type {
   OrthoId,
   ViewKind,
   SavedView,
-} from "./engineApi";
+} from "@/lib/editor/engineApi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type THREE = any;

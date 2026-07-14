@@ -7,7 +7,7 @@
 import React, { useState } from "react";
 import { useEditor } from "@/state/EditorState";
 import { Seg } from "./ui/Seg";
-import type { DragMode, MainTab, ViewId } from "./viewport/engineApi";
+import type { DragMode, MainTab, ViewId } from "@/lib/editor/engineApi";
 
 const MAIN_TABS: { key: MainTab; label: string }[] = [
   { key: "editor", label: "Editor" },

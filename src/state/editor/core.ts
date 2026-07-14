@@ -13,7 +13,7 @@ import {
   ensureProjectShape,
   deepCopy,
 } from "@/lib/editorModel";
-import type { EditorEngineHandle } from "@/components/editor/viewport/engineApi";
+import type { EditorEngineHandle } from "@/lib/editor/engineApi";
 import { autosave, SavedEntry } from "@/lib/editorStorage";
 import type { EditorUi, EditorPlayback, HistoryState } from "./types";
 

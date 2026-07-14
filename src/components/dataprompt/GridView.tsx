@@ -2,7 +2,7 @@
 import React from "react";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
-import { CagCardPreview } from "@/components/CagCardPreview";
+import { CagCardPreview } from "@/shared/viewport3d/CagCardPreview";
 import { EntryView } from "@/state/AppState";
 
 export function GridView({ entries }: { entries: EntryView[] }) {

@@ -6,7 +6,7 @@
 // canvas underneath; this layer is pointer-interactive chrome only.
 
 import React from "react";
-import type { ViewId } from "./engineApi";
+import type { ViewId } from "@/lib/editor/engineApi";
 
 export function ViewCell({
   view,

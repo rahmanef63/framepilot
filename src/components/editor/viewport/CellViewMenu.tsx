@@ -6,7 +6,7 @@
 // orbit as a new custom view. cam + iso cells keep the plain .vname label.
 
 import React, { useEffect, useRef, useState } from "react";
-import type { SlotId, OrthoId, ViewKind, SavedView } from "./engineApi";
+import type { SlotId, OrthoId, ViewKind, SavedView } from "@/lib/editor/engineApi";
 import "./CellViewMenu.css";
 
 const ORTHO_ORDER: OrthoId[] = ["top", "bottom", "left", "right", "front", "back", "iso"];

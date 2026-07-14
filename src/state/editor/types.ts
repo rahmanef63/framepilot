@@ -10,7 +10,7 @@ import type {
   DragMode,
   FocusView,
   MainTab,
-} from "@/components/editor/viewport/engineApi";
+} from "@/lib/editor/engineApi";
 import type { SavedEntry } from "@/lib/editorStorage";
 
 export interface EditorUi {

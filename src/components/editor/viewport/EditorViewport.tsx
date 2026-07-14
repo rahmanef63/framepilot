@@ -12,7 +12,7 @@ import { ViewCell } from "./ViewCell";
 import { CellViewMenu } from "./CellViewMenu";
 import { Hud } from "./Hud";
 import type { EditorViewportEngine as EngineType } from "./editorViewportEngine";
-import type { EngineHudRefs, ViewId, SlotId, ViewKind } from "./engineApi";
+import type { EngineHudRefs, ViewId, SlotId, ViewKind } from "@/lib/editor/engineApi";
 
 // The three reconfigurable quad slots (cam stays locked to the pov shot camera).
 const SLOT_IDS: SlotId[] = ["top", "left", "right"];

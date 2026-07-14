@@ -8,7 +8,7 @@ import {
   buildFacingCone,
   buildTargetDot,
   sampleToken,
-} from "@/components/editor/viewport/scene-kit";
+} from "./scene-kit";
 
 // cag-viewport — a self-contained 3D shot-angle viewport, ported from the
 // prototype's cag-viewport.js. Three.js is lazy-loaded (dynamic import) only

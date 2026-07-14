@@ -9,7 +9,7 @@
 // useEditor(), EditorStateProvider, EditorContextValue, EditorUi — is unchanged.
 
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
-import type { ViewId } from "@/components/editor/viewport/engineApi";
+import type { ViewId } from "@/lib/editor/engineApi";
 import { loadAutosave } from "@/lib/editorStorage";
 import type { EditorProject, SlotId } from "@/lib/editorModel";
 

@@ -14,7 +14,7 @@
 //   4. router.push("/") — Studio 3D mount ulang & memuat dokumen tadi.
 
 import { useRouter } from "next/navigation";
-import { CagCardPreview } from "@/components/CagCardPreview";
+import { CagCardPreview } from "@/shared/viewport3d/CagCardPreview";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { toEditorProject } from "@/lib/editorModel";
