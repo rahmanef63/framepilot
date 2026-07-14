@@ -219,6 +219,11 @@ class Controller {
       up = nu;
     }
 
+    // Skip building the camera-viz geometry entirely when the group is hidden (POV):
+    // there is no reason to rebuild the gizmo/frustum/ring/target-dot every frame at
+    // 60fps just to keep it invisible. The basis above and the _shotCam block below
+    // stay outside this guard — POV rendering still needs the positioned shot camera.
+    if (g.visible) {
     // Camera gizmo (body box + lens) — mirrors editorViewportEngine.camBody. Oriented
     // from the (roll-adjusted) right/up/fwd basis so its lens looks toward the target.
     // Accent-colored so it reads on the light --card background.
@@ -257,6 +262,7 @@ class Controller {
         ringMat
       )
     );
+    }
 
     this._shotCam.fov = (vfovR * 180) / Math.PI;
     this._shotCam.position.copy(camPos);

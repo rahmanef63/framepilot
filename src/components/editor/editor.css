@@ -1176,6 +1176,112 @@
   padding: 0 4px;
 }
 
+/* ---------- SCENE ↔ FRAME hierarchy (mobile strip, ≤820 only) ----------
+   The strip is a two-level "folder" browser: SCENE tiles (enterable groups drawn
+   as a stack of cards via layered box-shadow) at the top level, then the existing
+   FRAME tiles once a scene is entered. A ‹ back button + crumb head the frame
+   level. All token-styled so it themes light/dark. */
+.cag-editor .mfs-scene {
+  position: relative;
+  flex: 0 0 auto;
+  height: 100%;
+  max-height: 96px;
+  /* landscape (wider than the square frame tiles) — gives room for the badge +
+     play + name AND visually distinguishes a scene group from a single frame. */
+  aspect-ratio: 3 / 2;
+  margin-right: 6px; /* room for the stacked-cards shadow so it never clips */
+  border-radius: 8px;
+  /* two offset shadows read as a stack of cards behind = a group differentiator */
+  box-shadow: 3px 3px 0 -1px var(--panel-2), 3px 3px 0 0 var(--line);
+}
+.cag-editor .mfs-scene.current .mfs-scene-open {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.cag-editor .mfs-scene-open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel-2);
+  color: var(--ink);
+  position: relative;
+}
+.cag-editor .mfs-scene-open img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cag-editor .mfs-scene-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: 700 9px var(--e-mono);
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 55%, transparent);
+  color: var(--accent-ink);
+}
+.cag-editor .mfs-scene-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 5px;
+  font: 700 9px var(--e-mono);
+  color: var(--accent-ink);
+  background: color-mix(in srgb, var(--foreground) 45%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cag-editor .mfs-scene-play {
+  position: absolute;
+  top: 3px;
+  left: 3px; /* top-LEFT corner (badge is top-right) so the tile centre stays a clean "enter" tap */
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 92%, transparent);
+  color: var(--accent-ink);
+  cursor: pointer;
+  z-index: 2;
+}
+.cag-editor .mfs-back {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--ink);
+}
+.cag-editor .mfs-crumb {
+  flex: 0 1 auto;
+  max-width: 34vw;
+  font: 700 12px var(--font-sans);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px;
+}
+
 /* ---------- long-press frame menu (MobileFrameMenu, mobile only) ----------
    A fixed popover anchored under the held thumbnail; the strip is display:none on
    desktop so this only ever renders on touch. */

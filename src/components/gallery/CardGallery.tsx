@@ -216,6 +216,11 @@ export function CardGallery({
   );
 }
 
+// Camera interpolation helpers (module scope so they are stable across renders).
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+// shortest-path angle lerp — glides through the nearest arc (handles the 0/360 seam).
+const angLerp = (a: number, b: number, t: number) => a + (((b - a + 540) % 360) - 180) * t;
+
 function ExpandPanel({
   item,
   playing,
@@ -227,29 +232,57 @@ function ExpandPanel({
   onPlay: () => void;
   cameraViewOnPlay: boolean;
 }) {
-  // A multi-shot template is a "video": playing PLAYS THROUGH the shot sequence
-  // (cutting between frames). A single-frame item just spins the camera as before.
-  const frames = item.frames && item.frames.length ? item.frames : [item.preview];
+  // A multi-shot template is a "video": playing GLIDES THROUGH the shot sequence,
+  // continuously interpolating the camera between consecutive shots (no hard cuts).
+  // A single-frame item just spins the camera as before.
+  const frames = useMemo(
+    () => (item.frames && item.frames.length ? item.frames : [item.preview]),
+    [item],
+  );
   const isVideo = frames.length > 1;
-  const [idx, setIdx] = useState(0);
+  const [cur, setCur] = useState<GalleryFrame>(frames[0]);
+  const [seg, setSeg] = useState(0); // current shot index (for the indicator)
 
   // Template preview: while playing, swap the ISO/orbit view for the camera POV
   // (what the shot camera actually sees), so you watch the shots through the lens.
   const camview = playing && cameraViewOnPlay ? "pov" : "orbit";
 
-  // Advance through the shot list while playing a "video".
+  // While playing a "video", run a requestAnimationFrame loop that interpolates the
+  // camera between consecutive shots with a smoothstep ease, so it glides instead of
+  // cutting. Otherwise sit on the first frame.
   useEffect(() => {
-    if (!playing || !isVideo) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % frames.length), 1100);
-    return () => clearInterval(t);
-  }, [playing, isVideo, frames.length]);
-
-  // Reset to the first shot whenever we pause.
-  useEffect(() => {
-    if (!playing) setIdx(0);
-  }, [playing]);
-
-  const cur = frames[Math.min(idx, frames.length - 1)];
+    if (!playing || !isVideo) {
+      setCur(frames[0]);
+      setSeg(0);
+      return;
+    }
+    const N = frames.length,
+      SEG = 1500; // ms per shot-to-shot glide
+    let raf = 0,
+      start: number | null = null;
+    const tick = (ts: number) => {
+      if (start == null) start = ts;
+      const t = (ts - start) / SEG;
+      const s = ((Math.floor(t) % N) + N) % N;
+      const local = t - Math.floor(t);
+      const e = local * local * (3 - 2 * local); // smoothstep ease
+      const A = frames[s],
+        B = frames[(s + 1) % N];
+      setCur({
+        az: angLerp(A.az, B.az, e),
+        el: lerp(A.el, B.el, e),
+        dist: lerp(A.dist, B.dist, e),
+        lens: lerp(A.lens, B.lens, e),
+        roll: angLerp(A.roll ?? 0, B.roll ?? 0, e),
+        subj: A.subj,
+        name: A.name,
+      });
+      setSeg(s);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [playing, isVideo, frames]);
 
   return (
     <div className="cg-expand">
@@ -289,7 +322,7 @@ function ExpandPanel({
         </div>
         {isVideo ? (
           <span className="cg-shotind">
-            Shot {Math.min(idx, frames.length - 1) + 1}/{frames.length}
+            Shot {seg + 1}/{frames.length}
             {cur.name ? " · " + cur.name : ""}
           </span>
         ) : null}
