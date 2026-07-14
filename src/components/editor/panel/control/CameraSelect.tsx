@@ -5,6 +5,7 @@
 // user sees why their per-frame choice is inert. Prompt-only — no 3D effect.
 
 import React from "react";
+import { Camera } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 
@@ -35,7 +36,7 @@ export function CameraSelect() {
             </option>
           ))}
         </select>
-        {preset?.look ? <p style={hint}>◈ {preset.sensor} · {preset.look}</p> : null}
+        {preset?.look ? <p style={hint}><Camera size={13} aria-hidden /> {preset.sensor} · {preset.look}</p> : null}
         {global ? (
           <p style={hint}>Ikut kamera global — atur di Viewport.</p>
         ) : !current ? (

@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
+  // Barrel-optimize the lucide-react icon import so only the used icons ship.
+  experimental: { optimizePackageImports: ["lucide-react"] },
   // A per-build id, baked into BOTH the client bundle and the /api/build-id route at
   // build time. The client compares its baked id against the running server's id; after
   // a deploy they diverge → the "new version" toast.

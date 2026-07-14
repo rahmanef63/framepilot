@@ -1,5 +1,6 @@
 "use client";
 import React, { type CSSProperties } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ds/Button";
 
 // Compact micro footprint so the dense outline action rows keep the light Rupa
@@ -81,7 +82,13 @@ export function ArmDeleteButton({
         timer.current = setTimeout(() => setArmed(false), 2600);
       }}
     >
-      {armed ? "✕?" : "✕"}
+      {armed ? (
+        <>
+          <X size={13} aria-hidden />?
+        </>
+      ) : (
+        <X size={13} aria-hidden />
+      )}
     </IcoButton>
   );
 }

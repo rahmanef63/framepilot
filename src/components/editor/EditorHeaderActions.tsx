@@ -12,6 +12,7 @@ import { useApp } from "@/state/AppState";
 import { Button } from "@/components/ds/Button";
 import { useProjectSync } from "./useProjectSync";
 import { EditorActionMenu, EditorActionRows } from "./EditorActionMenu";
+import { Undo2, Redo2, GraduationCap, Download } from "lucide-react";
 
 export function EditorHeaderActions() {
   const ctx = useEditor();
@@ -45,8 +46,8 @@ export function EditorHeaderActions() {
       </span>
       {/* undo/redo visible on desktop; folded into the Aksi (⋯) menu on mobile */}
       <span className="ehx-history">
-        <Button variant="ghost" size="sm" icon="↶" title="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={ctx.undo} style={{ padding: "7px 10px" }} />
-        <Button variant="ghost" size="sm" icon="↷" title="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={ctx.redo} style={{ padding: "7px 10px" }} />
+        <Button variant="ghost" size="sm" icon={<Undo2 size={16} aria-hidden />} title="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={ctx.undo} style={{ padding: "7px 10px" }} />
+        <Button variant="ghost" size="sm" icon={<Redo2 size={16} aria-hidden />} title="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={ctx.redo} style={{ padding: "7px 10px" }} />
       </span>
       {/* .ehx-tour is display:contents (globals.css) so desktop lays it out inline as
           before; the mobile ≤820 rule flips it to display:none (folded into ⋯). The
@@ -56,7 +57,7 @@ export function EditorHeaderActions() {
         <Button
           variant="ghost"
           size="sm"
-          icon="🎓"
+          icon={<GraduationCap size={16} aria-hidden />}
           title="Tur / onboarding — pandu langkah demi langkah"
           onClick={() => window.dispatchEvent(new Event("cag:start-tour"))}
           style={{ padding: "7px 10px" }}
@@ -65,7 +66,7 @@ export function EditorHeaderActions() {
       {/* .ehx-save (display:contents, globals.css) → mobile ≤820 hides it; Simpan is
           still reachable in the ⋯ menu. Header on phones = undo · redo · ⋯. */}
       <span className="ehx-save">
-        <Button variant="primary" size="sm" icon="⤓" title="Simpan Proyek" onClick={saveCurrent} style={{ padding: "7px 11px" }}>
+        <Button variant="primary" size="sm" icon={<Download size={16} aria-hidden />} title="Simpan Proyek" onClick={saveCurrent} style={{ padding: "7px 11px" }}>
           Simpan
         </Button>
       </span>

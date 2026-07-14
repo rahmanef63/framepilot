@@ -6,6 +6,7 @@
 // data comes from useEditor(); the pure lib does the Blob/file work.
 
 import React, { useEffect, useRef } from "react";
+import { X } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { useProjectSync } from "@/components/editor/useProjectSync";
@@ -43,7 +44,13 @@ function ArmDelete({ title, onConfirm }: { title: string; onConfirm: () => void 
         timer.current = setTimeout(() => setArmed(false), 2600);
       }}
     >
-      {armed ? "✕?" : "✕"}
+      {armed ? (
+        <>
+          <X size={13} aria-hidden />?
+        </>
+      ) : (
+        <X size={13} aria-hidden />
+      )}
     </button>
   );
 }

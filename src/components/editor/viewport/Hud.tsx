@@ -8,6 +8,7 @@
 // hosting .cell (set by the engine's updateFormatGuide).
 
 import React from "react";
+import { Play } from "lucide-react";
 
 export function Hud({ thirdsOn }: { thirdsOn: boolean }) {
   return (
@@ -26,7 +27,7 @@ export function Hud({ thirdsOn }: { thirdsOn: boolean }) {
         <i className="h2" />
       </div>
       <div className="toplabel">
-        <span className="badge playBadge">▶ PLAY</span>
+        <span className="badge playBadge"><Play size={14} aria-hidden /> PLAY</span>
         <span className="badge angleBadge" />
         <span className="badge shotBadge" />
       </div>

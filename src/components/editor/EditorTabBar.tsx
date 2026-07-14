@@ -5,7 +5,7 @@
 // tab was folded into the /panduan cookbook — Ship B slim.)
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { Menu, GraduationCap, Settings, ChevronDown } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { Seg } from "./ui/Seg";
@@ -50,7 +50,7 @@ export function EditorTabBar() {
         aria-label="Buka menu"
         aria-controls="fp-sidebar"
       >
-        <span aria-hidden>☰</span>
+        <Menu size={18} aria-hidden />
       </button>
       <div className="tabs">
         {MAIN_TABS.map((t) => (
@@ -65,8 +65,8 @@ export function EditorTabBar() {
       </div>
 
       {/* Mobile top-bar actions grouped to the right (desktop: display:contents +
-          the help buttons hidden, so this collapses to just the inline tools). Tur
-          replays the onboarding coach-marks; Panduan opens the camera-grammar cookbook. */}
+          the help button hidden, so this collapses to just the inline tools). Tur
+          replays the onboarding coach-marks. */}
       <div className="tabbar-help">
         <button
           type="button"
@@ -75,16 +75,8 @@ export function EditorTabBar() {
           aria-label="Tur"
           title="Tur / onboarding — pandu langkah demi langkah"
         >
-          <span aria-hidden>🎓</span>
+          <GraduationCap size={16} aria-hidden />
         </button>
-        <Link
-          href="/panduan"
-          className="tabbar-helpbtn"
-          aria-label="Panduan"
-          title="Panduan — kamus grammar kamera"
-        >
-          <span aria-hidden>📖</span>
-        </Link>
         <button
           type="button"
           className={"tabbar-alat" + (toolsOpen ? " open" : "")}
@@ -92,10 +84,8 @@ export function EditorTabBar() {
           aria-controls="tabbar-tools"
           onClick={() => setToolsOpen((v) => !v)}
         >
-          <span aria-hidden>⚙</span> Alat
-          <span className="tabbar-alat-chev" aria-hidden>
-            ▾
-          </span>
+          <Settings size={15} aria-hidden /> Alat
+          <ChevronDown size={13} className="tabbar-alat-chev" aria-hidden />
         </button>
       </div>
 

@@ -3,6 +3,7 @@ import React from "react";
 import type { EditorContextValue } from "@/state/EditorState";
 import type { EditorFrame } from "@/lib/editorModel";
 import { IconCopy } from "@/components/editor/EditorIcons";
+import { ChevronUp, ChevronDown, LayoutGrid } from "lucide-react";
 import { IcoButton, ArmDeleteButton } from "./IcoButton";
 
 // One frame row: click loads the camera, inline rename, per-row actions (C/↑↓/✕).
@@ -30,7 +31,7 @@ export function FrameRow({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={frame.thumb} alt="" />
       ) : (
-        <div className="fthumb ph">▦</div>
+        <div className="fthumb ph"><LayoutGrid size={16} aria-hidden /></div>
       )}
       <input
         className="fname2"
@@ -44,10 +45,10 @@ export function FrameRow({
           <IconCopy size={12} />
         </IcoButton>
         <IcoButton title="Naik" onClick={() => ctx.moveFrame(frame.id, -1)}>
-          ↑
+          <ChevronUp size={13} aria-hidden />
         </IcoButton>
         <IcoButton title="Turun" onClick={() => ctx.moveFrame(frame.id, 1)}>
-          ↓
+          <ChevronDown size={13} aria-hidden />
         </IcoButton>
         <ArmDeleteButton title="Hapus (klik 2×)" onConfirm={() => ctx.delFrame(frame.id)} />
       </span>

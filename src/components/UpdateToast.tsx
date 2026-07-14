@@ -5,6 +5,7 @@
 // (unregister SW + purge caches + cache-busted reload). Checks on mount, every 5 min,
 // and when the tab regains focus — so a user who left the tab open gets the new build.
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { forceFreshReload } from "@/lib/forceFreshReload";
 
 const LOCAL_ID = process.env.NEXT_PUBLIC_BUILD_ID ?? "unknown";
@@ -54,7 +55,7 @@ export function UpdateToast() {
         Muat ulang
       </button>
       <button className="fp-ut-close" aria-label="Tutup" onClick={() => setStale(false)}>
-        ✕
+        <X size={14} aria-hidden />
       </button>
     </div>
   );

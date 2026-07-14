@@ -5,11 +5,12 @@ import { useApp, type LibraryView } from "@/state/AppState";
 import { GridView } from "./GridView";
 import { TableView } from "./TableView";
 import { SplitView } from "./SplitView";
+import { LayoutGrid, List, Columns2, Plus, type LucideIcon } from "lucide-react";
 
-const VIEWS: { id: LibraryView; label: string; glyph: string }[] = [
-  { id: "grid", label: "Grid", glyph: "▦" },
-  { id: "table", label: "Tabel", glyph: "≣" },
-  { id: "split", label: "Split", glyph: "◫" },
+const VIEWS: { id: LibraryView; label: string; glyph: LucideIcon }[] = [
+  { id: "grid", label: "Grid", glyph: LayoutGrid },
+  { id: "table", label: "Tabel", glyph: List },
+  { id: "split", label: "Split", glyph: Columns2 },
 ];
 
 // Small segmented view-switcher, ds-token styled (light + dark). Sits in the
@@ -28,6 +29,7 @@ function ViewSwitcher({ view, setView }: { view: LibraryView; setView: (v: Libra
     >
       {VIEWS.map((v) => {
         const on = v.id === view;
+        const Glyph = v.glyph;
         return (
           <button
             key={v.id}
@@ -47,7 +49,7 @@ function ViewSwitcher({ view, setView }: { view: LibraryView; setView: (v: Libra
               background: on ? "var(--primary)" : "transparent",
             }}
           >
-            <span aria-hidden style={{ font: "500 12px var(--font-mono)" }}>{v.glyph}</span>
+            <span aria-hidden style={{ font: "500 12px var(--font-mono)" }}><Glyph size={14} /></span>
             {v.label}
           </button>
         );
@@ -83,7 +85,7 @@ export function DataPromptScreen() {
         <span style={{ font: "500 12px var(--font-mono)", color: "var(--muted-foreground)" }}>{app.entriesCountText}</span>
         <div style={{ flex: 1 }} />
         {entries.length > 0 ? <ViewSwitcher view={app.view} setView={app.setView} /> : null}
-        <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport()}>
+        <Button variant="primary" size="sm" icon={<Plus size={14} aria-hidden />} onClick={() => app.openImport()}>
           Impor data
         </Button>
       </div>
@@ -107,7 +109,7 @@ export function DataPromptScreen() {
               Kirim foto atau tautan ke AI, minta JSON sesuai skema, lalu impor. · Send a photo or link to your AI, then
               import the JSON.
             </p>
-            <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport()}>
+            <Button variant="primary" size="sm" icon={<Plus size={14} aria-hidden />} onClick={() => app.openImport()}>
               Impor data
             </Button>
           </div>

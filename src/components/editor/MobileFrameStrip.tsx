@@ -9,6 +9,7 @@
 // frames. Lives inside EditorStateProvider, so useEditor() works directly.
 
 import React, { useRef, useState } from "react";
+import { LayoutGrid } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { activeScene, type EditorFrame } from "@/lib/editorModel";
 import { IconPlay, IconPause } from "./EditorIcons";
@@ -84,7 +85,7 @@ export function MobileFrameStrip() {
               <img src={f.thumb} alt="" />
             ) : (
               <span className="mfs-ph" aria-hidden>
-                ▦
+                <LayoutGrid size={18} />
               </span>
             )}
             <span className="mfs-idx">#{i + 1}</span>

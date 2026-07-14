@@ -5,6 +5,7 @@
 // Native <details> = the dropdown (no outside-click JS, closes itself, a11y-ok).
 
 import React from "react";
+import { ChevronDown } from "lucide-react";
 import { usePromptOptions } from "./usePromptOptions";
 import type { ShotOptions } from "@/lib/prompt/types";
 import "./prompt-options.css";
@@ -58,7 +59,7 @@ export function PromptOptionsMenu() {
           {on}/{ROWS.length}
         </span>
         <span className="cam-opts__chevron" aria-hidden="true">
-          ▾
+          <ChevronDown size={14} />
         </span>
       </summary>
       <PromptOptionsList />

@@ -1,5 +1,6 @@
 "use client";
 import React, { CSSProperties, ReactNode, useState } from "react";
+import { ChevronRight, Dot } from "lucide-react";
 
 /**
  * NavItem — a single navigation entry. `horizontal` is a sidebar/menu row
@@ -8,7 +9,7 @@ import React, { CSSProperties, ReactNode, useState } from "react";
  * Ported from ds-a components/navigation/NavItem.jsx.
  */
 export function NavItem({
-  icon = "◦",
+  icon = <Dot size={14} aria-hidden />,
   label,
   active = false,
   chevron = false,
@@ -85,7 +86,7 @@ export function NavItem({
               color: "var(--subtle-foreground)",
             }}
           >
-            {"›"}
+            <ChevronRight size={14} aria-hidden />
           </span>
         ) : null}
       </button>

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { CagCardPreview } from "@/shared/viewport3d/CagCardPreview";
 import { EntryView } from "@/state/AppState";
+import { Camera } from "lucide-react";
 
 export function GridView({ entries }: { entries: EntryView[] }) {
   return (
@@ -44,7 +45,7 @@ export function GridView({ entries }: { entries: EntryView[] }) {
                 {e.sceneCount} scene · {e.frameCount} shot · {e.when}
               </div>
               <div style={{ display: "flex", gap: 6, marginTop: "auto", paddingTop: 4, flexWrap: "wrap" }}>
-                <Button variant="primary" size="sm" icon="◈" onClick={e.onOpenStudio} title="Buka di Studio 3D">
+                <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={e.onOpenStudio} title="Buka di Studio 3D">
                   Buka di Studio 3D
                 </Button>
                 <Button variant="ghost" size="sm" onClick={e.onDelete} title="Hapus · Delete">

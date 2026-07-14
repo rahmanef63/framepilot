@@ -5,6 +5,7 @@ import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
 import { HeaderNav } from "@/components/shell/HeaderNav";
 import { BrandMark } from "@/components/shell/BrandMark";
+import { Menu, Plus, Braces } from "lucide-react";
 
 const SCREEN_NAMES: Record<string, string> = {
   "/": "Studio 3D",
@@ -41,7 +42,7 @@ export function Header() {
           aria-controls="fp-sidebar"
           className="app-header-burger"
         >
-          <span aria-hidden>☰</span>
+          <span aria-hidden><Menu size={18} /></span>
         </button>
         <span className="app-header-brand" style={{ color: "var(--primary)" }} aria-hidden>
           <BrandMark size={22} />
@@ -66,18 +67,18 @@ export function Header() {
         {onData ? (
           <>
             <span className="app-header-stats">{app.projStats}</span>
-            <Button variant="outline" size="sm" icon="{ }" onClick={app.openSchema}>
+            <Button variant="outline" size="sm" icon={<Braces size={14} aria-hidden />} onClick={app.openSchema}>
               Skema
             </Button>
             <Button variant="outline" size="sm" onClick={app.exportProject}>
               Ekspor
             </Button>
-            <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport("paste")}>
+            <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => app.openImport("paste")}>
               Impor
             </Button>
           </>
         ) : isStudio ? null : (
-          <Button variant="primary" size="sm" icon="+" onClick={() => app.openImport("paste")}>
+          <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => app.openImport("paste")}>
             Impor
           </Button>
         )}

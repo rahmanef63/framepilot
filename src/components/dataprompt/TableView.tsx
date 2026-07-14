@@ -3,6 +3,7 @@ import React from "react";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { EntryView } from "@/state/AppState";
+import { Camera } from "lucide-react";
 
 // Compact table view over the same EntryView list the grid renders. Adapted to
 // the current EntryView shape (no bulk-select / source-filter) — the only actions
@@ -73,7 +74,7 @@ export function TableView({ entries }: { entries: EntryView[] }) {
             </Badge>
             <span style={{ font: "600 11px var(--font-mono)", color: "var(--muted-foreground)" }}>{e.when}</span>
             <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-              <Button variant="primary" size="sm" icon="◈" onClick={e.onOpenStudio} title="Buka di Studio 3D">
+              <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={e.onOpenStudio} title="Buka di Studio 3D">
                 Studio 3D
               </Button>
               <Button variant="ghost" size="sm" onClick={e.onDelete} title="Hapus · Delete">

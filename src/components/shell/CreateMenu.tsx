@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { NavItem } from "@/components/ds/NavItem";
+import { Plus, Camera, Image, LayoutTemplate } from "lucide-react";
 
 /**
  * CreateMenu — the "Buat" (create) affordance rendered as a dropdown.
@@ -67,7 +68,7 @@ export function CreateMenu({
     <div ref={wrapRef} style={{ position: "relative", width: orientation === "horizontal" && fill ? "100%" : undefined }}>
       <NavItem
         orientation={orientation}
-        icon="+"
+        icon={<Plus size={16} />}
         label="Buat"
         accent
         active={open}
@@ -95,19 +96,19 @@ export function CreateMenu({
           }}
         >
           <MenuOption
-            icon="◈"
+            icon={<Camera size={16} />}
             title="Susun di Studio 3D"
             desc="Rancang kamera → Prompt Kamera"
             onClick={() => pick(onNew3D)}
           />
           <MenuOption
-            icon="▧"
+            icon={<Image size={16} />}
             title="Impor dari Gambar"
             desc="Foto → ekstrak data kamera"
             onClick={() => pick(onFromImage)}
           />
           <MenuOption
-            icon="▦"
+            icon={<LayoutTemplate size={16} />}
             title="Dari template"
             desc="Mulai dari preset scene siap pakai"
             onClick={() => pick(onFromTemplate)}
@@ -124,7 +125,7 @@ function MenuOption({
   desc,
   onClick,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   desc: string;
   onClick: () => void;

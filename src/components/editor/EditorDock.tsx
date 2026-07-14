@@ -10,6 +10,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 import { useEditor } from "@/state/EditorState";
+import { PanelLeft, Aperture, LayoutGrid, MoreHorizontal, Plus, type LucideIcon } from "lucide-react";
 
 type DockSection = "prompt" | "kamera" | "preset" | "more" | null;
 
@@ -25,11 +26,11 @@ export function MobileDockProvider({ children }: { children: React.ReactNode }) 
 
 export const useMobileDock = () => useContext(MobileDockCtx);
 
-const TABS: { key: Exclude<DockSection, null>; icon: string; label: string }[] = [
-  { key: "prompt", icon: "▤", label: "Prompt" },
-  { key: "kamera", icon: "◉", label: "Kamera" },
-  { key: "preset", icon: "▦", label: "Preset" },
-  { key: "more", icon: "⋯", label: "Lainnya" },
+const TABS: { key: Exclude<DockSection, null>; icon: LucideIcon; label: string }[] = [
+  { key: "prompt", icon: PanelLeft, label: "Prompt" },
+  { key: "kamera", icon: Aperture, label: "Kamera" },
+  { key: "preset", icon: LayoutGrid, label: "Preset" },
+  { key: "more", icon: MoreHorizontal, label: "Lainnya" },
 ];
 
 export function EditorDock() {
@@ -53,7 +54,7 @@ export function EditorDock() {
         aria-label="Buat frame baru dari kamera saat ini"
         title="Tangkap frame dari kamera → frame baru"
       >
-        <span aria-hidden>＋</span>
+        <span aria-hidden><Plus size={26} /></span>
       </button>
       {right.map((t) => (
         <DockBtn key={t.key} icon={t.icon} label={t.label} active={section === t.key} onClick={() => toggle(t.key)} />
@@ -68,11 +69,12 @@ function DockBtn({
   active,
   onClick,
 }: {
-  icon: string;
+  icon: LucideIcon;
   label: string;
   active: boolean;
   onClick: () => void;
 }) {
+  const Icon = icon;
   return (
     <button
       type="button"
@@ -81,7 +83,7 @@ function DockBtn({
       onClick={onClick}
     >
       <span className="dock-ico" aria-hidden>
-        {icon}
+        <Icon size={22} />
       </span>
       <span className="dock-lbl">{label}</span>
     </button>

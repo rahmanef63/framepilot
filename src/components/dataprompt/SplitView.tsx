@@ -4,6 +4,7 @@ import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { CagViewport } from "@/shared/viewport3d/CagViewport";
 import { EntryView } from "@/state/AppState";
+import { Camera } from "lucide-react";
 
 // Split view: a narrow list on the left + a live-3D inspector on the right.
 // Adapted to the current EntryView shape (no bulk-select / edit / json fields):
@@ -122,7 +123,7 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
                   {active.sceneCount} scene · {active.frameCount} shot · {active.when}
                 </div>
                 <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
-                  <Button variant="primary" size="sm" icon="◈" onClick={active.onOpenStudio}>
+                  <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={active.onOpenStudio}>
                     Buka di Studio 3D
                   </Button>
                   <Button variant="ghost" size="sm" onClick={active.onDelete}>

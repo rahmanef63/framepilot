@@ -7,6 +7,7 @@ import { scenePrompt } from "@/lib/editorPrompt";
 import { usePlatform } from "@/components/editor/usePlatform";
 import { getPromptOptions } from "@/components/editor/usePromptOptions";
 import { IconPlay, IconClipboard, IconNote, IconCopy } from "@/components/editor/EditorIcons";
+import { ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { IcoButton, ArmDeleteButton } from "./IcoButton";
 import { FrameRow } from "./FrameRow";
 import { copyText } from "./clipboard";
@@ -42,7 +43,7 @@ export function SceneRow({
             ctx.toggleSceneCollapsed(sc.id);
           }}
         >
-          {sc.collapsed ? "▸" : "▾"}
+          {sc.collapsed ? <ChevronRight size={14} aria-hidden /> : <ChevronDown size={14} aria-hidden />}
         </button>
         {head && head.thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -89,10 +90,10 @@ export function SceneRow({
           <IconCopy size={13} />
         </IcoButton>
         <IcoButton title="Naik" onClick={() => ctx.moveScene(sc.id, -1)}>
-          ↑
+          <ChevronUp size={13} aria-hidden />
         </IcoButton>
         <IcoButton title="Turun" onClick={() => ctx.moveScene(sc.id, 1)}>
-          ↓
+          <ChevronDown size={13} aria-hidden />
         </IcoButton>
         <ArmDeleteButton title="Hapus scene (klik 2×)" onConfirm={() => ctx.delScene(sc.id)} />
       </div>

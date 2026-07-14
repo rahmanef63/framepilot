@@ -5,6 +5,7 @@
 // camera prompt live against the same @/lib/prompt/platforms SSOT.
 
 import React from "react";
+import { ChevronDown } from "lucide-react";
 import { PLATFORMS } from "@/lib/prompt/platforms";
 import type { PlatformId } from "@/lib/prompt/types";
 import "./platform-picker.css";
@@ -33,7 +34,7 @@ export function PlatformSelect({
           ))}
         </select>
         <span className="cam-plat-select__chevron" aria-hidden="true">
-          ▾
+          <ChevronDown size={14} />
         </span>
       </span>
     </label>

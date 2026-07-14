@@ -7,6 +7,7 @@
 // scene state comes from useEditor(); strings ported VERBATIM from the concept.
 
 import React, { useState } from "react";
+import { Check } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { Button } from "@/components/ds/Button";
 import { activeScene } from "@/lib/editorModel";
@@ -127,7 +128,7 @@ export function PreviewPanel() {
             disabled={!hasShots}
             onClick={copyPrompt}
           >
-            {copied ? "Tersalin ✓" : hasShots ? "Salin Prompt" : "Belum ada shot"}
+            {copied ? <>Tersalin <Check size={16} aria-hidden /></> : hasShots ? "Salin Prompt" : "Belum ada shot"}
           </Button>
         </div>
         {hasShots ? (

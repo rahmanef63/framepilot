@@ -6,6 +6,7 @@
 // and the full bilingual production dump tucked into a collapsible "Detail".
 
 import React, { useState } from "react";
+import { Check } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
@@ -67,7 +68,7 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
       <div className="cam-dock-row" data-tour="copy">
         <PlatformSelect value={platform} onChange={setPlatform} />
         <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
-          {copied ? "Tersalin ✓" : hasShots ? "Salin" : "Belum ada shot"}
+          {copied ? <>Tersalin <Check size={14} aria-hidden /></> : hasShots ? "Salin" : "Belum ada shot"}
         </Button>
       </div>
 

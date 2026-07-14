@@ -5,6 +5,7 @@
 // in the Viewport tab). The toggle reuses the ToggleRow .on accent-button pattern.
 
 import React from "react";
+import { Camera } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 
@@ -37,7 +38,7 @@ export function GlobalCameraSettings() {
             </option>
           ))}
         </select>
-        {preset?.look ? <p style={hint}>◈ {preset.sensor} · {preset.look}</p> : null}
+        {preset?.look ? <p style={hint}><Camera size={13} aria-hidden /> {preset.sensor} · {preset.look}</p> : null}
         <p style={hint}>
           {global
             ? "Semua frame pakai kamera ini."

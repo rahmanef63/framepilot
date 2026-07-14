@@ -1,5 +1,6 @@
 "use client";
 import React, { CSSProperties, ReactNode, useEffect, useState } from "react";
+import { X } from "lucide-react";
 
 /** Backdrop — the scrim behind modals. Ported from ds-a. */
 export function Backdrop({
@@ -57,7 +58,7 @@ export function CloseButton({
         ...style,
       }}
     >
-      {"✕"}
+      <X size={14} aria-hidden />
     </button>
   );
 }

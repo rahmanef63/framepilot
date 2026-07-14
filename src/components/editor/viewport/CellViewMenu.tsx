@@ -7,6 +7,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import type { SlotId, OrthoId, ViewKind, SavedView } from "@/lib/editor/engineApi";
+import { Check, ChevronDown, Pencil, Plus, X } from "lucide-react";
 import "./CellViewMenu.css";
 
 const ORTHO_ORDER: OrthoId[] = ["top", "bottom", "left", "right", "front", "back", "iso"];
@@ -111,7 +112,7 @@ export function CellViewMenu({
         onClick={() => (open ? close() : setOpen(true))}
       >
         {labelOf(current, savedViews)}
-        <span className="cvm-chev">▾</span>
+        <span className="cvm-chev"><ChevronDown size={14} aria-hidden /></span>
       </button>
 
       {open ? (
@@ -142,7 +143,7 @@ export function CellViewMenu({
                   }}
                 />
                 <button className="cvm-icon" title="Simpan" onClick={commitText}>
-                  ✓
+                  <Check size={16} aria-hidden />
                 </button>
               </div>
             ) : (
@@ -164,12 +165,12 @@ export function CellViewMenu({
                       setText(v.name);
                     }}
                   >
-                    ✎
+                    <Pencil size={16} aria-hidden />
                   </button>
                 ) : null}
                 {onDelete ? (
                   <button className="cvm-icon" title="Hapus view" onClick={() => onDelete(v.id)}>
-                    ✕
+                    <X size={16} aria-hidden />
                   </button>
                 ) : null}
               </div>
@@ -189,7 +190,7 @@ export function CellViewMenu({
                 }}
               />
               <button className="cvm-icon" title="Simpan" onClick={commitText}>
-                ✓
+                <Check size={16} aria-hidden />
               </button>
             </div>
           ) : (
@@ -201,7 +202,7 @@ export function CellViewMenu({
                 setText("");
               }}
             >
-              <span className="cvm-name">＋ Simpan view saat ini…</span>
+              <span className="cvm-name"><Plus size={16} aria-hidden /> Simpan view saat ini…</span>
             </button>
           )}
         </div>

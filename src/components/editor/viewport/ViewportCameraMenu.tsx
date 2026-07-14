@@ -12,6 +12,7 @@ import { useEditor } from "@/state/EditorState";
 import { ARS } from "@/lib/dataPrompt";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 import { ANGLE_PRESETS, SHOT_PRESETS } from "@/lib/editor/presets";
+import { Aperture, ChevronDown, Plus } from "lucide-react";
 import "./CellViewMenu.css";
 
 type SectionId = "ratio" | "angle" | "saved" | "shot" | "camera";
@@ -89,8 +90,8 @@ export function ViewportCameraMenu() {
         aria-controls="cvm-camera-pop"
         onClick={() => setOpen((o) => !o)}
       >
-        ◉ Kamera
-        <span className="cvm-chev">▾</span>
+        <Aperture size={16} aria-hidden /> Kamera
+        <span className="cvm-chev"><ChevronDown size={14} aria-hidden /></span>
       </button>
 
       {open ? (
@@ -138,7 +139,7 @@ export function ViewportCameraMenu() {
                   onKeyDown={(e) => e.key === "Enter" && saveCurrent()}
                 />
                 <button className="cvm-icon" aria-label="Simpan posisi kamera saat ini" title="Simpan posisi kamera saat ini" onClick={saveCurrent}>
-                  ＋
+                  <Plus size={16} aria-hidden />
                 </button>
               </div>
             </div>
@@ -210,7 +211,7 @@ function AccRow({
     >
       <span className="cvm-acc-label">{label}</span>
       {value ? <span className="cvm-acc-val">{value}</span> : null}
-      <span className="cvm-acc-chev" aria-hidden>▾</span>
+      <span className="cvm-acc-chev" aria-hidden><ChevronDown size={14} /></span>
     </button>
   );
 }

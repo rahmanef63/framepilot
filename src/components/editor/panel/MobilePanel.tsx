@@ -9,6 +9,7 @@
 // (viewport+brief+proyek).
 
 import React from "react";
+import { ChevronDown } from "lucide-react";
 import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
 import { PromptOptionsList } from "@/components/editor/PromptOptionsMenu";
 import { useMobileDock } from "@/components/editor/EditorDock";
@@ -36,7 +37,7 @@ function AccSection({
       <summary>
         <span>{title}</span>
         <span className="acc-chevron" aria-hidden>
-          ▾
+          <ChevronDown size={14} />
         </span>
       </summary>
       <div className="acc-body">{children}</div>

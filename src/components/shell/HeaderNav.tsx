@@ -3,6 +3,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CreateMenu } from "@/components/shell/CreateMenu";
 import { useApp } from "@/state/AppState";
+import { Camera, Library } from "lucide-react";
 
 /**
  * HeaderNav — the app's primary navigation, moved OUT of the left rail into the
@@ -24,8 +25,8 @@ export function HeaderNav() {
         onFromImage={() => app.openImport("photo")}
         onFromTemplate={() => router.push("/template")}
       />
-      <HeaderTab icon="◈" label="Studio 3D" active={pathname === "/"} onClick={() => router.push("/")} />
-      <HeaderTab icon="▧" label="Pustaka" active={pathname === "/library"} onClick={() => router.push("/library")} />
+      <HeaderTab icon={<Camera size={16} />} label="Studio 3D" active={pathname === "/"} onClick={() => router.push("/")} />
+      <HeaderTab icon={<Library size={16} />} label="Pustaka" active={pathname === "/library"} onClick={() => router.push("/library")} />
     </nav>
   );
 }
@@ -36,7 +37,7 @@ function HeaderTab({
   active,
   onClick,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   active: boolean;
   onClick: () => void;

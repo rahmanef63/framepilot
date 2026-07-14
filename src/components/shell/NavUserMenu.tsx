@@ -6,6 +6,7 @@ import { NavItem } from "@/components/ds/NavItem";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
 import { useIsAdmin } from "@/components/admin/useIsAdmin";
+import { Check, PanelLeft, Settings, BookOpen } from "lucide-react";
 
 /**
  * NavUserMenu — collapses the whole sidebar footer (theme mode, Docs, Panduan,
@@ -69,7 +70,7 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
       <NavItem
         orientation={orientation}
         avatar
-        icon={isAuthenticated ? "✓" : "RF"}
+        icon={isAuthenticated ? <Check size={16} /> : "RF"}
         label={isAuthenticated ? "Akun" : "Masuk"}
         active={open}
         chevron={orientation === "horizontal"}
@@ -97,12 +98,12 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
         >
           <ThemeModeToggle />
           <Divider />
-          <MenuLink icon="▤" label="Docs" active={pathname.startsWith("/docs")} onClick={() => go("/docs")} />
-          <MenuLink icon="?" label="Panduan" active={pathname === "/panduan"} onClick={() => go("/panduan")} />
-          {isAdmin ? <MenuLink icon="⚙" label="Admin" active={pathname === "/admin"} onClick={() => go("/admin")} /> : null}
+          <MenuLink icon={<PanelLeft size={16} />} label="Docs" active={pathname.startsWith("/docs")} onClick={() => go("/docs")} />
+          <MenuLink icon={<BookOpen size={16} aria-hidden />} label="Panduan" active={pathname === "/panduan"} onClick={() => go("/panduan")} />
+          {isAdmin ? <MenuLink icon={<Settings size={16} />} label="Admin" active={pathname === "/admin"} onClick={() => go("/admin")} /> : null}
           <Divider />
           <MenuLink
-            icon={isAuthenticated ? "✓" : "RF"}
+            icon={isAuthenticated ? <Check size={16} /> : "RF"}
             label={isAuthenticated ? "Akun" : "Masuk"}
             active={isAuthenticated}
             onClick={openAcct}
@@ -124,7 +125,7 @@ function MenuLink({
   active,
   onClick,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   active?: boolean;
   onClick: () => void;

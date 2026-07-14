@@ -5,6 +5,7 @@
 // the editor context's existing frame CRUD actions.
 
 import React, { useState } from "react";
+import { RotateCw, Pencil, Copy, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import type { EditorFrame } from "@/lib/editorModel";
 
@@ -55,22 +56,22 @@ export function MobileFrameMenu({
           <>
             <div className="mfs-menu-head">#{index + 1} · {frame.name}</div>
             <button role="menuitem" onClick={() => run(() => ctx.updateFrameById(frame.id))}>
-              ⟳ Perbarui (kamera kini)
+              <RotateCw size={16} aria-hidden /> Perbarui (kamera kini)
             </button>
-            <button role="menuitem" onClick={() => setRenaming(true)}>✎ Ganti nama</button>
-            <button role="menuitem" onClick={() => run(() => ctx.dupFrame(frame.id))}>⧉ Duplikat</button>
+            <button role="menuitem" onClick={() => setRenaming(true)}><Pencil size={16} aria-hidden /> Ganti nama</button>
+            <button role="menuitem" onClick={() => run(() => ctx.dupFrame(frame.id))}><Copy size={16} aria-hidden /> Duplikat</button>
             <button role="menuitem" disabled={index === 0} onClick={() => run(() => ctx.moveFrame(frame.id, -1))}>
-              ← Geser kiri
+              <ChevronLeft size={16} aria-hidden /> Geser kiri
             </button>
             <button role="menuitem" disabled={index === total - 1} onClick={() => run(() => ctx.moveFrame(frame.id, 1))}>
-              Geser kanan →
+              Geser kanan <ChevronRight size={16} aria-hidden />
             </button>
             <button
               role="menuitem"
               className={"mfs-menu-del" + (confirmDel ? " armed" : "")}
               onClick={() => (confirmDel ? run(() => ctx.delFrame(frame.id)) : setConfirmDel(true))}
             >
-              {confirmDel ? "Yakin hapus?" : "🗑 Hapus"}
+              {confirmDel ? "Yakin hapus?" : <><Trash2 size={16} aria-hidden /> Hapus</>}
             </button>
           </>
         )}

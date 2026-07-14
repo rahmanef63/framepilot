@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { applyMode, bootMode, getMode, setMode, type Mode } from "@/lib/theme/theme-mode";
+import { Sun, Moon, Monitor, type LucideIcon } from "lucide-react";
 
 /**
  * ThemeModeToggle — 3-way segmented Light / Dark / System control.
@@ -9,10 +10,10 @@ import { applyMode, bootMode, getMode, setMode, type Mode } from "@/lib/theme/th
  * Built on app tokens only (no ds import needed — pure token styling).
  * Boots the saved mode once on mount.
  */
-const OPTS: { mode: Mode; icon: string; label: string; title: string }[] = [
-  { mode: "light", icon: "☀", label: "Terang", title: "Mode terang" },
-  { mode: "dark", icon: "☾", label: "Gelap", title: "Mode gelap" },
-  { mode: "system", icon: "⌂", label: "Sistem", title: "Ikut sistem" },
+const OPTS: { mode: Mode; icon: LucideIcon; label: string; title: string }[] = [
+  { mode: "light", icon: Sun, label: "Terang", title: "Mode terang" },
+  { mode: "dark", icon: Moon, label: "Gelap", title: "Mode gelap" },
+  { mode: "system", icon: Monitor, label: "Sistem", title: "Ikut sistem" },
 ];
 
 export function ThemeModeToggle() {
@@ -71,7 +72,7 @@ export function ThemeModeToggle() {
               transition: "background var(--motion) var(--ease), color var(--motion) var(--ease)",
             }}
           >
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.95em" }}>{o.icon}</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.95em" }}><o.icon size={16} /></span>
             {o.label}
           </button>
         );

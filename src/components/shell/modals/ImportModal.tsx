@@ -3,6 +3,7 @@
 // reveal the collapsible extraction-prompt helper. Split out of GlobalModals (rr
 // single-responsibility). All state comes from useApp; styling from ./modalStyles.
 import React, { useState } from "react";
+import { ChevronDown, ChevronRight, Menu, Braces } from "lucide-react";
 import { ModalDialog } from "@/components/ds/Modal";
 import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
@@ -50,7 +51,7 @@ export function ImportModal() {
                 background: "var(--card)",
               }}
             >
-              ≡ Unggah .json
+              <Menu size={14} aria-hidden /> Unggah .json
             </span>
           </label>
           <Button variant="ghost" size="sm" onClick={app.fillSamplePaste}>
@@ -85,7 +86,7 @@ export function ImportModal() {
               textAlign: "left",
             }}
           >
-            <span style={{ color: "var(--muted-foreground)" }}>{helperOpen ? "▾" : "▸"}</span>
+            <span style={{ color: "var(--muted-foreground)" }}>{helperOpen ? <ChevronDown size={14} aria-hidden /> : <ChevronRight size={14} aria-hidden />}</span>
             Belum punya JSON? Prompt ekstraksi untuk AI
           </button>
           {helperOpen ? (
@@ -111,7 +112,7 @@ export function ImportModal() {
               </div>
               <textarea readOnly spellCheck={false} value={app.extractPrompt} style={promptBoxStyle} />
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <Button variant="primary" size="sm" icon="{ }" onClick={app.copyExtractPrompt}>
+                <Button variant="primary" size="sm" icon={<Braces size={14} aria-hidden />} onClick={app.copyExtractPrompt}>
                   Salin prompt ekstraksi · Copy
                 </Button>
                 <Button variant="ghost" size="sm" onClick={app.openSchema}>

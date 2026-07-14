@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ds/Button";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
+import { Aperture } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Docs — Camera Angle Guide Pro",
@@ -50,7 +51,9 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             minWidth: 0,
           }}
         >
-          <span style={{ font: "700 18px var(--font-mono)", color: "var(--primary)", flex: "none" }}>◉</span>
+          <span style={{ font: "700 18px var(--font-mono)", color: "var(--primary)", flex: "none" }}>
+            <Aperture size={18} aria-hidden />
+          </span>
           <span
             style={{
               font: "700 15px var(--font-sans)",
