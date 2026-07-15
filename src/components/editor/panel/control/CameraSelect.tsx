@@ -34,7 +34,7 @@ export function CameraSelect() {
         >
           {CAMERAS.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.label}
+              {c.id === "" ? t("view.noCameraGeneric") : c.label}
             </option>
           ))}
         </select>

@@ -1,6 +1,7 @@
 // editorModel/convert — one-way converters (plan §3.3) between the v2 EditorProject
 // and the lightweight library/AppState shapes. Pure, on demand.
 
+import { tr } from "@/i18n";
 import {
   DEF,
   entryProject,
@@ -100,7 +101,7 @@ export function projectToEntry(project: EditorProject, meta: ProjectEntryMeta): 
     .filter((sc) => sc.frames.length);
   return {
     id: meta.id,
-    name: project.name || "Tanpa nama",
+    name: project.name || tr("sys.untitled"),
     en: meta.en || "",
     source: meta.source || project.source || "studio",
     ref: meta.ref || "",

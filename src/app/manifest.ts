@@ -6,14 +6,14 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Camera Angle Guide Pro",
     short_name: "CAG Pro",
-    description: "Susun sudut kamera di studio 3D → prompt kamera siap-tempel untuk 10+ platform video AI.",
+    description: "Compose camera angles in a 3D studio → paste-ready camera prompts for 10+ AI video platforms.",
     start_url: "/",
     scope: "/",
     display: "standalone",
     background_color: "#F0EEE6",
     theme_color: "#d97757",
     orientation: "any",
-    lang: "id",
+    lang: "en",
     categories: ["productivity", "photo", "graphics"],
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },

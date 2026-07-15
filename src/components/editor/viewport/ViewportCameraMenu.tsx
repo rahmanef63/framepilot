@@ -180,7 +180,7 @@ export function ViewportCameraMenu() {
                   disabled={!global && !current}
                   onClick={() => pickCamera(c.id)}
                 >
-                  <span className="cvm-name">{c.label}</span>
+                  <span className="cvm-name">{c.id === "" ? t("view.noCameraGeneric") : c.label}</span>
                 </button>
               ))}
             </div>

@@ -2,6 +2,7 @@
 // Backend: window.storage -> localStorage -> in-memory. Quota-safe.
 
 import { EditorProject, ensureProjectShape, newProject, deepCopy } from "./editorModel";
+import { tr } from "@/i18n";
 
 export const AUTOKEY = "camguide-pro-autosave";
 const LISTKEY = "camguide-pro-projects";
@@ -106,10 +107,11 @@ export function listProjects(): SavedEntry[] {
 export function saveProject(project: EditorProject): SaveResult & { id: string } {
   const id = project.activeSceneId ? "prj-" + project.scenes[0].id : "prj-" + Date.now().toString(36);
   const list = listProjects();
-  const idx = list.findIndex((e) => e.name === (project.name || "Tanpa nama"));
+  const name = project.name || tr("sys.untitled");
+  const idx = list.findIndex((e) => e.name === name);
   const entry: SavedEntry = {
     id: idx >= 0 ? list[idx].id : id,
-    name: project.name || "Tanpa nama",
+    name,
     updated: Date.now(),
     project: deepCopy(project),
   };

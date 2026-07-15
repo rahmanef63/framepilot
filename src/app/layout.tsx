@@ -12,22 +12,22 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "CAG Pro" },
   icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
-  title: "Camera Angle Guide Pro — studio 3D → prompt kamera AI",
+  title: "Camera Angle Guide Pro — 3D studio → AI camera prompts",
   description:
-    "Susun sudut kamera di studio 3D lalu ekspor prompt kamera siap-tempel untuk 10+ platform video AI (Runway, Kling, Veo, Luma, …).",
+    "Compose camera angles in a 3D studio, then export paste-ready camera prompts for 10+ AI video platforms (Runway, Kling, Veo, Luma, …).",
   openGraph: {
     type: "website",
     url: "/",
     siteName: "Camera Angle Guide Pro",
     title: "Camera Angle Guide Pro",
-    description: "Susun sudut kamera di studio 3D → prompt kamera siap-tempel untuk video AI.",
-    locale: "id_ID",
+    description: "Compose camera angles in a 3D studio → paste-ready camera prompts for AI video.",
+    locale: "en_US",
     images: [{ url: "/meta/framepilot-opengraph.webp", width: 1672, height: 941, alt: "Camera Angle Guide Pro" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Camera Angle Guide Pro",
-    description: "Susun sudut kamera di studio 3D → prompt kamera siap-tempel untuk video AI.",
+    description: "Compose camera angles in a 3D studio → paste-ready camera prompts for AI video.",
     images: ["/meta/framepilot-twitter-card.webp"],
   },
 };

@@ -53,8 +53,6 @@ function schemaObj(mode: SchemaMode) {
   };
   const base = {
     schema: "camera-angle-guide/v2",
-    _petunjuk:
-      "Isi HANYA field yang bisa disimpulkan dari gambar/video. Sisakan field lain pada nilai default. Kembalikan JSON valid saja.",
     _instructions:
       "Fill ONLY the fields you can infer from the image/video. Leave the rest at their defaults. Return valid JSON only.",
     _enums: {
