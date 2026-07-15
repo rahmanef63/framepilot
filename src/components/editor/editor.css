@@ -1874,10 +1874,11 @@
     color: var(--ink);
     cursor: pointer;
   }
-  /* bigger main tabs on mobile (were too small) */
-  .cag-editor .tabs button {
-    padding: 9px 14px;
-    font-size: 14px;
+  /* Editor / Full Preview tabs are desktop-only — on mobile the editor is the
+     only page, so hide the tab strip (keeps the ☰ · language · Alat top bar to
+     one row instead of wrapping to three). */
+  .cag-editor .tabs {
+    display: none;
   }
   /* Tur · Panduan · Alat grouped at the right edge of the one-row tabbar. */
   .cag-editor .tabbar-help {

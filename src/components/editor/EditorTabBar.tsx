@@ -1,10 +1,11 @@
 "use client";
-// EditorTabBar.tsx — the concept .tabbar: main tab router (Editor / Full Preview)
+// EditorTabBar.tsx — the concept .tabbar: main tab router (Editor / Full Preview,
+// DESKTOP-ONLY — the strip is hidden on mobile where the editor is the only page)
 // + drag-tool mode Seg + view focus bar (QUAD/CAM/TOP/LEFT/RIGHT/ISO) + keyboard
 // hint. Uses editor.css classes for dark-studio fidelity. (The old Guide Belajar
 // tab was folded into the /panduan cookbook — Ship B slim.)
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, GraduationCap, Settings, ChevronDown } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
@@ -41,6 +42,20 @@ export function EditorTabBar() {
   // the tabbar is one row (button hidden on desktop, tools show inline there). When
   // opened on mobile the tools panel splits in-flow below (canvas shrinks while open).
   const [toolsOpen, setToolsOpen] = useState(false);
+
+  // The Editor / Full Preview tabs are desktop-only. On mobile the editor is the
+  // only page, so if a desktop→mobile resize left the state in "preview" (the tab
+  // strip is hidden there) snap it back — otherwise the user is stranded on a
+  // preview page with no way to switch back.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 820px)");
+    const sync = () => {
+      if (mq.matches && ui.mainTab === "preview") ctx.setMainTab("editor");
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [ui.mainTab, ctx]);
 
   return (
     <div className="tabbar">
