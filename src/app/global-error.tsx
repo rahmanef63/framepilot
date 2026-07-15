@@ -8,6 +8,11 @@
 // TODO(rr): raw <button> + literal color fallbacks here violate "shadcn primitives
 // only" + "theme tokens not hex" — unavoidable in the root-crash boundary, which
 // runs without the design-system CSS/context. Compliant version is impossible here.
+//
+// i18n: the I18nProvider lives in the (crashed) root layout, so useT() has no
+// context here — use the context-free tr() runtime, which mirrors the last active
+// locale (falls back to Indonesian).
+import { tr } from "@/i18n";
 
 export default function GlobalError({
   error,
@@ -30,9 +35,9 @@ export default function GlobalError({
         }}
       >
         <div style={{ textAlign: "center", padding: 24, maxWidth: 420 }}>
-          <h1 style={{ fontSize: 20, margin: "0 0 8px" }}>Aplikasi bermasalah</h1>
+          <h1 style={{ fontSize: 20, margin: "0 0 8px" }}>{tr("chrome.globalErrorTitle")}</h1>
           <p style={{ opacity: 0.7, margin: "0 0 16px", lineHeight: 1.5 }}>
-            Terjadi kesalahan tak terduga. Muat ulang untuk mencoba lagi.
+            {tr("chrome.globalErrorDesc")}
           </p>
           <button
             onClick={reset}
@@ -46,7 +51,7 @@ export default function GlobalError({
               color: "var(--primary-foreground, #fff)",
             }}
           >
-            Muat ulang
+            {tr("chrome.reload")}
           </button>
         </div>
       </body>

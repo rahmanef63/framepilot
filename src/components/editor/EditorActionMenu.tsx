@@ -7,6 +7,7 @@
 
 import React from "react";
 import { Button } from "@/components/ds/Button";
+import { useT } from "@/i18n";
 import { forceFreshReload } from "@/lib/forceFreshReload";
 import { MoreHorizontal, Undo2, Redo2, Download, Sparkles, Plus, GraduationCap, RotateCw, Braces } from "lucide-react";
 
@@ -33,6 +34,7 @@ export function EditorActionMenu({
   canUndo: boolean;
   canRedo: boolean;
 }) {
+  const { t } = useT();
   const [open, setOpen] = React.useState(false);
   const wrapRef = React.useRef<HTMLDivElement>(null);
   const [rect, setRect] = React.useState<DOMRect | null>(null);
@@ -76,7 +78,7 @@ export function EditorActionMenu({
         variant={open ? "outline" : "ghost"}
         size="sm"
         icon={<MoreHorizontal size={16} aria-hidden />}
-        title="Aksi lainnya"
+        title={t("editor.moreActions")}
         onClick={toggle}
         style={{ padding: "7px 11px" }}
       />
@@ -144,21 +146,22 @@ export function EditorActionRows({
   canRedo: boolean;
   onPick?: (fn: () => void) => void;
 }) {
+  const { t } = useT();
   const pick = onPick ?? ((fn: () => void) => fn());
   return (
     <>
-      <MenuOption icon={<Undo2 size={16} aria-hidden />} title="Urungkan" desc="Undo (Ctrl/Cmd+Z)" disabled={!canUndo} onClick={() => pick(onUndo)} />
-      <MenuOption icon={<Redo2 size={16} aria-hidden />} title="Ulangi" desc="Redo (Ctrl/Cmd+Shift+Z)" disabled={!canRedo} onClick={() => pick(onRedo)} />
+      <MenuOption icon={<Undo2 size={16} aria-hidden />} title={t("editor.actionUndo")} desc={t("editor.actionUndoDesc")} disabled={!canUndo} onClick={() => pick(onUndo)} />
+      <MenuOption icon={<Redo2 size={16} aria-hidden />} title={t("editor.actionRedo")} desc={t("editor.actionRedoDesc")} disabled={!canRedo} onClick={() => pick(onRedo)} />
       <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
-      <MenuOption icon={<Download size={16} aria-hidden />} title="Simpan Proyek" desc="Tulis ke penyimpanan" onClick={() => pick(onSave)} />
-      <MenuOption icon={<Sparkles size={16} aria-hidden />} title="Proyek Baru" desc="Mulai proyek kosong" onClick={() => pick(onNew)} />
-      <MenuOption icon={<Plus size={16} aria-hidden />} title="Impor" desc="Tempel / unggah data" onClick={() => pick(onImport)} />
-      <MenuOption icon={<Download size={16} aria-hidden />} title="Ekspor proyek" desc="Unduh JSON proyek" onClick={() => pick(onExport)} />
-      <MenuOption icon={<Braces size={16} aria-hidden />} title="Skema" desc="Lihat & unduh skema" onClick={() => pick(onSchema)} />
-      {onTour ? <MenuOption icon={<GraduationCap size={16} aria-hidden />} title="Tur / Panduan" desc="Pandu langkah demi langkah" onClick={() => pick(onTour)} /> : null}
+      <MenuOption icon={<Download size={16} aria-hidden />} title={t("editor.actionSaveProject")} desc={t("editor.actionSaveProjectDesc")} onClick={() => pick(onSave)} />
+      <MenuOption icon={<Sparkles size={16} aria-hidden />} title={t("editor.actionNewProject")} desc={t("editor.actionNewProjectDesc")} onClick={() => pick(onNew)} />
+      <MenuOption icon={<Plus size={16} aria-hidden />} title={t("common.import")} desc={t("editor.actionImportDesc")} onClick={() => pick(onImport)} />
+      <MenuOption icon={<Download size={16} aria-hidden />} title={t("editor.actionExportProject")} desc={t("editor.actionExportProjectDesc")} onClick={() => pick(onExport)} />
+      <MenuOption icon={<Braces size={16} aria-hidden />} title={t("editor.actionSchema")} desc={t("editor.actionSchemaDesc")} onClick={() => pick(onSchema)} />
+      {onTour ? <MenuOption icon={<GraduationCap size={16} aria-hidden />} title={t("editor.actionTour")} desc={t("editor.actionTourDesc")} onClick={() => pick(onTour)} /> : null}
       <div style={{ height: 1, margin: "3px 4px", background: "var(--border)" }} />
       {/* Hard reload: unregister SW + purge Cache Storage + cache-busted reload. */}
-      <MenuOption icon={<RotateCw size={16} aria-hidden />} title="Muat ulang versi" desc="Bersihkan cache & ambil versi terbaru" onClick={() => pick(() => void forceFreshReload())} />
+      <MenuOption icon={<RotateCw size={16} aria-hidden />} title={t("editor.actionReload")} desc={t("editor.actionReloadDesc")} onClick={() => pick(() => void forceFreshReload())} />
     </>
   );
 }

@@ -2,6 +2,7 @@
 import React from "react";
 import type { EditorContextValue } from "@/state/EditorState";
 import type { EditorScene } from "@/lib/editorModel";
+import { useT } from "@/i18n";
 import { sceneDuration } from "@/lib/editorModel";
 import { scenePrompt } from "@/lib/editorPrompt";
 import { usePlatform } from "@/components/editor/usePlatform";
@@ -27,6 +28,7 @@ export function SceneRow({
   active: boolean;
   currentFrameId: string | null;
 }) {
+  const { t } = useT();
   const [platform] = usePlatform();
   const cls =
     "snode" + (active ? " activeScene" : "") + (sc.collapsed ? " collapsed" : "");
@@ -37,7 +39,7 @@ export function SceneRow({
       <div className="srow" onClick={() => ctx.setActiveSceneId(sc.id, true)}>
         <button
           className="fold ico"
-          title="Buka/tutup"
+          title={t("panel.expandCollapse")}
           onClick={(e) => {
             e.stopPropagation();
             ctx.toggleSceneCollapsed(sc.id);
@@ -54,7 +56,7 @@ export function SceneRow({
         <input
           className="sname"
           value={sc.name}
-          title="Rename scene"
+          title={t("panel.renameScene")}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => ctx.renameScene(sc.id, e.target.value)}
         />
@@ -66,7 +68,7 @@ export function SceneRow({
       {/* baris aksi scene */}
       <div className="sacts">
         <IcoButton
-          title="Play scene ini"
+          title={t("panel.playScene")}
           onClick={() => {
             ctx.setActiveSceneId(sc.id, false);
             ctx.play();
@@ -75,34 +77,34 @@ export function SceneRow({
           <IconPlay size={13} />
         </IcoButton>
         <IcoButton
-          title="Salin prompt kamera scene"
+          title={t("panel.copyScenePrompt")}
           onClick={() => {
             copyText(scenePrompt(sc, ctx.project.settings, platform, getPromptOptions()));
-            showToast("Prompt kamera scene disalin");
+            showToast(t("panel.scenePromptCopied"));
           }}
         >
           <IconClipboard size={13} />
         </IcoButton>
-        <IcoButton title="Catatan scene" onClick={() => ctx.toggleSceneNotesOpen(sc.id)}>
+        <IcoButton title={t("panel.sceneNotes")} onClick={() => ctx.toggleSceneNotesOpen(sc.id)}>
           <IconNote size={13} />
         </IcoButton>
-        <IcoButton title="Duplikat scene" onClick={() => ctx.dupScene(sc.id)}>
+        <IcoButton title={t("panel.duplicateScene")} onClick={() => ctx.dupScene(sc.id)}>
           <IconCopy size={13} />
         </IcoButton>
-        <IcoButton title="Naik" onClick={() => ctx.moveScene(sc.id, -1)}>
+        <IcoButton title={t("panel.moveUp")} onClick={() => ctx.moveScene(sc.id, -1)}>
           <ChevronUp size={13} aria-hidden />
         </IcoButton>
-        <IcoButton title="Turun" onClick={() => ctx.moveScene(sc.id, 1)}>
+        <IcoButton title={t("panel.moveDown")} onClick={() => ctx.moveScene(sc.id, 1)}>
           <ChevronDown size={13} aria-hidden />
         </IcoButton>
-        <ArmDeleteButton title="Hapus scene (klik 2×)" onConfirm={() => ctx.delScene(sc.id)} />
+        <ArmDeleteButton title={t("panel.deleteSceneTwice")} onConfirm={() => ctx.delScene(sc.id)} />
       </div>
 
       {/* catatan scene */}
       {sc.notesOpen || sc.notes ? (
         <textarea
           className="snotes"
-          placeholder="Catatan scene… (lokasi, mood, waktu, kontinuitas)"
+          placeholder={t("panel.sceneNotesPlaceholder")}
           value={sc.notes}
           onChange={(e) => ctx.setSceneNotes(sc.id, e.target.value)}
         />
@@ -111,9 +113,7 @@ export function SceneRow({
       {/* anak: frames */}
       <div className="fchildren">
         {!sc.frames.length ? (
-          <div className="empty-tree">
-            Belum ada frame — aktifkan scene ini lalu + Tambah Frame.
-          </div>
+          <div className="empty-tree">{t("panel.emptyScene")}</div>
         ) : null}
         {sc.frames.map((f, fi) => (
           <FrameRow

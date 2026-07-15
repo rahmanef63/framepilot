@@ -4,6 +4,7 @@ import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { EntryView } from "@/state/AppState";
 import { Camera } from "lucide-react";
+import { useT } from "@/i18n";
 
 // Compact table view over the same EntryView list the grid renders. Adapted to
 // the current EntryView shape (no bulk-select / source-filter) — the only actions
@@ -11,6 +12,7 @@ import { Camera } from "lucide-react";
 const COLS = "2fr 132px 1.2fr 200px";
 
 export function TableView({ entries }: { entries: EntryView[] }) {
+  const { t } = useT();
   return (
     <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 20px 36px" }}>
       <div
@@ -36,10 +38,10 @@ export function TableView({ entries }: { entries: EntryView[] }) {
             color: "var(--muted-foreground)",
           }}
         >
-          <span>Nama · Name</span>
-          <span>Sumber</span>
-          <span>Diperbarui</span>
-          <span style={{ textAlign: "right" }}>Aksi</span>
+          <span>{t("lib.colName")}</span>
+          <span>{t("lib.colSource")}</span>
+          <span>{t("lib.colUpdated")}</span>
+          <span style={{ textAlign: "right" }}>{t("lib.colActions")}</span>
         </div>
         {entries.map((e) => (
           <div
@@ -66,7 +68,7 @@ export function TableView({ entries }: { entries: EntryView[] }) {
                 {e.name}
               </div>
               <div style={{ font: "500 10px var(--font-mono)", color: "var(--muted-foreground)" }}>
-                {e.sceneCount} scene · {e.frameCount} shot
+                {t("lib.sceneCount", { n: e.sceneCount })} · {t("lib.shotCount", { n: e.frameCount })}
               </div>
             </div>
             <Badge tone={e.sourceTone}>
@@ -74,12 +76,12 @@ export function TableView({ entries }: { entries: EntryView[] }) {
             </Badge>
             <span style={{ font: "600 11px var(--font-mono)", color: "var(--muted-foreground)" }}>{e.when}</span>
             <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-              <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={e.onOpenStudio} title="Buka di Studio 3D">
-                Studio 3D
+              <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={e.onOpenStudio} title={t("lib.openInStudio")}>
+                {t("lib.studio3d")}
               </Button>
               {!e.preset && (
-                <Button variant="ghost" size="sm" onClick={e.onDelete} title="Hapus · Delete">
-                  Hapus
+                <Button variant="ghost" size="sm" onClick={e.onDelete} title={t("common.delete")}>
+                  {t("common.delete")}
                 </Button>
               )}
             </div>

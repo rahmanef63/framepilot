@@ -12,6 +12,7 @@ import {
   deepCopy,
 } from "@/lib/editorModel";
 import { clamp } from "@/lib/editorMath";
+import { tr } from "@/i18n";
 import type { EditorCore } from "./core";
 
 export interface PlaybackActions {
@@ -120,7 +121,7 @@ export function usePlaybackActions(
       playbackRef.current.duration = d;
       const f = currentFrame();
       if (f) f.meta.duration = d;
-      scheduleHistoryCommit("Durasi frame");
+      scheduleHistoryCommit(tr("state.hist.frameDuration"));
       bump();
     },
     [playbackRef, currentFrame, scheduleHistoryCommit, bump]

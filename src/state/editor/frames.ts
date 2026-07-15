@@ -4,6 +4,7 @@
 
 import { useCallback } from "react";
 import { uid } from "@/lib/dataPrompt";
+import { tr } from "@/i18n";
 import {
   EditorFrame,
   defaultShotMeta,
@@ -81,7 +82,7 @@ export function useFrameActions(
     f.camera = projectRef.current.settings.camera;
     sc.frames.push(f);
     currentFrameIdRef.current = f.id;
-    commitHistory("Tambah frame");
+    commitHistory(tr("state.hist.addFrame"));
     bump();
   }, [projectRef, currentFrameIdRef, stopPlayback, captureFrameFields, commitHistory, bump]);
 
@@ -90,7 +91,7 @@ export function useFrameActions(
     if (!f) return;
     stopPlayback();
     Object.assign(f, captureFrameFields());
-    commitHistory("Perbarui frame");
+    commitHistory(tr("state.hist.updateFrame"));
     bump();
   }, [currentFrame, stopPlayback, captureFrameFields, commitHistory, bump]);
 
@@ -102,7 +103,7 @@ export function useFrameActions(
       if (!hit) return;
       stopPlayback();
       Object.assign(hit.frame, captureFrameFields());
-      commitHistory("Perbarui frame");
+      commitHistory(tr("state.hist.updateFrame"));
       bump();
     },
     [projectRef, stopPlayback, captureFrameFields, commitHistory, bump]
@@ -136,7 +137,7 @@ export function useFrameActions(
       };
       hit.scene.frames.splice(hit.index + 1, 0, copy);
       currentFrameIdRef.current = copy.id;
-      commitHistory("Gandakan frame");
+      commitHistory(tr("state.hist.duplicateFrame"));
       bump();
     },
     [projectRef, currentFrameIdRef, stopPlayback, commitHistory, bump]
@@ -149,7 +150,7 @@ export function useFrameActions(
       if (!hit) return;
       hit.scene.frames.splice(hit.index, 1);
       if (currentFrameIdRef.current === id) currentFrameIdRef.current = null;
-      commitHistory("Hapus frame");
+      commitHistory(tr("state.hist.deleteFrame"));
       bump();
     },
     [projectRef, currentFrameIdRef, stopPlayback, commitHistory, bump]
@@ -164,7 +165,7 @@ export function useFrameActions(
       const j = i + dir;
       if (j < 0 || j >= sc.frames.length) return;
       [sc.frames[i], sc.frames[j]] = [sc.frames[j], sc.frames[i]];
-      commitHistory("Pindahkan frame");
+      commitHistory(tr("state.hist.moveFrame"));
       bump();
     },
     [projectRef, stopPlayback, commitHistory, bump]
@@ -175,7 +176,7 @@ export function useFrameActions(
       const hit = findFrame(projectRef.current, id);
       if (!hit) return;
       hit.frame.name = name;
-      scheduleHistoryCommit("Ganti nama frame");
+      scheduleHistoryCommit(tr("state.hist.renameFrame"));
       bump();
     },
     [projectRef, scheduleHistoryCommit, bump]
@@ -186,7 +187,7 @@ export function useFrameActions(
       const hit = findFrame(projectRef.current, id);
       if (!hit) return;
       hit.frame.notes = notes;
-      scheduleHistoryCommit("Catatan frame");
+      scheduleHistoryCommit(tr("state.hist.frameNotes"));
       bump();
     },
     [projectRef, scheduleHistoryCommit, bump]
@@ -199,7 +200,7 @@ export function useFrameActions(
       const hit = findFrame(projectRef.current, id);
       if (!hit) return;
       hit.frame.camera = cameraId;
-      scheduleHistoryCommit("Kamera frame");
+      scheduleHistoryCommit(tr("state.hist.frameCamera"));
       bump();
     },
     [projectRef, scheduleHistoryCommit, bump]

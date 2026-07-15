@@ -10,6 +10,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { PanelLeft, Aperture, LayoutGrid, MoreHorizontal, Plus, type LucideIcon } from "lucide-react";
 
 type DockSection = "prompt" | "kamera" | "preset" | "more" | null;
@@ -26,15 +27,16 @@ export function MobileDockProvider({ children }: { children: React.ReactNode }) 
 
 export const useMobileDock = () => useContext(MobileDockCtx);
 
-const TABS: { key: Exclude<DockSection, null>; icon: LucideIcon; label: string }[] = [
-  { key: "prompt", icon: PanelLeft, label: "Prompt" },
-  { key: "kamera", icon: Aperture, label: "Kamera" },
-  { key: "preset", icon: LayoutGrid, label: "Preset" },
-  { key: "more", icon: MoreHorizontal, label: "Lainnya" },
+const TABS: { key: Exclude<DockSection, null>; icon: LucideIcon; labelKey: string }[] = [
+  { key: "prompt", icon: PanelLeft, labelKey: "editor.dockPrompt" },
+  { key: "kamera", icon: Aperture, labelKey: "editor.camera" },
+  { key: "preset", icon: LayoutGrid, labelKey: "editor.dockPreset" },
+  { key: "more", icon: MoreHorizontal, labelKey: "editor.dockMore" },
 ];
 
 export function EditorDock() {
   const ctx = useEditor();
+  const { t } = useT();
   const { section, setSection } = useMobileDock();
   const toggle = (s: Exclude<DockSection, null>) => setSection(section === s ? null : s);
 
@@ -43,21 +45,21 @@ export function EditorDock() {
   const right = TABS.slice(2);
 
   return (
-    <nav className="editor-dock" aria-label="Kontrol editor">
-      {left.map((t) => (
-        <DockBtn key={t.key} icon={t.icon} label={t.label} active={section === t.key} onClick={() => toggle(t.key)} />
+    <nav className="editor-dock" aria-label={t("editor.dockNavLabel")}>
+      {left.map((tab) => (
+        <DockBtn key={tab.key} icon={tab.icon} label={t(tab.labelKey)} active={section === tab.key} onClick={() => toggle(tab.key)} />
       ))}
       <button
         type="button"
         className="dock-add"
         onClick={() => ctx.addFrame()}
-        aria-label="Buat frame baru dari kamera saat ini"
-        title="Tangkap frame dari kamera → frame baru"
+        aria-label={t("editor.dockAddAria")}
+        title={t("editor.dockAddTitle")}
       >
         <span aria-hidden><Plus size={26} /></span>
       </button>
-      {right.map((t) => (
-        <DockBtn key={t.key} icon={t.icon} label={t.label} active={section === t.key} onClick={() => toggle(t.key)} />
+      {right.map((tab) => (
+        <DockBtn key={tab.key} icon={tab.icon} label={t(tab.labelKey)} active={section === tab.key} onClick={() => toggle(tab.key)} />
       ))}
     </nav>
   );

@@ -8,6 +8,7 @@ import { useConvex, useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Entry, seed, uid } from "@/lib/dataPrompt";
+import { tr } from "@/i18n";
 import {
   EditorProject,
   ensureProjectShape,
@@ -110,7 +111,7 @@ export function useLibraryStore(deps: { now: number; showToast: (m: string) => v
       editorProj.source = en.source;
       const res = saveProject(editorProj); // dispatches PROJECTS_CHANGED
       if (isAuthenticated) {
-        saveMutation({ name: editorProj.name || "Proyek", doc: JSON.stringify(editorProj) }).catch(() => {});
+        saveMutation({ name: editorProj.name || tr("state.defaultProjectName"), doc: JSON.stringify(editorProj) }).catch(() => {});
       }
       return res.id;
     },
@@ -127,7 +128,7 @@ export function useLibraryStore(deps: { now: number; showToast: (m: string) => v
       } else {
         setSeedEntries((cur) => cur.filter((e) => e.id !== id));
       }
-      showToast("Data prompt dihapus · deleted");
+      showToast(tr("state.io.deleted"));
     },
     [removeMutation, showToast]
   );

@@ -6,6 +6,7 @@ import { NavItem } from "@/components/ds/NavItem";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
 import { useIsAdmin } from "@/components/admin/useIsAdmin";
+import { useT } from "@/i18n";
 import { Check, PanelLeft, Settings, BookOpen } from "lucide-react";
 
 /**
@@ -16,6 +17,7 @@ import { Check, PanelLeft, Settings, BookOpen } from "lucide-react";
  * outside-click / Esc. Structure mirrors CreateMenu.
  */
 export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vertical" }) {
+  const { t } = useT();
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated } = useConvexAuth();
@@ -71,7 +73,7 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
         orientation={orientation}
         avatar
         icon={isAuthenticated ? <Check size={16} /> : "RF"}
-        label={isAuthenticated ? "Akun" : "Masuk"}
+        label={isAuthenticated ? t("shell.user.account") : t("shell.user.signIn")}
         active={open}
         chevron={orientation === "horizontal"}
         ariaHasPopup="menu"
@@ -98,13 +100,13 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
         >
           <ThemeModeToggle />
           <Divider />
-          <MenuLink icon={<PanelLeft size={16} />} label="Docs" active={pathname.startsWith("/docs")} onClick={() => go("/docs")} />
-          <MenuLink icon={<BookOpen size={16} aria-hidden />} label="Panduan" active={pathname === "/panduan"} onClick={() => go("/panduan")} />
-          {isAdmin ? <MenuLink icon={<Settings size={16} />} label="Admin" active={pathname === "/admin"} onClick={() => go("/admin")} /> : null}
+          <MenuLink icon={<PanelLeft size={16} />} label={t("shell.user.docs")} active={pathname.startsWith("/docs")} onClick={() => go("/docs")} />
+          <MenuLink icon={<BookOpen size={16} aria-hidden />} label={t("header.crumb.guide")} active={pathname === "/panduan"} onClick={() => go("/panduan")} />
+          {isAdmin ? <MenuLink icon={<Settings size={16} />} label={t("header.crumb.admin")} active={pathname === "/admin"} onClick={() => go("/admin")} /> : null}
           <Divider />
           <MenuLink
             icon={isAuthenticated ? <Check size={16} /> : "RF"}
-            label={isAuthenticated ? "Akun" : "Masuk"}
+            label={isAuthenticated ? t("shell.user.account") : t("shell.user.signIn")}
             active={isAuthenticated}
             onClick={openAcct}
           />

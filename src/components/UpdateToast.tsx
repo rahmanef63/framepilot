@@ -7,6 +7,9 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { forceFreshReload } from "@/lib/forceFreshReload";
+// Mounted in the root layout body OUTSIDE I18nProvider, so useT() has no context
+// here — use the context-free tr() runtime, which mirrors the active locale.
+import { tr } from "@/i18n";
 
 const LOCAL_ID = process.env.NEXT_PUBLIC_BUILD_ID ?? "unknown";
 const POLL_MS = 5 * 60 * 1000;
@@ -50,11 +53,11 @@ export function UpdateToast() {
   if (!stale) return null;
   return (
     <div className="fp-update-toast" role="status">
-      <span className="fp-ut-msg">Versi baru tersedia</span>
+      <span className="fp-ut-msg">{tr("chrome.updateAvailable")}</span>
       <button className="fp-ut-reload" onClick={() => void forceFreshReload()}>
-        Muat ulang
+        {tr("chrome.reload")}
       </button>
-      <button className="fp-ut-close" aria-label="Tutup" onClick={() => setStale(false)}>
+      <button className="fp-ut-close" aria-label={tr("common.close")} onClick={() => setStale(false)}>
         <X size={14} aria-hidden />
       </button>
     </div>

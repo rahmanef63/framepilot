@@ -6,6 +6,7 @@
 // public API — useApp(), AppStateProvider, EntryView, LibraryView — is unchanged.
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useT } from "@/i18n";
 import { Project, SRC_META, fmtWhen, seedProject } from "@/lib/dataPrompt";
 import { STARTER_TEMPLATES, type StarterTemplate } from "@/app/(app)/template/templates";
 import { toEditorProject } from "@/lib/editorModel";
@@ -25,6 +26,7 @@ export function useApp(): AppContextValue {
 }
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useT();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -65,10 +67,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // Mirrors the old /template page: build a project from the preset, persist it into
   // the SSOT store + seed AUTOKEY, then open Studio 3D.
   const useTemplate = useCallback(
-    (t: StarterTemplate) => {
-      const project = toEditorProject(t.project);
-      project.name = t.title;
-      project.settings.aspectRatio = t.aspectRatio;
+    (tpl: StarterTemplate) => {
+      const project = toEditorProject(tpl.project);
+      project.name = t(`template.${tpl.id}.title`);
+      project.settings.aspectRatio = tpl.aspectRatio;
       saveProject(project);
       try {
         localStorage.setItem(AUTOKEY, JSON.stringify(project));
@@ -77,22 +79,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       }
       router.push("/");
     },
-    [router],
+    [router, t],
   );
   const presetEntries = useMemo<EntryView[]>(
     () =>
-      STARTER_TEMPLATES.map((t) => {
-        const scenes = t.project.scenes;
+      STARTER_TEMPLATES.map((tpl) => {
+        const scenes = tpl.project.scenes;
         const frameCount = scenes.reduce((a, s) => a + s.frames.length, 0);
         const f0 = scenes[0].frames[0];
         return {
-          id: "preset:" + t.id,
-          name: t.title,
-          when: t.aspectRatio,
+          id: "preset:" + tpl.id,
+          name: t(`template.${tpl.id}.title`),
+          when: tpl.aspectRatio,
           sourceGlyph: "✦",
-          sourceLabel: "Preset",
+          sourceLabel: t("state.src.preset"),
           sourceTone: "new",
-          thumbCaption: "preset",
+          thumbCaption: t("state.src.preset").toLowerCase(),
           sceneCount: scenes.length,
           frameCount,
           pAz: f0.az,
@@ -106,10 +108,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
             .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll ?? 0, subj: f.subj ?? "person", name: f.name })),
           example: false,
           preset: true,
-          onOpenStudio: () => useTemplate(t),
+          onOpenStudio: () => useTemplate(tpl),
         };
       }),
-    [useTemplate],
+    [useTemplate, t],
   );
 
   // ---- derived card view models (single grid, no filter / selection / view switch) ----
@@ -118,14 +120,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const scenes = en.data.scenes;
       const frameCount = scenes.reduce((a, sc) => a + sc.frames.length, 0);
       // Examples get a clear "Contoh" badge via the existing source-badge UI.
+      const meta = SRC_META[en.source] || SRC_META.paste;
       const sm = store.showingExamples
-        ? { glyph: "★", label: "Contoh", tone: "outline" as const }
-        : SRC_META[en.source] || SRC_META.paste;
+        ? { glyph: "★", label: t("state.src.example"), tone: "outline" as const }
+        : { glyph: meta.glyph, label: t(`state.src.${en.source}`), tone: meta.tone };
       const f0 = scenes[0].frames[0];
       return {
         id: en.id,
-        name: en.name,
-        when: fmtWhen(en.created, now),
+        name: store.showingExamples ? t(`seed.${en.id}.name`) : en.name,
+        when: fmtWhen(en.created, now, t),
         sourceGlyph: sm.glyph,
         sourceLabel: sm.label,
         sourceTone: sm.tone,
@@ -146,14 +149,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         onDelete: () => store.del(en.id),
       };
     });
-  }, [store.entries, store.showingExamples, now, store.openInStudio3d, store.del]);
+  }, [store.entries, store.showingExamples, now, store.openInStudio3d, store.del, t]);
 
   // Presets lead the grid, followed by the user's own SSOT-store entries.
   const entriesAll = useMemo<EntryView[]>(() => [...presetEntries, ...userEntries], [presetEntries, userEntries]);
 
-  const entriesCountText = entriesAll.length + " item";
+  const entriesCountText = t("state.itemCount", { n: entriesAll.length });
   const totalShots = project.scenes.reduce((a, sc) => a + sc.frames.length, 0);
-  const projStats = project.scenes.length + " scene · " + totalShots + " shot";
+  const projStats = t("state.sceneShotCount", { s: project.scenes.length, f: totalShots });
 
   const value: AppContextValue = {
     sidebarOpen,
@@ -181,7 +184,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           font: "600 12px var(--font-mono)",
         }}
       >
-        Memuat · Loading…
+        {t("common.loading")}
       </div>
     );
   }

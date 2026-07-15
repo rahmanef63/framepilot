@@ -5,6 +5,7 @@ import { Button } from "@/components/ds/Button";
 import { CagViewport } from "@/shared/viewport3d/CagViewport";
 import { EntryView } from "@/state/AppState";
 import { Camera } from "lucide-react";
+import { useT } from "@/i18n";
 
 // Split view: a narrow list on the left + a live-3D inspector on the right.
 // Adapted to the current EntryView shape (no bulk-select / edit / json fields):
@@ -19,6 +20,7 @@ const sectionLabel: React.CSSProperties = {
 };
 
 export function SplitView({ entries }: { entries: EntryView[] }) {
+  const { t } = useT();
   const [activeId, setActiveId] = useState<string | null>(entries[0]?.id ?? null);
   // Keep a valid selection as the list changes (delete/import).
   useEffect(() => {
@@ -77,7 +79,7 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
                 <Badge tone={e.sourceTone}>{e.sourceGlyph}</Badge>
               </div>
               <div style={{ font: "600 9.5px var(--font-mono)", color: "var(--muted-foreground)" }}>
-                {e.sceneCount} scene · {e.frameCount} shot · {e.when}
+                {t("lib.sceneCount", { n: e.sceneCount })} · {t("lib.shotCount", { n: e.frameCount })} · {e.when}
               </div>
             </div>
           );
@@ -109,7 +111,7 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
                   }}
                 />
                 <span style={{ font: "500 9px var(--font-mono)", color: "var(--subtle-foreground)", textAlign: "center" }}>
-                  seret untuk putar · drag to orbit
+                  {t("lib.dragToOrbit")}
                 </span>
               </div>
               <div style={{ flex: 1, minWidth: 190 }}>
@@ -120,21 +122,21 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
                   </Badge>
                 </div>
                 <div style={{ font: "500 11px var(--font-mono)", color: "var(--muted-foreground)", marginTop: 6 }}>
-                  {active.sceneCount} scene · {active.frameCount} shot · {active.when}
+                  {t("lib.sceneCount", { n: active.sceneCount })} · {t("lib.shotCount", { n: active.frameCount })} · {active.when}
                 </div>
                 <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
                   <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={active.onOpenStudio}>
-                    Buka di Studio 3D
+                    {t("lib.openInStudio")}
                   </Button>
                   {!active.preset && (
                     <Button variant="ghost" size="sm" onClick={active.onDelete}>
-                      Hapus
+                      {t("common.delete")}
                     </Button>
                   )}
                 </div>
               </div>
             </div>
-            <div style={sectionLabel}>Frame pertama · First frame</div>
+            <div style={sectionLabel}>{t("lib.firstFrame")}</div>
             <div
               style={{
                 display: "grid",
@@ -143,12 +145,12 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
               }}
             >
               {[
-                ["Azimuth", `${Math.round(active.pAz)}°`],
-                ["Elevasi", `${Math.round(active.pEl)}°`],
-                ["Jarak", `${active.pDist}`],
-                ["Lensa", `${active.pLens}mm`],
-                ["Roll", `${Math.round(active.pRoll)}°`],
-                ["Subjek", active.pSubj],
+                [t("lib.azimuth"), `${Math.round(active.pAz)}°`],
+                [t("lib.elevation"), `${Math.round(active.pEl)}°`],
+                [t("lib.distance"), `${active.pDist}`],
+                [t("lib.lens"), `${active.pLens}mm`],
+                [t("lib.roll"), `${Math.round(active.pRoll)}°`],
+                [t("lib.subject"), active.pSubj],
               ].map(([label, value]) => (
                 <div
                   key={label}

@@ -4,6 +4,7 @@
 "use client";
 import React, { useCallback, useState } from "react";
 import { Entry, Project, SchemaMode, SourceKind, aiPrompt, projFrame, schemaJson, toScenes, uid } from "@/lib/dataPrompt";
+import { tr } from "@/i18n";
 
 export function useLibraryIo(deps: {
   showToast: (m: string) => void;
@@ -40,7 +41,7 @@ export function useLibraryIo(deps: {
       } catch {
         /* ignore */
       }
-      showToast(msg || "Disalin · Copied");
+      showToast(msg || tr("common.copied"));
     },
     [showToast]
   );
@@ -51,24 +52,24 @@ export function useLibraryIo(deps: {
       try {
         obj = JSON.parse(text);
       } catch {
-        setIoMsg("JSON tidak valid · Invalid JSON");
+        setIoMsg(tr("state.io.invalidJson"));
         setIoOk(false);
         return;
       }
       const scenes = toScenes(obj);
       if (!scenes || !scenes.length) {
-        setIoMsg("Tidak ada scene/frame ditemukan · No scenes or frames found");
+        setIoMsg(tr("state.io.noScenes"));
         setIoOk(false);
         return;
       }
       const labels: Record<string, string> = {
-        photo: "Impor foto",
-        youtube: "Impor YouTube",
-        file: "Impor file",
-        paste: "Impor tempel",
+        photo: tr("state.io.importPhoto"),
+        youtube: tr("state.io.importYoutube"),
+        file: tr("state.io.importFile"),
+        paste: tr("state.io.importPaste"),
       };
       const o = obj as Record<string, unknown>;
-      const nm = (o.name ? String(o.name).trim() : "") || labels[source] || "Impor";
+      const nm = (o.name ? String(o.name).trim() : "") || labels[source] || tr("common.import");
       const en: Entry = {
         id: uid(),
         name: nm,
@@ -84,11 +85,11 @@ export function useLibraryIo(deps: {
       // so the new prompt shows in /library and survives reload (SSOT).
       persistEntry(en);
       refreshLocal();
-      setIoMsg("Ditambahkan · added: " + scenes.length + " scene · " + fc + " shot");
+      setIoMsg(tr("state.io.added", { s: scenes.length, f: fc }));
       setIoOk(true);
       setImportOpen(false);
       setPasteText("");
-      showToast("Data prompt ditambahkan — " + scenes.length + " scene · " + fc + " shot");
+      showToast(tr("state.io.addedToast", { s: scenes.length, f: fc }));
     },
     [showToast, persistEntry, refreshLocal]
   );
@@ -115,7 +116,7 @@ export function useLibraryIo(deps: {
       ],
     };
     setPasteText(JSON.stringify(o, null, 2));
-    setIoMsg("Contoh diisi — klik Parse · Sample filled");
+    setIoMsg(tr("state.io.sampleFilled"));
     setIoOk(true);
   }, []);
 
@@ -151,7 +152,7 @@ export function useLibraryIo(deps: {
       activeSceneId: null,
     };
     download("camera-angle-guide-project.json", JSON.stringify(proj, null, 2));
-    showToast("Proyek diekspor untuk Camera Angle Guide Pro");
+    showToast(tr("state.io.exported"));
   }, [project.scenes, download, showToast]);
 
   const extractPrompt = aiPrompt(extractSrc, schemaMode);
@@ -171,7 +172,7 @@ export function useLibraryIo(deps: {
     extractSrc,
     setExtractSrc,
     extractPrompt,
-    copyExtractPrompt: () => copy(extractPrompt, "Prompt ekstraksi disalin · copied"),
+    copyExtractPrompt: () => copy(extractPrompt, tr("state.io.extractCopied")),
     ioMsg,
     ioOk,
     schemaOpen,
@@ -180,8 +181,8 @@ export function useLibraryIo(deps: {
     setSchemaMode,
     downloadSchema: () => {
       download("camera-angle-guide." + schemaMode + ".schema.json", schemaJson(schemaMode));
-      showToast("Skema JSON diunduh · downloaded");
+      showToast(tr("state.io.schemaDownloaded"));
     },
-    copySchemaPrompt: () => copy(aiPrompt(extractSrc, schemaMode), "Prompt + skema disalin · copied"),
+    copySchemaPrompt: () => copy(aiPrompt(extractSrc, schemaMode), tr("state.io.schemaCopied")),
   };
 }

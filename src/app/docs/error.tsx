@@ -3,6 +3,7 @@
 // its own layout (outside the app Shell), so it gets its own boundary.
 import { useEffect } from "react";
 import { Button } from "@/components/ds/Button";
+import { useT } from "@/i18n";
 
 export default function DocsError({
   error,
@@ -11,6 +12,7 @@ export default function DocsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useT();
   useEffect(() => {
     console.error("[docs:error]", error);
   }, [error]);
@@ -27,12 +29,12 @@ export default function DocsError({
           alignItems: "center",
         }}
       >
-        <div style={{ font: "800 22px var(--font-sans)", color: "var(--foreground)" }}>Dokumentasi gagal dimuat</div>
+        <div style={{ font: "800 22px var(--font-sans)", color: "var(--foreground)" }}>{t("chrome.docsErrorTitle")}</div>
         <p style={{ font: "400 14px var(--font-sans)", color: "var(--muted-foreground)", lineHeight: 1.5, margin: 0 }}>
-          Terjadi kesalahan saat memuat dokumentasi. Coba lagi.
+          {t("chrome.docsErrorDesc")}
         </p>
         <Button variant="primary" onClick={reset}>
-          Coba lagi
+          {t("chrome.tryAgain")}
         </Button>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { NavUserMenu } from "@/components/shell/NavUserMenu";
 import { BrandMark } from "@/components/shell/BrandMark";
 import { NavItem } from "@/components/ds/NavItem";
 import { useApp } from "@/state/AppState";
+import { useT } from "@/i18n";
 import { Camera, Library } from "lucide-react";
 
 /**
@@ -15,6 +16,7 @@ import { Camera, Library } from "lucide-react";
  */
 export function Sidebar() {
   const app = useApp();
+  const { t } = useT();
   const router = useRouter();
   const pathname = usePathname();
   const open = app.sidebarOpen;
@@ -36,7 +38,7 @@ export function Sidebar() {
     <>
       <aside
         id="fp-sidebar"
-        aria-label="Studio"
+        aria-label={t("shell.sidebar.label")}
         className={"fp-sidebar" + (open ? " open" : "")}
         style={{
           width: open ? "246px" : "72px",
@@ -67,7 +69,7 @@ export function Sidebar() {
               e.preventDefault();
               router.push("/");
             }}
-            title="Beranda · Studio 3D"
+            title={t("shell.brandLink.title")}
             style={{
               width: "38px",
               height: "38px",
@@ -96,10 +98,10 @@ export function Sidebar() {
             the mobile editor, so the primary destinations live here in the ☰ drawer.
             display:none on desktop (there the header owns the nav). */}
         {isStudio ? (
-          <nav className="fp-drawer-nav" aria-label="Navigasi utama">
+          <nav className="fp-drawer-nav" aria-label={t("shell.nav.primary")}>
             {/* only rendered on Studio (isStudio), so Studio 3D is the active one */}
-            <NavItem orientation="horizontal" icon={<Camera size={16} />} label="Studio 3D" active onClick={() => router.push("/")} />
-            <NavItem orientation="horizontal" icon={<Library size={16} />} label="Pustaka" onClick={() => router.push("/library")} />
+            <NavItem orientation="horizontal" icon={<Camera size={16} />} label={t("header.crumb.studio")} active onClick={() => router.push("/")} />
+            <NavItem orientation="horizontal" icon={<Library size={16} />} label={t("header.crumb.library")} onClick={() => router.push("/library")} />
           </nav>
         ) : null}
 
@@ -108,7 +110,7 @@ export function Sidebar() {
             desktop via CSS (there the ⋯ header menu owns them). */}
         {isStudio ? (
           <div className="fp-drawer-actions-wrap">
-            <div className="fp-drawer-heading">Aksi proyek</div>
+            <div className="fp-drawer-heading">{t("shell.drawer.projectActions")}</div>
             <div id="fp-drawer-actions" />
           </div>
         ) : null}
@@ -139,7 +141,7 @@ export function Sidebar() {
                 flex: "none",
               }}
             >
-              Scene &amp; Frame
+              {t("shell.sceneFrameHeading")}
             </div>
           ) : null}
           {/* #fp-studio-slot MUST stay mounted (display toggle, not conditional
@@ -158,7 +160,7 @@ export function Sidebar() {
           />
           {open && !isStudio ? (
             <p style={{ font: "400 12px var(--font-sans)", color: "var(--muted-foreground)", lineHeight: 1.5, padding: "4px 6px" }}>
-              Buka{" "}
+              {t("shell.sidebar.openPrefix")}{" "}
               <a
                 href="/"
                 onClick={(e) => {
@@ -167,9 +169,9 @@ export function Sidebar() {
                 }}
                 style={{ color: "var(--primary)", fontWeight: 600 }}
               >
-                Studio 3D
+                {t("header.crumb.studio")}
               </a>{" "}
-              untuk menyusun scene &amp; frame.
+              {t("shell.sidebar.openSuffix")}
             </p>
           ) : null}
         </div>

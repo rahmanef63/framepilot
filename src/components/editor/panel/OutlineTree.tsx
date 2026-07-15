@@ -7,12 +7,14 @@
 import React from "react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
+import { useT } from "@/i18n";
 import { sceneDuration } from "@/lib/editorModel";
 import { SceneRow } from "./outline/SceneRow";
 
 export function OutlineTree() {
   const ctx = useEditor();
   const { showToast } = useApp();
+  const { t } = useT();
   const { project } = ctx;
 
   const totalF = project.scenes.reduce((n, s) => n + s.frames.length, 0);
@@ -24,7 +26,7 @@ export function OutlineTree() {
           is just the count for the list below. */}
       <div className="tree-head">
         <span className="count">
-          {project.scenes.length} scene · {totalF} frame · {totalD.toFixed(1)}s
+          {t("panel.treeCount", { sc: project.scenes.length, fr: totalF, d: totalD.toFixed(1) })}
         </span>
         <div className="spacer" />
       </div>
@@ -40,10 +42,7 @@ export function OutlineTree() {
           />
         ))}
       </div>
-      <p className="storage-note">
-        Klik baris scene untuk mengaktifkannya, klik thumbnail frame untuk memuat kamera. ▶
-        memutar scene tsb. Hapus perlu klik ✕ dua kali.
-      </p>
+      <p className="storage-note">{t("panel.treeHint")}</p>
     </>
   );
 }

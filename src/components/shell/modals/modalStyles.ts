@@ -45,9 +45,11 @@ export const promptBoxStyle: React.CSSProperties = {
 
 // The four source hints only ever differed by ONE line of the extraction prompt
 // (aiPrompt's srcTxt), so they collapse to a source-hint selector inside the helper.
-export const SRC_HINTS: { key: SourceKind; label: string }[] = [
-  { key: "photo", label: "Foto" },
-  { key: "youtube", label: "YouTube" },
-  { key: "file", label: "File / lain" },
-  { key: "paste", label: "Teks" },
+// Labels are localized in ImportModal via t("shell.import.src." + key); only the
+// internal `key` (SourceKind) lives here.
+export const SRC_HINTS: { key: SourceKind }[] = [
+  { key: "photo" },
+  { key: "youtube" },
+  { key: "file" },
+  { key: "paste" },
 ];

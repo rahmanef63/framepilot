@@ -4,6 +4,7 @@
 
 import { useCallback } from "react";
 import { ensureProjectShape } from "@/lib/editorModel";
+import { tr } from "@/i18n";
 import type { EditorCore } from "./core";
 
 export interface HistoryActions {
@@ -41,7 +42,7 @@ export function useHistoryActions(
   }, [projectRef, rigRef, currentFrameIdRef, playbackRef]);
 
   const commitHistory = useCallback(
-    (label = "Perubahan") => {
+    (label = tr("state.hist.change")) => {
       const h = historyRef.current;
       if (h.busy) return;
       const json = historyPayload();
@@ -57,7 +58,7 @@ export function useHistoryActions(
   );
 
   const scheduleHistoryCommit = useCallback(
-    (label = "Perubahan", delay = 280) => {
+    (label = tr("state.hist.change"), delay = 280) => {
       if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
       historyTimerRef.current = setTimeout(() => commitHistory(label), delay);
     },

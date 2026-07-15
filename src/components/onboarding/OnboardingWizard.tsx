@@ -10,57 +10,60 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import "./onboarding.css";
 
+// title/body hold i18n keys, resolved via t() at render time (STEPS is
+// module-level, so it can't call the hook here).
 type Step = { target?: string; title: string; body: string; promptTab?: boolean };
 
 const STEPS: Step[] = [
   {
-    title: "Selamat datang di Studio 3D 👋",
-    body: "Alur inti cuma 3 langkah: atur kamera → tambah frame → salin Prompt Kamera. Tur singkat ini nunjukin tombolnya. Klik Lanjut, atau Lewati kapan saja.",
+    title: "onb.welcomeTitle",
+    body: "onb.welcomeBody",
   },
   {
     target: "viewport",
-    title: "1 · Atur kamera di 3D",
-    body: "Drag untuk orbit, scroll untuk zoom, klik-kanan untuk pan (WASD/QE juga jalan). Ini menentukan sudut & posisi kamera shot kamu.",
+    title: "onb.cameraTitle",
+    body: "onb.cameraBody",
   },
   {
     target: "drag",
-    title: "2 · Mode geser",
-    body: "Pilih apa yang digeser saat drag: Navigasi (kamera bebas), Subjek (geser objek), atau Kamera (posisi kamera presisi).",
+    title: "onb.dragTitle",
+    body: "onb.dragBody",
   },
   {
     target: "add-frame",
-    title: "3 · Tambah frame",
-    body: "Puas dengan angle? Klik + Frame untuk menyimpannya sebagai satu shot. Ulangi untuk tiap angle yang kamu mau.",
+    title: "onb.addFrameTitle",
+    body: "onb.addFrameBody",
   },
   {
     target: "shots",
-    title: "4 · Kelola scene & frame",
-    body: "Semua shot ada di sidebar ini — putar berurutan, urutkan, duplikat, hapus, atau kelompokkan per scene.",
+    title: "onb.shotsTitle",
+    body: "onb.shotsBody",
   },
   {
     target: "panel-prompt",
-    title: "5 · Tab Prompt",
-    body: "Buka tab Prompt untuk melihat Prompt Kamera siap-tempel dari shot yang terpilih.",
+    title: "onb.promptTabTitle",
+    body: "onb.promptTabBody",
   },
   {
     target: "platform",
     promptTab: true,
-    title: "6 · Pilih platform video-AI",
-    body: "Runway, Kling, Veo, Luma, Hailuo, dll. Prompt langsung di-tune mengikuti gaya platform yang kamu pilih.",
+    title: "onb.platformTitle",
+    body: "onb.platformBody",
   },
   {
     target: "detail-prompt",
     promptTab: true,
-    title: "7 · Atur detail prompt",
-    body: "Centang / hapus klausa (lensa, jarak, gerakan kamera, rasio…) — prompt diperbarui langsung saat kamu ubah.",
+    title: "onb.detailTitle",
+    body: "onb.detailBody",
   },
   {
     target: "copy",
     promptTab: true,
-    title: "8 · Salin & tempel",
-    body: "Klik Salin, lalu tempel ke platform video-AI pilihanmu. Selesai — shot kamu siap dibuat! 🎬",
+    title: "onb.copyTitle",
+    body: "onb.copyBody",
   },
 ];
 
@@ -69,6 +72,7 @@ const TIP_W = 320;
 
 export function OnboardingWizard() {
   const ctx = useEditor();
+  const { t } = useT();
   const setPanelTab = ctx.setPanelTab;
   const [run, setRun] = useState(false);
   const [i, setI] = useState(0);
@@ -215,7 +219,7 @@ export function OnboardingWizard() {
   }
 
   return (
-    <div className="ob-root" role="dialog" aria-modal="true" aria-label="Tur onboarding">
+    <div className="ob-root" role="dialog" aria-modal="true" aria-label={t("onb.dialogLabel")}>
       {/* full-screen click blocker (modal). Dims itself only when there is no
           spotlight; with a spotlight the dim comes from .ob-spot's box-shadow. */}
       <div className={"ob-catch" + (ring ? "" : " ob-catch--dim")} />
@@ -224,23 +228,23 @@ export function OnboardingWizard() {
       {ring ? <div className="ob-spot" style={ring} /> : null}
 
       <div ref={tipRef} className="ob-tip" style={{ width: TIP_W, maxWidth: "calc(100vw - 16px)", ...tipStyle }}>
-        <div className="ob-tip-h">{step.title}</div>
-        <p className="ob-tip-b">{step.body}</p>
+        <div className="ob-tip-h">{t(step.title)}</div>
+        <p className="ob-tip-b">{t(step.body)}</p>
         <div className="ob-tip-f">
           <span className="ob-count">
             {i + 1} / {STEPS.length}
           </span>
           <div className="ob-btns">
             <button className="ob-skip" onClick={() => stop(true)}>
-              Lewati
+              {t("onb.skip")}
             </button>
             {i > 0 ? (
               <button className="ob-back" onClick={() => setI((v) => Math.max(0, v - 1))}>
-                Kembali
+                {t("common.back")}
               </button>
             ) : null}
             <button className="ob-next" onClick={next}>
-              {i >= STEPS.length - 1 ? "Selesai" : "Lanjut"}
+              {i >= STEPS.length - 1 ? t("onb.finish") : t("common.next")}
             </button>
           </div>
         </div>

@@ -9,6 +9,7 @@
 import React, { useState } from "react";
 import { Check } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { Button } from "@/components/ds/Button";
 import { activeScene } from "@/lib/editorModel";
 import { projectPrompt, projectDetail } from "@/lib/editorPrompt";
@@ -22,6 +23,7 @@ import { CopyButton } from "./CopyButton";
 
 export function PreviewPanel() {
   const ctx = useEditor();
+  const { t } = useT();
   const { playback } = ctx;
   const [platform, setPlatform] = usePlatform();
   const [opts] = usePromptOptions();
@@ -30,7 +32,7 @@ export function PreviewPanel() {
   // whole-project skinned camera prompt for the textarea (platform-tuned hero),
   // rebuilt live from the shared prompt-detail toggles
   const prompt = projectPrompt(ctx.project, platform, opts);
-  const projName = ctx.project.name.trim() || "Proyek tanpa nama";
+  const projName = ctx.project.name.trim() || t("editor.untitledProject");
 
   // transport indicator sourced from the active scene (concept updatePlaybackUI)
   const sc = activeScene(ctx.project);
@@ -55,34 +57,34 @@ export function PreviewPanel() {
       {/* ---- transport row (concept .pv-bar) ---- */}
       <div className="pv-bar">
         <select
-          title="Scene aktif"
+          title={t("editor.activeScene")}
           value={sc.id}
           onChange={(e) => ctx.setActiveSceneId(e.target.value, true)}
         >
           {ctx.project.scenes.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.name} ({s.frames.length}f)
+              {s.name} ({t("editor.framesShort", { n: s.frames.length })})
             </option>
           ))}
         </select>
         <div className="pbar">
-          <Button variant="outline" size="sm" title="Frame sebelumnya" onClick={ctx.prevFrame}>
+          <Button variant="outline" size="sm" title={t("editor.prevFrame")} onClick={ctx.prevFrame}>
             <IconPrev />
           </Button>
-          <Button variant="outline" size="sm" title="Play / pause (Space)" onClick={ctx.togglePlay}>
+          <Button variant="outline" size="sm" title={t("editor.playPause")} onClick={ctx.togglePlay}>
             {playback.playing ? <IconPause /> : <IconPlay />}
           </Button>
-          <Button variant="outline" size="sm" title="Frame berikutnya" onClick={ctx.nextFrame}>
+          <Button variant="outline" size="sm" title={t("editor.nextFrame")} onClick={ctx.nextFrame}>
             <IconNext />
           </Button>
-          <Button variant="outline" size="sm" title="Stop" onClick={ctx.stopPlayback}>
+          <Button variant="outline" size="sm" title={t("editor.stop")} onClick={ctx.stopPlayback}>
             <IconStop />
           </Button>
           <span className="ind pbInd">{ind}</span>
         </div>
         <button
           className={"small" + (playback.loop ? " on" : "")}
-          title={"Loop: " + (playback.loop ? "ON" : "OFF")}
+          title={playback.loop ? t("editor.loopOn") : t("editor.loopOff")}
           onClick={() => ctx.setLoop(!playback.loop)}
         >
           <IconLoop />
@@ -91,22 +93,22 @@ export function PreviewPanel() {
           className="count frameCount"
           style={{ fontFamily: "var(--e-mono)", fontSize: 11, color: "var(--muted)" }}
         >
-          {total} frame
+          {t("editor.frameCount", { n: total })}
         </span>
         <div className="spacer" />
         <span className="hint" style={{ maxWidth: "34vw" }}>
-          Navigasi tetap aktif: WASD / Q E / drag / scroll
+          {t("editor.navStaysActive")}
         </span>
       </div>
 
       {/* ---- generated-prompt side panel (concept .pv-side) ---- */}
       <div className="pv-side">
         <div className="pv-side-head">
-          <h3>Prompt Kamera</h3>
-          <span className="pv-side-count">{totalShots} shot · {projName}</span>
+          <h3>{t("editor.cameraPrompt")}</h3>
+          <span className="pv-side-count">{t("editor.shotCount", { n: totalShots })} · {projName}</span>
         </div>
         <p className="pv-flow">
-          Susun shot di tab <b>Editor</b> → pilih platform → salin prompt kamera → tempel ke AI video.
+          {t("editor.flowBefore")} <b>{t("editor.tabEditor")}</b> {t("editor.flowAfter")}
         </p>
         <div className="cam-dock-ctl">
           <PlatformSelect value={platform} onChange={setPlatform} />
@@ -116,7 +118,7 @@ export function PreviewPanel() {
           readOnly
           spellCheck={false}
           value={prompt}
-          placeholder="Tambahkan frame di tab Editor, lalu prompt kamera per shot akan muncul di sini."
+          placeholder={t("editor.promptPlaceholder")}
         />
         {/* toggles below the output so the live rebuild stays visible while ticking */}
         <PromptOptionsMenu />
@@ -129,19 +131,18 @@ export function PreviewPanel() {
             disabled={!hasShots}
             onClick={copyPrompt}
           >
-            {copied ? <>Tersalin <Check size={16} aria-hidden /></> : hasShots ? "Salin Prompt" : "Belum ada shot"}
+            {copied ? <>{t("common.copied")} <Check size={16} aria-hidden /></> : hasShots ? t("editor.copyPrompt") : t("editor.noShotsYet")}
           </Button>
-          <CopyButton variant="ghost" size="md" text={() => projectDetail(ctx.project)} label="Salin detail" disabled={!hasShots} />
+          <CopyButton variant="ghost" size="md" text={() => projectDetail(ctx.project)} label={t("editor.copyDetails")} disabled={!hasShots} />
         </div>
         {hasShots ? (
           <details className="cam-detail">
-            <summary>Detail produksi (bilingual · semua shot)</summary>
+            <summary>{t("editor.productionDetails")}</summary>
             <pre>{projectDetail(ctx.project)}</pre>
           </details>
         ) : null}
         <p className="storage-note">
-          Prompt kamera di atas siap ditempel ke platform AI video. Buka <b>Detail</b> untuk catatan
-          produksi lengkap (tujuan, lighting, style, audio).
+          {t("editor.storageNoteBefore")} <b>{t("editor.detailWord")}</b> {t("editor.storageNoteAfter")}
         </p>
       </div>
     </>

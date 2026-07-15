@@ -4,13 +4,14 @@
 // presentation, styled by inspector-tabs.css (tokens only, ≥40px tap targets).
 
 import React from "react";
+import { useT } from "@/i18n";
 
 export type InspectorTab = "kamera" | "subjek" | "viewport";
 
-const TABS: { id: InspectorTab; label: string }[] = [
-  { id: "kamera", label: "Kamera" },
-  { id: "subjek", label: "Subjek" },
-  { id: "viewport", label: "Viewport" },
+const TABS: { id: InspectorTab; labelKey: string }[] = [
+  { id: "kamera", labelKey: "panel.tabCamera" },
+  { id: "subjek", labelKey: "panel.tabSubject" },
+  { id: "viewport", labelKey: "panel.tabViewport" },
 ];
 
 export function InspectorTabs({
@@ -20,17 +21,18 @@ export function InspectorTabs({
   value: InspectorTab;
   onChange: (id: InspectorTab) => void;
 }) {
+  const { t } = useT();
   return (
-    <div className="inspector-tabs" role="tablist" aria-label="Inspector">
-      {TABS.map((t) => (
+    <div className="inspector-tabs" role="tablist" aria-label={t("panel.inspector")}>
+      {TABS.map((tab) => (
         <button
-          key={t.id}
+          key={tab.id}
           role="tab"
-          aria-selected={value === t.id}
-          className={value === t.id ? "active" : undefined}
-          onClick={() => onChange(t.id)}
+          aria-selected={value === tab.id}
+          className={value === tab.id ? "active" : undefined}
+          onClick={() => onChange(tab.id)}
         >
-          {t.label}
+          {t(tab.labelKey)}
         </button>
       ))}
     </div>

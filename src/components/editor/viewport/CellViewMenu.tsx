@@ -8,25 +8,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { SlotId, OrthoId, ViewKind, SavedView } from "@/lib/editor/engineApi";
 import { Check, ChevronDown, Pencil, Plus, X } from "lucide-react";
+import { useT } from "@/i18n";
 import "./CellViewMenu.css";
 
 const ORTHO_ORDER: OrthoId[] = ["top", "bottom", "left", "right", "front", "back", "iso"];
+// Values are i18n keys (translated at render); the OrthoId map is a stable identity.
 const ORTHO_LABELS: Record<OrthoId, string> = {
-  top: "Atas",
-  bottom: "Bawah",
-  left: "Kiri",
-  right: "Kanan",
-  front: "Depan",
-  back: "Belakang",
-  iso: "Isometrik",
+  top: "view.orthoTop",
+  bottom: "view.orthoBottom",
+  left: "view.orthoLeft",
+  right: "view.orthoRight",
+  front: "view.orthoFront",
+  back: "view.orthoBack",
+  iso: "view.orthoIso",
 };
 
-function labelOf(kind: ViewKind, savedViews: SavedView[]): string {
+function labelOf(kind: ViewKind, savedViews: SavedView[], t: (k: string) => string): string {
   if (typeof kind === "string" && kind.startsWith("custom:")) {
     const v = savedViews.find((s) => "custom:" + s.id === kind);
-    return v ? v.name : "View";
+    return v ? v.name : t("view.viewFallback");
   }
-  return ORTHO_LABELS[kind as OrthoId] ?? String(kind);
+  const key = ORTHO_LABELS[kind as OrthoId];
+  return key ? t(key) : String(kind);
 }
 
 export function CellViewMenu({
@@ -46,6 +49,7 @@ export function CellViewMenu({
   onRename?: (id: string, name: string) => void;
   onDelete?: (id: string) => void;
 }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -108,16 +112,16 @@ export function CellViewMenu({
     <div className="cell-viewmenu" ref={rootRef}>
       <button
         className="cvm-trigger"
-        title="Ganti tampilan sel"
+        title={t("view.cellTriggerTitle")}
         onClick={() => (open ? close() : setOpen(true))}
       >
-        {labelOf(current, savedViews)}
+        {labelOf(current, savedViews, t)}
         <span className="cvm-chev"><ChevronDown size={14} aria-hidden /></span>
       </button>
 
       {open ? (
         <div className="cvm-pop" ref={popRef}>
-          <div className="cvm-label">Standar</div>
+          <div className="cvm-label">{t("view.standard")}</div>
           {ORTHO_ORDER.map((k) => (
             <button
               key={k}
@@ -125,24 +129,24 @@ export function CellViewMenu({
               data-active={current === k}
               onClick={() => pick(k)}
             >
-              <span className="cvm-name">{ORTHO_LABELS[k]}</span>
+              <span className="cvm-name">{t(ORTHO_LABELS[k])}</span>
             </button>
           ))}
 
-          {savedViews.length ? <div className="cvm-label">View custom</div> : null}
+          {savedViews.length ? <div className="cvm-label">{t("view.customViews")}</div> : null}
           {savedViews.map((v) =>
             editId === v.id ? (
               <div className="cvm-add" key={v.id}>
                 <input
                   autoFocus
                   value={text}
-                  placeholder="Nama view"
+                  placeholder={t("view.viewNamePlaceholder")}
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") commitText();
                   }}
                 />
-                <button className="cvm-icon" title="Simpan" onClick={commitText}>
+                <button className="cvm-icon" title={t("common.save")} onClick={commitText}>
                   <Check size={16} aria-hidden />
                 </button>
               </div>
@@ -158,7 +162,7 @@ export function CellViewMenu({
                 {onRename ? (
                   <button
                     className="cvm-icon"
-                    title="Ubah nama"
+                    title={t("common.rename")}
                     onClick={() => {
                       setEditId(v.id);
                       setAdding(false);
@@ -169,7 +173,7 @@ export function CellViewMenu({
                   </button>
                 ) : null}
                 {onDelete ? (
-                  <button className="cvm-icon" title="Hapus view" onClick={() => onDelete(v.id)}>
+                  <button className="cvm-icon" title={t("view.deleteView")} onClick={() => onDelete(v.id)}>
                     <X size={16} aria-hidden />
                   </button>
                 ) : null}
@@ -183,13 +187,13 @@ export function CellViewMenu({
               <input
                 autoFocus
                 value={text}
-                placeholder="Nama view baru"
+                placeholder={t("view.newViewNamePlaceholder")}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") commitText();
                 }}
               />
-              <button className="cvm-icon" title="Simpan" onClick={commitText}>
+              <button className="cvm-icon" title={t("common.save")} onClick={commitText}>
                 <Check size={16} aria-hidden />
               </button>
             </div>
@@ -202,7 +206,7 @@ export function CellViewMenu({
                 setText("");
               }}
             >
-              <span className="cvm-name"><Plus size={16} aria-hidden /> Simpan view saat ini…</span>
+              <span className="cvm-name"><Plus size={16} aria-hidden /> {t("view.saveCurrentView")}</span>
             </button>
           )}
         </div>

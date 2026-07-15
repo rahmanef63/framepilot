@@ -8,6 +8,8 @@ export type GuideStep = { title: string; detail: string };
 
 export type GuideSection = {
   id: string;
+  /** base i18n key namespace for this section, e.g. "guide.about" */
+  key: string;
   /** label mono kecil di atas judul */
   kicker: string;
   title: string;
@@ -23,13 +25,17 @@ export type GuideSection = {
 
 export const GUIDE_INTRO = {
   eyebrow: "Panduan · Cookbook",
+  eyebrowKey: "guide.intro.eyebrow",
   title: "Camera Angle Guide Pro — dari ide shot ke prompt siap pakai",
+  titleKey: "guide.intro.title",
   desc: "Ubah ide atau referensi (foto · YouTube · teks · JSON) jadi data sudut kamera terstruktur + prompt AI, lalu tata dan rancang shot di Studio 3D. Ikuti resep di bawah dari awal sampai ekspor.",
+  descKey: "guide.intro.desc",
 };
 
 export const GUIDE_SECTIONS: GuideSection[] = [
   {
     id: "apa-itu",
+    key: "guide.about",
     kicker: "01 · Kenalan",
     title: "Apa ini & untuk siapa",
     intro:
@@ -44,6 +50,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "alur",
+    key: "guide.flow",
     kicker: "02 · Alur kerja",
     title: "Alur end-to-end: dari impor ke ekspor",
     intro:
@@ -79,6 +86,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "impor",
+    key: "guide.import",
     kicker: "03 · Resep Pustaka",
     title: "Cara impor tiap jenis sumber",
     intro: "Empat cara memasukkan data di Pustaka. Pilih sesuai bahan yang kamu punya — atau lewati impor dan mulai dari kartu ✦ Preset lewat “Gunakan Template”.",
@@ -108,6 +116,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "studio",
+    key: "guide.studio",
     kicker: "04 · Resep Studio 3D",
     title: "Menata rig & menangkap frame",
     intro:
@@ -143,6 +152,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "playback",
+    key: "guide.playback",
     kicker: "05 · Resep fitur",
     title: "Playback frame",
     intro:
@@ -162,6 +172,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "sudut",
+    key: "guide.angles",
     kicker: "06 · Tata bahasa",
     title: "Sudut kamera: pilih dari relasi kuasa & informasi",
     intro:
@@ -202,6 +213,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "shot-size",
+    key: "guide.shotSize",
     kicker: "07 · Tata bahasa",
     title: "Ukuran shot: atur seberapa banyak informasi yang masuk",
     intro:
@@ -242,6 +254,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "tema",
+    key: "guide.theme",
     kicker: "08 · Resep fitur",
     title: "Tema tampilan",
     intro:
@@ -262,6 +275,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: "simpan",
+    key: "guide.saveProject",
     kicker: "09 · Resep fitur",
     title: "Simpan proyek",
     intro:

@@ -10,6 +10,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { Button } from "@/components/ds/Button";
 import { OutlineTree } from "./panel/OutlineTree";
 import {
@@ -26,6 +27,7 @@ import {
 
 export function OutlineSidebar() {
   const ctx = useEditor();
+  const { t } = useT();
   const { project, playback } = ctx;
 
   // Target the Shell sidebar slot after mount (it renders before the editor).
@@ -45,7 +47,7 @@ export function OutlineSidebar() {
   const dirty = ctx.frameIsDirty(current);
 
   const content = (
-    <aside className="outline-side" aria-label="Manajemen scene & frame">
+    <aside className="outline-side" aria-label={t("panel.sceneFrameManager")}>
       <div className="os-top">
         {/* Row 1 — CREATE: the two "add" actions, co-located and clearly labelled
             (+ Frame = capture the current camera into the active scene; + Scene =
@@ -54,49 +56,49 @@ export function OutlineSidebar() {
           <Button
             variant="primary"
             size="sm"
-            title="Tangkap frame dari kamera saat ini → masuk scene aktif"
+            title={t("panel.addFrameTitle")}
             onClick={ctx.addFrame}
             style={{ flex: "1 1 auto" }}
           >
             <span data-tour="add-frame" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <IconPlus size={15} /> Frame
+              <IconPlus size={15} /> {t("panel.frame")}
             </span>
           </Button>
-          <Button variant="outline" size="sm" title="Buat scene baru" onClick={ctx.addScene}>
+          <Button variant="outline" size="sm" title={t("panel.addSceneTitle")} onClick={ctx.addScene}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <IconPlus size={13} /> Scene
+              <IconPlus size={13} /> {t("panel.scene")}
             </span>
           </Button>
         </div>
 
         {/* Row 2 — PLAYBACK: the maju/mundur nav trio (prev · play · next) sits
             prominent, split by a divider from the smaller playback options. */}
-        <div className="os-transport" role="group" aria-label="Navigasi & putar frame">
+        <div className="os-transport" role="group" aria-label={t("panel.transportLabel")}>
           <span className="os-tgroup">
-            <button className="os-ico os-nav" title="Frame sebelumnya" aria-label="Frame sebelumnya" onClick={ctx.prevFrame}>
+            <button className="os-ico os-nav" title={t("panel.prevFrame")} aria-label={t("panel.prevFrame")} onClick={ctx.prevFrame}>
               <IconPrev size={18} />
             </button>
             <button
               className="os-ico os-nav"
-              title="Play / pause (Space)"
-              aria-label={playback.playing ? "Pause" : "Play"}
+              title={t("panel.playPauseTitle")}
+              aria-label={playback.playing ? t("common.pause") : t("common.play")}
               onClick={ctx.togglePlay}
             >
               {playback.playing ? <IconPause size={18} /> : <IconPlay size={18} />}
             </button>
-            <button className="os-ico os-nav" title="Frame berikutnya" aria-label="Frame berikutnya" onClick={ctx.nextFrame}>
+            <button className="os-ico os-nav" title={t("panel.nextFrame")} aria-label={t("panel.nextFrame")} onClick={ctx.nextFrame}>
               <IconNext size={18} />
             </button>
           </span>
           <span className="os-tdiv" aria-hidden />
           <span className="os-tgroup">
-            <button className="os-ico os-opt" title="Stop" aria-label="Stop" onClick={ctx.stopPlayback}>
+            <button className="os-ico os-opt" title={t("panel.stop")} aria-label={t("panel.stop")} onClick={ctx.stopPlayback}>
               <IconStop size={14} />
             </button>
             <button
               className={"os-ico os-opt" + (playback.loop ? " on" : "")}
-              title={"Loop: " + (playback.loop ? "ON" : "OFF")}
-              aria-label={"Loop: " + (playback.loop ? "ON" : "OFF")}
+              title={t("panel.loopState", { s: playback.loop ? "ON" : "OFF" })}
+              aria-label={t("panel.loopState", { s: playback.loop ? "ON" : "OFF" })}
               aria-pressed={playback.loop}
               onClick={() => ctx.setLoop(!playback.loop)}
             >
@@ -104,8 +106,8 @@ export function OutlineSidebar() {
             </button>
             <button
               className={"os-ico os-opt" + (playback.smooth ? " on" : "")}
-              title={"Transisi: " + (playback.smooth ? "HALUS" : "CUT")}
-              aria-label={"Transisi: " + (playback.smooth ? "halus" : "potong")}
+              title={playback.smooth ? t("panel.transitionSmooth") : t("panel.transitionCut")}
+              aria-label={playback.smooth ? t("panel.transitionSmoothAria") : t("panel.transitionCutAria")}
               aria-pressed={playback.smooth}
               onClick={() => ctx.setSmooth(!playback.smooth)}
             >
@@ -118,7 +120,7 @@ export function OutlineSidebar() {
             live camera to the selected frame (only when it has unsaved changes). */}
         <div className="os-status">
           <span className="os-ind">{ind}</span>
-          <label className="os-dur" title="Durasi per frame saat play">
+          <label className="os-dur" title={t("panel.durationTitle")}>
             <input
               type="number"
               min={0.5}
@@ -126,7 +128,7 @@ export function OutlineSidebar() {
               step={0.5}
               value={playback.duration}
               onChange={(e) => ctx.setFrameDuration(Number(e.target.value) || 0.5)}
-              aria-label="Durasi per frame (detik)"
+              aria-label={t("panel.durationAria")}
             />
             s
           </label>
@@ -137,13 +139,13 @@ export function OutlineSidebar() {
               disabled={!dirty}
               title={
                 dirty
-                  ? "Tulis kamera + subjek saat ini ke frame terpilih"
-                  : "Ubah kamera dulu — lalu klik untuk menyimpannya ke frame ini"
+                  ? t("panel.updateFrameDirtyTitle")
+                  : t("panel.updateFrameCleanTitle")
               }
               onClick={ctx.updateFrame}
             >
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                <IconUpdate size={13} /> Perbarui
+                <IconUpdate size={13} /> {t("panel.update")}
               </span>
             </Button>
           ) : null}

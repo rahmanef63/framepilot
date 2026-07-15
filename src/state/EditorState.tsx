@@ -9,6 +9,7 @@
 // useEditor(), EditorStateProvider, EditorContextValue, EditorUi — is unchanged.
 
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
+import { tr } from "@/i18n";
 import type { ViewId } from "@/lib/editor/engineApi";
 import { loadAutosave } from "@/lib/editorStorage";
 import type { EditorProject, SlotId } from "@/lib/editorModel";
@@ -169,7 +170,7 @@ export function EditorStateProvider({
     hydratedRef.current = true;
     const auto = loadAutosave();
     if (!auto) return;
-    swapProject(core, auto, "Pulihkan autosave", commitHistory);
+    swapProject(core, auto, tr("state.hist.restoreAutosave"), commitHistory);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

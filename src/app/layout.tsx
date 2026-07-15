@@ -3,6 +3,7 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/convex-provider";
 import { RegisterSW } from "@/components/RegisterSW";
 import { UpdateToast } from "@/components/UpdateToast";
+import { I18nProvider } from "@/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -51,15 +52,23 @@ export const viewport: Viewport = {
 // Self-contained — mirrors resolveDark() in src/lib/theme/theme-mode.ts.
 const THEME_MODE_BOOT = `(function(){try{var m=localStorage.getItem("framepilot:theme-mode");if(m!=="light"&&m!=="dark"&&m!=="system")m="system";var d=m==="dark"||(m==="system"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light";}catch(e){}})();`;
 
+// Anti-flash for language: if the user picked a locale before, stamp <html lang/dir>
+// before first paint so a saved en/es/zh/ar visitor doesn't flash Indonesian.
+// (First-time detection happens in I18nProvider; this only honors an explicit choice.)
+const LANG_BOOT = `(function(){try{var l=localStorage.getItem("cag.lang");if(["id","en","es","zh","ar"].indexOf(l)<0)return;document.documentElement.lang=l;document.documentElement.dir=(l==="ar")?"rtl":"ltr";}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="id" data-theme="light">
         <head>
           <script dangerouslySetInnerHTML={{ __html: THEME_MODE_BOOT }} />
+          <script dangerouslySetInnerHTML={{ __html: LANG_BOOT }} />
         </head>
         <body>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            <I18nProvider>{children}</I18nProvider>
+          </ConvexClientProvider>
           <RegisterSW />
           <UpdateToast />
         </body>

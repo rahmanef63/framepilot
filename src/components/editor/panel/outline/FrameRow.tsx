@@ -2,6 +2,7 @@
 import React from "react";
 import type { EditorContextValue } from "@/state/EditorState";
 import type { EditorFrame } from "@/lib/editorModel";
+import { useT } from "@/i18n";
 import { IconCopy } from "@/components/editor/EditorIcons";
 import { ChevronUp, ChevronDown, LayoutGrid } from "lucide-react";
 import { IcoButton, ArmDeleteButton } from "./IcoButton";
@@ -18,6 +19,7 @@ export function FrameRow({
   index: number;
   current: boolean;
 }) {
+  const { t } = useT();
   return (
     <div
       className={"frow" + (current ? " current" : "")}
@@ -36,21 +38,21 @@ export function FrameRow({
       <input
         className="fname2"
         value={frame.name}
-        title="Rename frame"
+        title={t("panel.renameFrame")}
         onClick={(e) => e.stopPropagation()}
         onChange={(e) => ctx.renameFrame(frame.id, e.target.value)}
       />
       <span className="facts">
-        <IcoButton title="Duplikat frame" onClick={() => ctx.dupFrame(frame.id)}>
+        <IcoButton title={t("panel.duplicateFrame")} onClick={() => ctx.dupFrame(frame.id)}>
           <IconCopy size={12} />
         </IcoButton>
-        <IcoButton title="Naik" onClick={() => ctx.moveFrame(frame.id, -1)}>
+        <IcoButton title={t("panel.moveUp")} onClick={() => ctx.moveFrame(frame.id, -1)}>
           <ChevronUp size={13} aria-hidden />
         </IcoButton>
-        <IcoButton title="Turun" onClick={() => ctx.moveFrame(frame.id, 1)}>
+        <IcoButton title={t("panel.moveDown")} onClick={() => ctx.moveFrame(frame.id, 1)}>
           <ChevronDown size={13} aria-hidden />
         </IcoButton>
-        <ArmDeleteButton title="Hapus (klik 2×)" onConfirm={() => ctx.delFrame(frame.id)} />
+        <ArmDeleteButton title={t("panel.deleteTwice")} onConfirm={() => ctx.delFrame(frame.id)} />
       </span>
     </div>
   );

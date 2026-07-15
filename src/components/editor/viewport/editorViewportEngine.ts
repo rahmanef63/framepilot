@@ -25,6 +25,7 @@ import {
   subjHeight,
   aspectNumber,
 } from "@/lib/editorMath";
+import { tr } from "@/i18n";
 import {
   buildPerson,
   buildObject,
@@ -543,7 +544,7 @@ export class EditorViewportEngine implements EditorEngineHandle {
       `<span>FOV<b>${Math.round(this.rig.fov)}°</b></span>` +
       `<span>ROLL<b>${Math.round(this.rig.roll)}°</b></span>` +
       `<span>H<b>${this.rig.camPos.y.toFixed(2)}m</b></span>` +
-      `<span>SUBJ<b>${this.rig.subj === "person" ? "ORANG" : "OBJEK"}</b></span>` +
+      `<span>SUBJ<b>${this.rig.subj === "person" ? tr("view.hudSubjPerson") : tr("view.hudSubjObject")}</b></span>` +
       `<span>OUT<b>${this.aspect} · ${this.fps}FPS</b></span>`;
     (this.hud.readouts || []).forEach((r) => (r.innerHTML = html));
     (this.hud.formatLabels || []).forEach((x) => (x.textContent = this.aspect));

@@ -7,6 +7,7 @@
 import React, { useState } from "react";
 import { RotateCw, Pencil, Copy, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import type { EditorFrame } from "@/lib/editorModel";
 
 export function MobileFrameMenu({
@@ -23,6 +24,7 @@ export function MobileFrameMenu({
   onClose: () => void;
 }) {
   const ctx = useEditor();
+  const { t } = useT();
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(frame.name);
   const [confirmDel, setConfirmDel] = useState(false);
@@ -39,7 +41,7 @@ export function MobileFrameMenu({
   return (
     <>
       <div className="mfs-menu-scrim" onClick={onClose} aria-hidden />
-      <div className="mfs-menu" style={{ top, left }} role="menu" aria-label={`Aksi frame ${frame.name}`}>
+      <div className="mfs-menu" style={{ top, left }} role="menu" aria-label={t("editor.frameActionsAria", { name: frame.name })}>
         {renaming ? (
           <form
             className="mfs-menu-rename"
@@ -49,29 +51,29 @@ export function MobileFrameMenu({
               onClose();
             }}
           >
-            <input autoFocus value={name} maxLength={60} onChange={(e) => setName(e.target.value)} aria-label="Nama frame" />
-            <button type="submit">Simpan</button>
+            <input autoFocus value={name} maxLength={60} onChange={(e) => setName(e.target.value)} aria-label={t("editor.frameNameAria")} />
+            <button type="submit">{t("common.save")}</button>
           </form>
         ) : (
           <>
             <div className="mfs-menu-head">#{index + 1} · {frame.name}</div>
             <button role="menuitem" onClick={() => run(() => ctx.updateFrameById(frame.id))}>
-              <RotateCw size={16} aria-hidden /> Perbarui (kamera kini)
+              <RotateCw size={16} aria-hidden /> {t("editor.updateCurrentCamera")}
             </button>
-            <button role="menuitem" onClick={() => setRenaming(true)}><Pencil size={16} aria-hidden /> Ganti nama</button>
-            <button role="menuitem" onClick={() => run(() => ctx.dupFrame(frame.id))}><Copy size={16} aria-hidden /> Duplikat</button>
+            <button role="menuitem" onClick={() => setRenaming(true)}><Pencil size={16} aria-hidden /> {t("common.rename")}</button>
+            <button role="menuitem" onClick={() => run(() => ctx.dupFrame(frame.id))}><Copy size={16} aria-hidden /> {t("common.duplicate")}</button>
             <button role="menuitem" disabled={index === 0} onClick={() => run(() => ctx.moveFrame(frame.id, -1))}>
-              <ChevronLeft size={16} aria-hidden /> Geser kiri
+              <ChevronLeft size={16} aria-hidden /> {t("editor.moveLeft")}
             </button>
             <button role="menuitem" disabled={index === total - 1} onClick={() => run(() => ctx.moveFrame(frame.id, 1))}>
-              Geser kanan <ChevronRight size={16} aria-hidden />
+              {t("editor.moveRight")} <ChevronRight size={16} aria-hidden />
             </button>
             <button
               role="menuitem"
               className={"mfs-menu-del" + (confirmDel ? " armed" : "")}
               onClick={() => (confirmDel ? run(() => ctx.delFrame(frame.id)) : setConfirmDel(true))}
             >
-              {confirmDel ? "Yakin hapus?" : <><Trash2 size={16} aria-hidden /> Hapus</>}
+              {confirmDel ? t("editor.confirmDelete") : <><Trash2 size={16} aria-hidden /> {t("common.delete")}</>}
             </button>
           </>
         )}

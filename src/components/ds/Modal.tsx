@@ -1,6 +1,7 @@
 "use client";
 import React, { CSSProperties, ReactNode, useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useT } from "@/i18n";
 
 /** Backdrop — the scrim behind modals. Ported from ds-a. */
 export function Backdrop({
@@ -27,7 +28,7 @@ export function Backdrop({
 /** CloseButton — the ✕ icon button on overlays. Ported from ds-a. */
 export function CloseButton({
   onClick,
-  title = "Tutup",
+  title,
   variant = "default",
   style = {},
 }: {
@@ -36,12 +37,14 @@ export function CloseButton({
   variant?: "default" | "round";
   style?: CSSProperties;
 }) {
+  const { t } = useT();
+  const label = title ?? t("common.close");
   const [hover, setHover] = useState(false);
   return (
     <button
       onClick={onClick}
-      title={title}
-      aria-label={title}
+      title={label}
+      aria-label={label}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{

@@ -4,6 +4,7 @@ import React, { CSSProperties } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Badge } from "@/components/ds/Badge";
+import { useT } from "@/i18n";
 
 /** dd MMM yyyy in Bahasa Indonesia, from a ms timestamp. */
 function formatTanggal(ms: number): string {
@@ -70,6 +71,7 @@ const headBase: CSSProperties = {
  * never even issued for a non-admin. The server also enforces via requireAdmin.
  */
 export function AdminDashboard() {
+  const { t } = useT();
   const stats = useQuery(api.admin.stats);
   const users = useQuery(api.admin.listUsers);
 
@@ -77,17 +79,17 @@ export function AdminDashboard() {
     <div style={{ width: "100%", maxWidth: "960px", margin: "0 auto" }}>
       <header style={{ marginBottom: "22px" }}>
         <h1 style={{ margin: 0, font: "800 22px var(--font-sans)", color: "var(--foreground)" }}>
-          Panel Admin
+          {t("admin.panelTitle")}
         </h1>
         <p style={{ marginTop: "6px", font: "400 13px var(--font-sans)", color: "var(--muted-foreground)" }}>
-          Ringkasan pengguna dan proyek FramePilot. · Overview of users and projects.
+          {t("admin.panelSubtitle")}
         </p>
       </header>
 
       {/* Stat tiles */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", marginBottom: "26px" }}>
-        <StatTile label="Total Pengguna" value={stats?.userCount} />
-        <StatTile label="Total Proyek" value={stats?.projectCount} />
+        <StatTile label={t("admin.totalUsers")} value={stats?.userCount} />
+        <StatTile label={t("admin.totalProjects")} value={stats?.projectCount} />
       </div>
 
       {/* User table */}
@@ -102,7 +104,7 @@ export function AdminDashboard() {
       >
         <div style={{ padding: "14px 16px", borderBottom: "var(--border-width) solid var(--border)" }}>
           <h2 style={{ margin: 0, font: "700 14px var(--font-sans)", color: "var(--foreground)" }}>
-            Pengguna
+            {t("admin.usersHeading")}
           </h2>
         </div>
 
@@ -110,23 +112,23 @@ export function AdminDashboard() {
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "560px" }}>
             <thead>
               <tr>
-                <th style={headBase}>Email</th>
-                <th style={headBase}>Nama</th>
-                <th style={{ ...headBase, textAlign: "right" }}>Proyek</th>
-                <th style={{ ...headBase, textAlign: "right" }}>Bergabung</th>
+                <th style={headBase}>{t("admin.colEmail")}</th>
+                <th style={headBase}>{t("admin.colName")}</th>
+                <th style={{ ...headBase, textAlign: "right" }}>{t("admin.colProjects")}</th>
+                <th style={{ ...headBase, textAlign: "right" }}>{t("admin.colJoined")}</th>
               </tr>
             </thead>
             <tbody>
               {users === undefined ? (
                 <tr>
                   <td colSpan={4} style={{ ...cellBase, color: "var(--muted-foreground)", textAlign: "center", borderBottom: 0 }}>
-                    Memuat…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={4} style={{ ...cellBase, color: "var(--muted-foreground)", textAlign: "center", borderBottom: 0 }}>
-                    Belum ada pengguna.
+                    {t("admin.noUsers")}
                   </td>
                 </tr>
               ) : (

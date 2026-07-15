@@ -6,28 +6,31 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { Seg } from "../../ui/Seg";
 import { Slider } from "../../ui/Slider";
 
-const SUBJECT_OPTIONS: { value: "person" | "object"; label: string }[] = [
-  { value: "person", label: "Orang" },
-  { value: "object", label: "Objek" },
+const SUBJECT_OPTIONS: { value: "person" | "object"; labelKey: string }[] = [
+  { value: "person", labelKey: "panel.subjectPerson" },
+  { value: "object", labelKey: "panel.subjectObject" },
 ];
 
 export function SubjectControls() {
   const ctx = useEditor();
+  const { t } = useT();
   const rig = ctx.rigRef.current;
+  const subjectOptions = SUBJECT_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) }));
   return (
     <>
       <div className="group">
-        <h3>Subjek</h3>
-        <Seg options={SUBJECT_OPTIONS} value={rig.subj} onChange={ctx.setSubject} />
+        <h3>{t("panel.tabSubject")}</h3>
+        <Seg options={subjectOptions} value={rig.subj} onChange={ctx.setSubject} />
       </div>
 
       <div className="group">
-        <h3>Subjek · Transform</h3>
+        <h3>{t("panel.subjectTransform")}</h3>
         <Slider
-          label="Rotasi"
+          label={t("panel.rotation")}
           min={-180}
           max={180}
           step={5}
@@ -36,7 +39,7 @@ export function SubjectControls() {
           onInput={(v) => ctx.setSubjRot(v)}
         />
         <Slider
-          label="Posisi X"
+          label={t("panel.posX")}
           min={-6}
           max={6}
           step={0.1}
@@ -45,7 +48,7 @@ export function SubjectControls() {
           onInput={(v) => ctx.setSubjX(v)}
         />
         <Slider
-          label="Posisi Z"
+          label={t("panel.posZ")}
           min={-6}
           max={6}
           step={0.1}

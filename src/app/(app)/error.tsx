@@ -4,6 +4,7 @@
 // bare default screen. Happy path is untouched; only the error state changes.
 import { useEffect } from "react";
 import { Button } from "@/components/ds/Button";
+import { useT } from "@/i18n";
 
 export default function AppError({
   error,
@@ -12,6 +13,7 @@ export default function AppError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useT();
   useEffect(() => {
     console.error("[app:error]", error);
   }, [error]);
@@ -28,12 +30,12 @@ export default function AppError({
           alignItems: "center",
         }}
       >
-        <div style={{ font: "800 22px var(--font-sans)", color: "var(--foreground)" }}>Ada yang tidak beres</div>
+        <div style={{ font: "800 22px var(--font-sans)", color: "var(--foreground)" }}>{t("chrome.errorTitle")}</div>
         <p style={{ font: "400 14px var(--font-sans)", color: "var(--muted-foreground)", lineHeight: 1.5, margin: 0 }}>
-          Terjadi kesalahan saat memuat halaman ini. Coba muat ulang bagian ini.
+          {t("chrome.errorDesc")}
         </p>
         <Button variant="primary" onClick={reset}>
-          Coba lagi
+          {t("chrome.tryAgain")}
         </Button>
       </div>
     </div>

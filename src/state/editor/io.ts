@@ -4,6 +4,7 @@
 
 import { useCallback } from "react";
 import type { Project as AppProject } from "@/lib/dataPrompt";
+import { tr } from "@/i18n";
 import {
   EditorProject,
   defaultRigState,
@@ -82,7 +83,7 @@ export function useIoActions(
     rigRef.current = defaultRigState();
     draftMetaRef.current = defaultShotMeta();
     syncRig();
-    swapProject(core, newProjectStorage(), "Proyek baru", commitHistory);
+    swapProject(core, newProjectStorage(), tr("state.hist.newProject"), commitHistory);
   }, [core, rigRef, draftMetaRef, stopPlayback, syncRig, commitHistory]);
 
   const loadSavedProject = useCallback(
@@ -90,7 +91,7 @@ export function useIoActions(
       stopPlayback();
       const p = loadProject(id);
       if (!p) return;
-      swapProject(core, p, "Muat proyek", commitHistory);
+      swapProject(core, p, tr("state.hist.loadProject"), commitHistory);
     },
     [core, stopPlayback, commitHistory]
   );
@@ -106,7 +107,7 @@ export function useIoActions(
   const importProjectObject = useCallback(
     (obj: unknown) => {
       stopPlayback();
-      swapProject(core, toEditorProject(obj), "Impor proyek", commitHistory);
+      swapProject(core, toEditorProject(obj), tr("state.hist.importProject"), commitHistory);
     },
     [core, stopPlayback, commitHistory]
   );

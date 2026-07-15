@@ -5,15 +5,17 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { ANGLE_PRESETS, SHOT_PRESETS, LENS_PRESETS } from "@/lib/editor/presets";
 
 export function PresetRows() {
   const ctx = useEditor();
+  const { t } = useT();
   return (
     <>
       {/* ---- angle presets (G7) ---- */}
       <div className="group">
-        <h3>Sudut · Angle</h3>
+        <h3>{t("panel.angleHeading")}</h3>
         <div className="chips">
           {ANGLE_PRESETS.map((p) => (
             <button
@@ -30,7 +32,7 @@ export function PresetRows() {
 
       {/* ---- shot-size presets (G8) ---- */}
       <div className="group">
-        <h3>Ukuran Shot</h3>
+        <h3>{t("panel.shotSize")}</h3>
         <div className="chips">
           {SHOT_PRESETS.map((p) => (
             <button key={p.label} type="button" onClick={() => ctx.applyShotPreset(p.r)}>
@@ -42,7 +44,7 @@ export function PresetRows() {
 
       {/* ---- lens presets (G9) ---- */}
       <div className="group">
-        <h3>Lensa</h3>
+        <h3>{t("panel.lens")}</h3>
         <div className="chips">
           {LENS_PRESETS.map((mm) => (
             <button key={mm} type="button" onClick={() => ctx.applyLensPreset(mm)}>

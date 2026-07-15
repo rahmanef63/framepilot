@@ -3,6 +3,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CreateMenu } from "@/components/shell/CreateMenu";
 import { useApp } from "@/state/AppState";
+import { useT } from "@/i18n";
 import { Camera, Library } from "lucide-react";
 
 /**
@@ -13,11 +14,12 @@ import { Camera, Library } from "lucide-react";
  */
 export function HeaderNav() {
   const app = useApp();
+  const { t } = useT();
   const router = useRouter();
   const pathname = usePathname();
 
   return (
-    <nav className="app-hnav" aria-label="Navigasi utama">
+    <nav className="app-hnav" aria-label={t("shell.nav.primary")}>
       <CreateMenu
         orientation="horizontal"
         fill={false}
@@ -25,8 +27,8 @@ export function HeaderNav() {
         onFromImage={() => app.openImport("photo")}
         onFromTemplate={() => router.push("/library")}
       />
-      <HeaderTab icon={<Camera size={16} />} label="Studio 3D" active={pathname === "/"} onClick={() => router.push("/")} />
-      <HeaderTab icon={<Library size={16} />} label="Pustaka" active={pathname === "/library"} onClick={() => router.push("/library")} />
+      <HeaderTab icon={<Camera size={16} />} label={t("header.crumb.studio")} active={pathname === "/"} onClick={() => router.push("/")} />
+      <HeaderTab icon={<Library size={16} />} label={t("header.crumb.library")} active={pathname === "/library"} onClick={() => router.push("/library")} />
     </nav>
   );
 }

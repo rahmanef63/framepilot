@@ -1,13 +1,13 @@
 // Data Prompt — demo library seed + the Studio starter project. Pure DATA (the
 // library's first-run fixtures), so exempt from the file-size cap.
-import { raw, uid } from "./core";
+import { raw } from "./core";
 import type { Entry, Meta, Project } from "./types";
 
 export function seed(now: number): Entry[] {
   const t = now;
   return [
     {
-      id: uid(),
+      id: "seed-interview",
       name: "Wawancara duduk",
       en: "Seated interview",
       source: "photo",
@@ -48,7 +48,7 @@ export function seed(now: number): Entry[] {
       },
     },
     {
-      id: uid(),
+      id: "seed-drone",
       name: "Estab. drone kota",
       en: "City drone establisher",
       source: "youtube",
@@ -95,7 +95,7 @@ export function seed(now: number): Entry[] {
       },
     },
     {
-      id: uid(),
+      id: "seed-product",
       name: "Produk hero",
       en: "Product hero low-angle",
       source: "photo",
@@ -126,7 +126,7 @@ export function seed(now: number): Entry[] {
       },
     },
     {
-      id: uid(),
+      id: "seed-chase",
       name: "Aksi kejar",
       en: "Chase — dutch handheld",
       source: "file",

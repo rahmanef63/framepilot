@@ -4,16 +4,18 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { ARS, FPS } from "@/lib/dataPrompt";
 
 export function OutputFrame() {
   const ctx = useEditor();
+  const { t } = useT();
   return (
     <div className="group">
-      <h3>Output Frame</h3>
+      <h3>{t("panel.outputFrame")}</h3>
       <div className="field-row">
         <div className="field">
-          <label>Rasio Aspek</label>
+          <label>{t("panel.aspectRatio")}</label>
           <select
             value={ctx.project.settings.aspectRatio}
             onChange={(e) => ctx.setAspect(e.target.value)}

@@ -6,12 +6,14 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { MOVES } from "@/lib/dataPrompt";
 import { frameDuration } from "@/lib/editorModel";
 import { getOrbit, shotLabel, focalLength, subjHeight } from "@/lib/editorMath";
 
 export function ShotBrief() {
   const ctx = useEditor();
+  const { t } = useT();
   const m = ctx.draftMeta;
   const set = ctx.setDraftMetaField;
   const frame = ctx.currentFrame();
@@ -29,26 +31,26 @@ export function ShotBrief() {
             {frameDuration({ ...frame, meta: m }).toFixed(1)}s
             <br />
             {dirty
-              ? "Ada perubahan yang belum diterapkan ke frame."
-              : "Semua data frame sudah tersimpan."}
+              ? t("panel.frameDirty")
+              : t("panel.frameClean")}
           </>
         ) : (
-          "Belum ada frame aktif. Isi brief, atur kamera, lalu tambahkan frame."
+          t("panel.noActiveFrame")
         )}
       </div>
 
       <div className="field">
-        <label htmlFor="shotIntent">Tujuan shot</label>
+        <label htmlFor="shotIntent">{t("panel.shotIntent")}</label>
         <input
           id="shotIntent"
           type="text"
-          placeholder="Contoh: memperkenalkan karakter dan lokasi"
+          placeholder={t("panel.shotIntentPlaceholder")}
           value={m.intent}
           onChange={(e) => set("intent", e.target.value)}
         />
       </div>
       <div className="field">
-        <label htmlFor="shotMovement">Gerakan kamera</label>
+        <label htmlFor="shotMovement">{t("panel.cameraMovement")}</label>
         <select id="shotMovement" value={m.movement} onChange={(e) => set("movement", e.target.value)}>
           {!MOVES.includes(m.movement) && <option value={m.movement}>{m.movement}</option>}
           {MOVES.map((mv) => (
@@ -59,48 +61,45 @@ export function ShotBrief() {
         </select>
       </div>
       <div className="field">
-        <label htmlFor="shotAction">Aksi subjek</label>
+        <label htmlFor="shotAction">{t("panel.subjectAction")}</label>
         <textarea
           id="shotAction"
-          placeholder="Blocking, ekspresi, arah pandang, atau aksi utama…"
+          placeholder={t("panel.subjectActionPlaceholder")}
           value={m.action}
           onChange={(e) => set("action", e.target.value)}
         />
       </div>
       <div className="field">
-        <label htmlFor="shotLighting">Lighting &amp; mood</label>
+        <label htmlFor="shotLighting">{t("panel.lightingMood")}</label>
         <input
           id="shotLighting"
           type="text"
-          placeholder="Soft window light, tense, cool blue hour…"
+          placeholder={t("panel.lightingPlaceholder")}
           value={m.lighting}
           onChange={(e) => set("lighting", e.target.value)}
         />
       </div>
       <div className="field">
-        <label htmlFor="shotStyle">Visual style</label>
+        <label htmlFor="shotStyle">{t("panel.visualStyle")}</label>
         <input
           id="shotStyle"
           type="text"
-          placeholder="Commercial clean, documentary, cinematic natural…"
+          placeholder={t("panel.stylePlaceholder")}
           value={m.style}
           onChange={(e) => set("style", e.target.value)}
         />
       </div>
       <div className="field">
-        <label htmlFor="shotAudio">Dialog / ambience / SFX</label>
+        <label htmlFor="shotAudio">{t("panel.audioLabel")}</label>
         <textarea
           id="shotAudio"
-          placeholder="Dialog penting, room tone, ambience, atau cue SFX…"
+          placeholder={t("panel.audioPlaceholder")}
           value={m.audio}
           onChange={(e) => set("audio", e.target.value)}
         />
       </div>
 
-      <p className="storage-note">
-        Data ini ikut tersimpan di frame, Shot List CSV, Storyboard, dan prompt AI. Pilih frame lalu
-        klik “Perbarui Frame” untuk menyimpan perubahan.
-      </p>
+      <p className="storage-note">{t("panel.briefNote")}</p>
     </>
   );
 }

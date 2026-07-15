@@ -3,6 +3,7 @@
 // setters lean on pushAutosave + commitHistory.
 
 import { useCallback } from "react";
+import { tr } from "@/i18n";
 import type { DragMode, FocusView, MainTab } from "@/lib/editor/engineApi";
 import type { EditorCore } from "./core";
 import type { EditorUi } from "./types";
@@ -83,7 +84,7 @@ export function useUiActions(
       rig.target.x = rig.subjPos.x;
       rig.target.z = rig.subjPos.z;
     }
-    afterRigMutate("Target lock");
+    afterRigMutate(tr("state.hist.targetLock"));
   }, [rigRef, afterRigMutate]);
 
   const setAspect = useCallback(
@@ -92,7 +93,7 @@ export function useUiActions(
       engineRef.current?.setAspect(a);
       engineRef.current?.updateHud();
       pushAutosave();
-      commitHistory("Ubah aspek");
+      commitHistory(tr("state.hist.changeAspect"));
       bump();
     },
     [projectRef, engineRef, pushAutosave, commitHistory, bump]
@@ -102,7 +103,7 @@ export function useUiActions(
       projectRef.current.settings.fps = n;
       engineRef.current?.updateHud();
       pushAutosave();
-      commitHistory("Ubah FPS");
+      commitHistory(tr("state.hist.changeFps"));
       bump();
     },
     [projectRef, engineRef, pushAutosave, commitHistory, bump]
@@ -122,7 +123,7 @@ export function useUiActions(
     (id: string) => {
       projectRef.current.settings.camera = id;
       pushAutosave();
-      commitHistory("Kamera global");
+      commitHistory(tr("state.hist.globalCamera"));
       bump();
     },
     [projectRef, pushAutosave, commitHistory, bump]
@@ -131,7 +132,7 @@ export function useUiActions(
     (on: boolean) => {
       projectRef.current.settings.globalCamera = on;
       pushAutosave();
-      commitHistory("Mode kamera global");
+      commitHistory(tr("state.hist.globalCameraMode"));
       bump();
     },
     [projectRef, pushAutosave, commitHistory, bump]

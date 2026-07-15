@@ -13,6 +13,7 @@ import { Badge, type BadgeTone } from "@/components/ds/Badge";
 import { Button, type ButtonVariant } from "@/components/ds/Button";
 import { CagCardPreview } from "@/shared/viewport3d/CagCardPreview";
 import { CagViewport } from "@/shared/viewport3d/CagViewport";
+import { useT } from "@/i18n";
 import "./CardGallery.css";
 
 export interface GalleryFrame {
@@ -49,9 +50,9 @@ type SortKey = "name" | "shots-desc" | "shots-asc";
 
 export function CardGallery({
   items,
-  filterLabel = "Semua",
-  searchPlaceholder = "Cari…",
-  emptyText = "Tidak ada yang cocok.",
+  filterLabel,
+  searchPlaceholder,
+  emptyText,
   cameraViewOnPlay = false,
 }: {
   items: GalleryItem[];
@@ -62,6 +63,11 @@ export function CardGallery({
    *  camera POV (what the shot camera sees) — used by the template gallery. */
   cameraViewOnPlay?: boolean;
 }) {
+  const { t } = useT();
+  // Fall back to localized generic labels when a caller omits these props.
+  const effFilterLabel = filterLabel ?? t("lib.filterAll");
+  const effSearchPlaceholder = searchPlaceholder ?? t("lib.searchDefault");
+  const effEmptyText = emptyText ?? t("lib.emptyDefault");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("name");
   const [filter, setFilter] = useState("all");
@@ -117,17 +123,17 @@ export function CardGallery({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={searchPlaceholder}
-          aria-label="Cari"
+          placeholder={effSearchPlaceholder}
+          aria-label={t("common.search")}
         />
-        <select className="cg-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Urutkan">
-          <option value="name">Nama (A–Z)</option>
-          <option value="shots-desc">Shot terbanyak</option>
-          <option value="shots-asc">Shot paling sedikit</option>
+        <select className="cg-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label={t("lib.sortAria")}>
+          <option value="name">{t("lib.sortNameAsc")}</option>
+          <option value="shots-desc">{t("lib.sortShotsDesc")}</option>
+          <option value="shots-asc">{t("lib.sortShotsAsc")}</option>
         </select>
         {filters.length > 1 ? (
-          <select className="cg-select" value={filter} onChange={(e) => setFilter(e.target.value)} aria-label={filterLabel}>
-            <option value="all">{filterLabel}</option>
+          <select className="cg-select" value={filter} onChange={(e) => setFilter(e.target.value)} aria-label={effFilterLabel}>
+            <option value="all">{effFilterLabel}</option>
             {filters.map((v) => (
               <option key={v} value={v}>
                 {v}
@@ -139,7 +145,7 @@ export function CardGallery({
 
       <div className="cg-grid" ref={gridRef}>
         {visible.length === 0 ? (
-          <div className="cg-empty">{emptyText}</div>
+          <div className="cg-empty">{effEmptyText}</div>
         ) : (
           visible.map((it, i) => {
             const rowEnd = i % cols === cols - 1 || i === visible.length - 1;
@@ -181,11 +187,11 @@ export function CardGallery({
                         <div className={"cg-card-tag" + (isVideo ? " video" : "")}>
                           {isVideo ? (
                             <>
-                              <Film size={12} aria-hidden /> Video
+                              <Film size={12} aria-hidden /> {t("lib.video")}
                             </>
                           ) : (
                             <>
-                              <Image size={12} aria-hidden /> 1 frame
+                              <Image size={12} aria-hidden /> {t("lib.oneFrame")}
                             </>
                           )}
                         </div>
@@ -232,6 +238,7 @@ function ExpandPanel({
   onPlay: () => void;
   cameraViewOnPlay: boolean;
 }) {
+  const { t } = useT();
   // A multi-shot template is a "video": playing GLIDES THROUGH the shot sequence,
   // continuously interpolating the camera between consecutive shots (no hard cuts).
   // A single-frame item just spins the camera as before.
@@ -307,22 +314,22 @@ function ExpandPanel({
           <button type="button" className="cg-play" aria-pressed={playing} onClick={onPlay}>
             {playing ? (
               <>
-                <Pause size={14} aria-hidden /> Jeda
+                <Pause size={14} aria-hidden /> {t("common.pause")}
               </>
             ) : isVideo ? (
               <>
-                <Play size={14} aria-hidden /> Putar animasi
+                <Play size={14} aria-hidden /> {t("lib.playAnimation")}
               </>
             ) : (
               <>
-                <Play size={14} aria-hidden /> Putar preview
+                <Play size={14} aria-hidden /> {t("lib.playPreview")}
               </>
             )}
           </button>
         </div>
         {isVideo ? (
           <span className="cg-shotind">
-            Shot {seg + 1}/{frames.length}
+            {t("lib.shotIndicator", { cur: seg + 1, total: frames.length })}
             {cur.name ? " · " + cur.name : ""}
           </span>
         ) : null}
@@ -330,8 +337,8 @@ function ExpandPanel({
         <div className="cg-readout">
           <span>AZ {Math.round(cur.az)}°</span>
           <span>EL {Math.round(cur.el)}°</span>
-          <span>JARAK {cur.dist.toFixed(1)}m</span>
-          <span>LENSA {Math.round(cur.lens)}mm</span>
+          <span>{t("lib.readoutDist")} {cur.dist.toFixed(1)}m</span>
+          <span>{t("lib.readoutLens")} {Math.round(cur.lens)}mm</span>
           {cur.roll ? <span>ROLL {Math.round(cur.roll)}°</span> : null}
         </div>
         <div className="cg-actions">

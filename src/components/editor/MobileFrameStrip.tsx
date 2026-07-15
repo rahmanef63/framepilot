@@ -14,6 +14,7 @@
 import React, { useRef, useState } from "react";
 import { LayoutGrid, Film, Layers, ChevronLeft } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { activeScene, type EditorFrame } from "@/lib/editorModel";
 import { IconPlay, IconPause } from "./EditorIcons";
 import { MobileFrameMenu } from "./MobileFrameMenu";
@@ -23,6 +24,7 @@ const LONG_PRESS_MS = 450;
 
 export function MobileFrameStrip() {
   const ctx = useEditor();
+  const { t } = useT();
   const scenes = ctx.project.scenes;
   const currentId = ctx.currentFrameId;
   const playing = ctx.playback.playing;
@@ -93,7 +95,7 @@ export function MobileFrameStrip() {
   // ---- SCENE mode: enterable folder tiles ----
   if (!inside) {
     return (
-      <div className="mobile-frame-strip" role="group" aria-label="Scene — ketuk untuk buka, tahan scene untuk aksi">
+      <div className="mobile-frame-strip" role="group" aria-label={t("editor.sceneStripAria")}>
         <div className="mfs-scroll">
           {scenes.map((sc, idx) => (
             <div key={sc.id} className={"mfs-scene" + (sc.id === activeId ? " current" : "")}>
@@ -111,8 +113,8 @@ export function MobileFrameStrip() {
                   }
                   enterScene(sc.id);
                 }}
-                title={sc.name + " — tahan untuk aksi"}
-                aria-label={"Buka scene " + sc.name}
+                title={t("editor.holdForActions", { name: sc.name })}
+                aria-label={t("editor.openScene", { name: sc.name })}
               >
                 {sc.frames[0]?.thumb ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -131,8 +133,8 @@ export function MobileFrameStrip() {
                 <button
                   className="mfs-scene-play"
                   onClick={() => playScene(sc.id)}
-                  aria-label={"Putar scene " + sc.name}
-                  title="Putar / preview scene"
+                  aria-label={t("editor.playScene", { name: sc.name })}
+                  title={t("editor.playPreviewScene")}
                 >
                   {playing && sc.id === activeId ? <IconPause size={14} /> : <IconPlay size={14} />}
                 </button>
@@ -155,12 +157,12 @@ export function MobileFrameStrip() {
 
   // ---- FRAME mode: inside a scene ----
   return (
-    <div className="mobile-frame-strip" role="group" aria-label="Frame — ketuk untuk pindah, tahan untuk aksi">
+    <div className="mobile-frame-strip" role="group" aria-label={t("editor.frameStripAria")}>
       <button
         className="mfs-back"
         onClick={exitScene}
-        aria-label="Kembali ke daftar scene"
-        title="Keluar dari scene"
+        aria-label={t("editor.backToScenes")}
+        title={t("editor.exitScene")}
       >
         <ChevronLeft size={18} />
       </button>
@@ -170,8 +172,8 @@ export function MobileFrameStrip() {
       <button
         className="mfs-play"
         onClick={ctx.togglePlay}
-        aria-label={playing ? "Jeda urutan frame" : "Putar urutan frame"}
-        title="Putar / jeda urutan frame"
+        aria-label={playing ? t("editor.pauseSequence") : t("editor.playSequence")}
+        title={t("editor.playPauseSequence")}
       >
         {playing ? <IconPause size={18} /> : <IconPlay size={18} />}
       </button>
@@ -185,8 +187,8 @@ export function MobileFrameStrip() {
             onPointerUp={cancelTimer}
             onPointerLeave={cancelTimer}
             onClick={(e) => onClickTile(e, f.id)}
-            title={f.name + " — tahan untuk aksi"}
-            aria-label={"Pindah ke " + f.name}
+            title={t("editor.holdForActions", { name: f.name })}
+            aria-label={t("editor.switchToFrame", { name: f.name })}
             aria-current={f.id === currentId}
           >
             {f.thumb ? (

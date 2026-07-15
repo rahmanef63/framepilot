@@ -6,10 +6,12 @@
 // OutlineSidebar; on mobile this whole panel becomes an accordion (MobilePanel).
 
 import React from "react";
+import { useT } from "@/i18n";
 import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
 import { ShotBrief } from "./ShotBrief";
 
 export function ShotPanel() {
+  const { t } = useT();
   return (
     <div className="panel-page active">
       {/* ---- output-of-this-tab hero: paste-ready camera prompt ---- */}
@@ -17,7 +19,7 @@ export function ShotPanel() {
 
       {/* ---- optional brief: one collapsible layer, collapsed by default ---- */}
       <details className="brief-fold">
-        <summary>Detail brief (opsional)</summary>
+        <summary>{t("panel.briefDetailOptional")}</summary>
         <ShotBrief />
       </details>
     </div>

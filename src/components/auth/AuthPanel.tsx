@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "@/components/ds/Button";
+import { useT } from "@/i18n";
 
 /**
  * AuthPanel — email + password sign in / sign up form backed by the
@@ -11,12 +12,13 @@ import { Button } from "@/components/ds/Button";
  * Modeled on framepilot-video-src/components/auth-panel.tsx, ported to ds tokens.
  */
 export function AuthPanel({
-  title = "Masuk untuk menyimpan proyek",
+  title,
   onDone,
 }: {
   title?: string;
   onDone?: () => void;
 }) {
+  const { t } = useT();
   const { signIn } = useAuthActions();
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [email, setEmail] = useState("");
@@ -34,8 +36,8 @@ export function AuthPanel({
     } catch {
       setError(
         flow === "signIn"
-          ? "Email atau kata sandi salah."
-          : "Gagal membuat akun. Gunakan email yang valid dan kata sandi minimal 8 karakter."
+          ? t("auth.errWrongCredentials")
+          : t("auth.errSignUpFailed")
       );
     } finally {
       setBusy(false);
@@ -63,12 +65,12 @@ export function AuthPanel({
 
   return (
     <form onSubmit={submit} style={{ width: "100%" }}>
-      <h2 style={{ font: "800 16px var(--font-sans)", color: "var(--foreground)", margin: 0 }}>{title}</h2>
+      <h2 style={{ font: "800 16px var(--font-sans)", color: "var(--foreground)", margin: 0 }}>{title ?? t("auth.signInToSave")}</h2>
       <p style={{ marginTop: "4px", font: "400 12px var(--font-sans)", color: "var(--muted-foreground)" }}>
-        {flow === "signIn" ? "Selamat datang kembali." : "Buat akun — email + kata sandi."}
+        {flow === "signIn" ? t("auth.welcomeBack") : t("auth.createAccountSubtitle")}
       </p>
 
-      <label style={labelStyle}>Email</label>
+      <label style={labelStyle}>{t("auth.email")}</label>
       <input
         type="email"
         required
@@ -78,10 +80,10 @@ export function AuthPanel({
         style={inputStyle}
         onFocus={(e) => (e.currentTarget.style.borderColor = "var(--primary)")}
         onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
-        placeholder="kamu@contoh.com"
+        placeholder={t("auth.emailPlaceholder")}
       />
 
-      <label style={labelStyle}>Kata sandi</label>
+      <label style={labelStyle}>{t("auth.password")}</label>
       <input
         type="password"
         required
@@ -95,7 +97,7 @@ export function AuthPanel({
         placeholder="••••••••"
       />
       <p style={{ marginTop: "6px", font: "400 11px var(--font-mono)", color: "var(--subtle-foreground)" }}>
-        Minimal 8 karakter.
+        {t("auth.minChars")}
       </p>
 
       {error ? (
@@ -105,7 +107,7 @@ export function AuthPanel({
       ) : null}
 
       <Button type="submit" disabled={busy} style={{ marginTop: "18px", width: "100%" }}>
-        {busy ? "…" : flow === "signIn" ? "Masuk" : "Buat akun"}
+        {busy ? "…" : flow === "signIn" ? t("auth.signIn") : t("auth.createAccount")}
       </Button>
 
       <Button
@@ -118,7 +120,7 @@ export function AuthPanel({
         }}
         style={{ marginTop: "10px", width: "100%" }}
       >
-        {flow === "signIn" ? "Belum punya akun? Daftar" : "Sudah punya akun? Masuk"}
+        {flow === "signIn" ? t("auth.noAccountSignUp") : t("auth.haveAccountSignIn")}
       </Button>
     </form>
   );

@@ -7,17 +7,19 @@ import { api } from "../../../convex/_generated/api";
 import { ModalDialog } from "@/components/ds/Modal";
 import { Button } from "@/components/ds/Button";
 import { AuthPanel } from "@/components/auth/AuthPanel";
+import { useT } from "@/i18n";
 
 /** Signed-in view: shows the account email + a Keluar (sign out) button. */
 function SignedIn({ onDone }: { onDone: () => void }) {
+  const { t } = useT();
   const { signOut } = useAuthActions();
   const user = useQuery(api.auth.loggedInUser);
 
   return (
     <div style={{ width: "100%" }}>
-      <h2 style={{ font: "800 16px var(--font-sans)", color: "var(--foreground)", margin: 0 }}>Akun</h2>
+      <h2 style={{ font: "800 16px var(--font-sans)", color: "var(--foreground)", margin: 0 }}>{t("auth.account")}</h2>
       <p style={{ marginTop: "4px", font: "400 12px var(--font-sans)", color: "var(--muted-foreground)" }}>
-        Kamu sudah masuk.
+        {t("auth.signedIn")}
       </p>
 
       <div
@@ -29,7 +31,7 @@ function SignedIn({ onDone }: { onDone: () => void }) {
           background: "var(--background)",
         }}
       >
-        <div style={{ font: "600 10px var(--font-mono)", color: "var(--subtle-foreground)" }}>Email</div>
+        <div style={{ font: "600 10px var(--font-mono)", color: "var(--subtle-foreground)" }}>{t("auth.email")}</div>
         <div style={{ marginTop: "3px", font: "600 13px var(--font-sans)", color: "var(--foreground)", wordBreak: "break-all" }}>
           {user?.email ?? "—"}
         </div>
@@ -43,7 +45,7 @@ function SignedIn({ onDone }: { onDone: () => void }) {
         }}
         style={{ marginTop: "18px", width: "100%" }}
       >
-        Keluar
+        {t("auth.signOut")}
       </Button>
     </div>
   );
@@ -51,12 +53,13 @@ function SignedIn({ onDone }: { onDone: () => void }) {
 
 /** Account overlay — gates on auth state, showing sign-in form or the account panel. */
 export function AccountModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useT();
   if (!open) return null;
   return (
     <ModalDialog open={open} onClose={onClose} width="min(420px, 94vw)" height="auto">
       <AuthLoading>
         <p style={{ font: "500 12px var(--font-mono)", color: "var(--muted-foreground)", margin: 0 }}>
-          Memuat · Loading…
+          {t("common.loading")}
         </p>
       </AuthLoading>
       <Unauthenticated>

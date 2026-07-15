@@ -5,6 +5,7 @@
 
 import { useCallback } from "react";
 import { uid } from "@/lib/dataPrompt";
+import { tr } from "@/i18n";
 import type { SlotId, ViewKind, SavedView } from "@/lib/editorModel";
 import type { EditorCore } from "./core";
 
@@ -51,7 +52,7 @@ export function useViewActions(
       p.savedViews.push(view);
       engineRef.current?.setSavedViews(p.savedViews);
       pushAutosave();
-      commitHistory("Simpan view");
+      commitHistory(tr("state.hist.saveView"));
       bump();
     },
     [projectRef, engineRef, pushAutosave, commitHistory, bump]
@@ -65,7 +66,7 @@ export function useViewActions(
       v.name = name.slice(0, 60);
       engineRef.current?.setSavedViews(p.savedViews ?? []);
       pushAutosave();
-      commitHistory("Ubah nama view");
+      commitHistory(tr("state.hist.renameView"));
       bump();
     },
     [projectRef, engineRef, pushAutosave, commitHistory, bump]
@@ -84,7 +85,7 @@ export function useViewActions(
       p.quadSlots = slots;
       syncEngineViews();
       pushAutosave();
-      commitHistory("Hapus view");
+      commitHistory(tr("state.hist.deleteView"));
       bump();
     },
     [projectRef, syncEngineViews, pushAutosave, commitHistory, bump]
@@ -98,7 +99,7 @@ export function useViewActions(
       p.quadSlots = slots;
       engineRef.current?.setCellView(slot, kind);
       pushAutosave();
-      commitHistory("Ubah view sel");
+      commitHistory(tr("state.hist.changeCellView"));
       bump();
     },
     [projectRef, engineRef, pushAutosave, commitHistory, bump]

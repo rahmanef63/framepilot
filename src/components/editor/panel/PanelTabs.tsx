@@ -6,19 +6,21 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { ControlPanel } from "./ControlPanel";
 import { ShotPanel } from "./ShotPanel";
 import { MobilePanel } from "./MobilePanel";
 import { useMediaQuery } from "../useMediaQuery";
 import type { EditorUi } from "@/state/EditorState";
 
-const SUB_TABS: { key: EditorUi["panelTab"]; label: string }[] = [
-  { key: "control", label: "Kontrol" },
-  { key: "shot", label: "Prompt" },
+const SUB_TABS: { key: EditorUi["panelTab"]; labelKey: string }[] = [
+  { key: "control", labelKey: "panel.tabControl" },
+  { key: "shot", labelKey: "panel.tabPrompt" },
 ];
 
 export function PanelTabs() {
   const ctx = useEditor();
+  const { t } = useT();
   const tab = ctx.ui.panelTab;
   // Mobile (≤820): one accordion stack instead of the nested tabs. Desktop untouched.
   const mobile = useMediaQuery("(max-width: 820px)");
@@ -27,14 +29,14 @@ export function PanelTabs() {
   return (
     <>
       <div className="panel-tabs">
-        {SUB_TABS.map((t) => (
+        {SUB_TABS.map((st) => (
           <button
-            key={t.key}
-            className={tab === t.key ? "active" : undefined}
-            data-tour={t.key === "shot" ? "panel-prompt" : undefined}
-            onClick={() => ctx.setPanelTab(t.key)}
+            key={st.key}
+            className={tab === st.key ? "active" : undefined}
+            data-tour={st.key === "shot" ? "panel-prompt" : undefined}
+            onClick={() => ctx.setPanelTab(st.key)}
           >
-            {t.label}
+            {t(st.labelKey)}
           </button>
         ))}
       </div>

@@ -7,24 +7,23 @@ import { ChevronDown, ChevronRight, Menu, Braces } from "lucide-react";
 import { ModalDialog } from "@/components/ds/Modal";
 import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
+import { useT } from "@/i18n";
 import { textareaStyle, hint, capLabel, promptBoxStyle, SRC_HINTS } from "./modalStyles";
 
 export function ImportModal() {
   const app = useApp();
+  const { t } = useT();
   const [helperOpen, setHelperOpen] = useState(false);
   return (
     <ModalDialog
       open={app.importOpen}
       onClose={app.closeImport}
-      title="Impor data prompt · Import"
+      title={t("shell.import.title")}
       width="min(620px,94vw)"
       height="min(560px,88vh)"
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div style={hint}>
-          Tempel JSON hasil AI (skema camera-angle-guide/v2) ATAU unggah file .json. · Paste your AI&apos;s JSON or upload
-          a .json file.
-        </div>
+        <div style={hint}>{t("shell.import.hint")}</div>
         <textarea
           value={app.pasteText}
           onChange={(e) => app.setPasteText(e.target.value)}
@@ -33,7 +32,7 @@ export function ImportModal() {
         />
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
           <Button variant="primary" size="sm" onClick={app.doParsePaste}>
-            Parse &amp; tambahkan · Add
+            {t("shell.import.parseAdd")}
           </Button>
           <label>
             <input type="file" accept=".json,application/json" onChange={app.onFileTab} style={{ display: "none" }} />
@@ -51,15 +50,15 @@ export function ImportModal() {
                 background: "var(--card)",
               }}
             >
-              <Menu size={14} aria-hidden /> Unggah .json
+              <Menu size={14} aria-hidden /> {t("shell.import.uploadJson")}
             </span>
           </label>
           <Button variant="ghost" size="sm" onClick={app.fillSamplePaste}>
-            Isi contoh · Sample
+            {t("shell.import.sample")}
           </Button>
         </div>
         {app.fileName ? (
-          <div style={{ font: "500 12px var(--font-mono)", color: "var(--muted-foreground)" }}>File: {app.fileName}</div>
+          <div style={{ font: "500 12px var(--font-mono)", color: "var(--muted-foreground)" }}>{t("shell.import.fileLabel", { name: app.fileName })}</div>
         ) : null}
 
         {/* collapsible extraction-prompt helper */}
@@ -87,16 +86,13 @@ export function ImportModal() {
             }}
           >
             <span style={{ color: "var(--muted-foreground)" }}>{helperOpen ? <ChevronDown size={14} aria-hidden /> : <ChevronRight size={14} aria-hidden />}</span>
-            Belum punya JSON? Prompt ekstraksi untuk AI
+            {t("shell.import.helperToggle")}
           </button>
           {helperOpen ? (
             <div style={{ padding: "0 12px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={hint}>
-                Salin prompt ini ke AI Anda (bukan prompt kamera — ini yang menghasilkan JSON angle-nya), lalu tempel
-                balikannya di kotak atas. · Copy this to your AI to get the camera JSON, then paste it above.
-              </div>
+              <div style={hint}>{t("shell.import.helperHint")}</div>
               <div>
-                <div style={{ ...capLabel, marginBottom: 6 }}>Sumber · Source</div>
+                <div style={{ ...capLabel, marginBottom: 6 }}>{t("shell.import.source")}</div>
                 <div style={{ display: "inline-flex", gap: 4, padding: 3, background: "var(--muted)", borderRadius: "var(--radius-pill)", flexWrap: "wrap" }}>
                   {SRC_HINTS.map((s) => (
                     <Button
@@ -105,7 +101,7 @@ export function ImportModal() {
                       size="sm"
                       onClick={() => app.setExtractSrc(s.key)}
                     >
-                      {s.label}
+                      {t("shell.import.src." + s.key)}
                     </Button>
                   ))}
                 </div>
@@ -113,10 +109,10 @@ export function ImportModal() {
               <textarea readOnly spellCheck={false} value={app.extractPrompt} style={promptBoxStyle} />
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <Button variant="primary" size="sm" icon={<Braces size={14} aria-hidden />} onClick={app.copyExtractPrompt}>
-                  Salin prompt ekstraksi · Copy
+                  {t("shell.import.copyExtraction")}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={app.openSchema}>
-                  Lihat skema
+                  {t("shell.import.viewSchema")}
                 </Button>
               </div>
             </div>

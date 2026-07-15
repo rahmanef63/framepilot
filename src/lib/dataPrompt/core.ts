@@ -1,5 +1,6 @@
 // Data Prompt — constructors + converters (RawFrame → studio project shape) + the
 // relative-time formatter. Pure functions; no React.
+import { tr } from "@/i18n";
 import { D2R, DEF, type Meta, type RawFrame, type Entry } from "./types";
 
 // --- deterministic id generator (stable across SSR/CSR before mount) ---
@@ -92,9 +93,16 @@ export function entryProject(en: Entry) {
   };
 }
 
-export function fmtWhen(ts: number, now: number): string {
+// `translate` defaults to the module-level tr(), but React callers should pass
+// the reactive t from useT() so the string updates on a live language switch
+// (tr() reads the active locale one render late inside a memo).
+export function fmtWhen(
+  ts: number,
+  now: number,
+  translate: (key: string, vars?: Record<string, string | number>) => string = tr
+): string {
   const h = Math.round((now - ts) / 3600000);
-  if (h < 1) return "baru saja";
-  if (h < 24) return h + " jam lalu";
-  return Math.round(h / 24) + " hari lalu";
+  if (h < 1) return translate("state.time.justNow");
+  if (h < 24) return translate("state.time.hoursAgo", { n: h });
+  return translate("state.time.daysAgo", { n: Math.round(h / 24) });
 }

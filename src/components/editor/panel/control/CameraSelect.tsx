@@ -7,12 +7,14 @@
 import React from "react";
 import { Camera } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 
 const hint: React.CSSProperties = { font: "400 11px var(--e-sans)", color: "var(--muted)", margin: "5px 0 0" };
 
 export function CameraSelect() {
   const ctx = useEditor();
+  const { t } = useT();
   const settings = ctx.project.settings;
   const current = ctx.currentFrame();
   const global = settings.globalCamera;
@@ -22,9 +24,9 @@ export function CameraSelect() {
 
   return (
     <div className="group">
-      <h3>Kamera (brand)</h3>
+      <h3>{t("panel.cameraBrand")}</h3>
       <div className="field">
-        <label>Kamera frame ini</label>
+        <label>{t("panel.cameraThisFrame")}</label>
         <select
           value={value}
           disabled={disabled}
@@ -38,9 +40,9 @@ export function CameraSelect() {
         </select>
         {preset?.look ? <p style={hint}><Camera size={13} aria-hidden /> {preset.sensor} · {preset.look}</p> : null}
         {global ? (
-          <p style={hint}>Ikut kamera global — atur di Viewport.</p>
+          <p style={hint}>{t("panel.followGlobalCamera")}</p>
         ) : !current ? (
-          <p style={hint}>Pilih atau buat frame dulu.</p>
+          <p style={hint}>{t("panel.pickFrameFirst")}</p>
         ) : null}
       </div>
     </div>

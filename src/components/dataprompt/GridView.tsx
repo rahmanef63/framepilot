@@ -8,8 +8,10 @@ import React from "react";
 import { EntryView } from "@/state/AppState";
 import { Camera } from "lucide-react";
 import { CardGallery, type GalleryItem, type GalleryAction } from "@/components/gallery/CardGallery";
+import { useT } from "@/i18n";
 
 export function GridView({ entries }: { entries: EntryView[] }) {
+  const { t } = useT();
   const items: GalleryItem[] = entries.map((e) => {
     // Preset (Template) cards get the single "Gunakan Template" action; real
     // library entries keep the "Buka di Studio 3D" + "Hapus" pair (Hapus only
@@ -17,29 +19,29 @@ export function GridView({ entries }: { entries: EntryView[] }) {
     const actions: GalleryAction[] = e.preset
       ? [
           {
-            label: "Gunakan Template",
+            label: t("lib.useTemplate"),
             variant: "primary",
             icon: <Camera size={14} aria-hidden />,
             onClick: e.onOpenStudio,
-            title: "Buat proyek dari preset ini",
+            title: t("lib.createFromPreset"),
           },
         ]
       : [
           {
-            label: "Buka di Studio 3D",
+            label: t("lib.openInStudio"),
             variant: "primary",
             icon: <Camera size={14} aria-hidden />,
             onClick: e.onOpenStudio,
-            title: "Buka di Studio 3D",
+            title: t("lib.openInStudio"),
           },
           ...(e.onDelete
-            ? [{ label: "Hapus", variant: "ghost", onClick: e.onDelete, title: "Hapus · Delete" } as GalleryAction]
+            ? [{ label: t("common.delete"), variant: "ghost", onClick: e.onDelete, title: t("common.delete") } as GalleryAction]
             : []),
         ];
     return {
       id: e.id,
       title: e.name,
-      meta: `${e.sceneCount} scene · ${e.frameCount} shot · ${e.when}`,
+      meta: `${t("lib.sceneCount", { n: e.sceneCount })} · ${t("lib.shotCount", { n: e.frameCount })} · ${e.when}`,
       badge: { label: `${e.sourceGlyph} ${e.sourceLabel}`.trim(), tone: e.sourceTone },
       filterValue: e.sourceLabel,
       shotCount: e.frameCount,
@@ -54,9 +56,9 @@ export function GridView({ entries }: { entries: EntryView[] }) {
     <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 20px 36px" }}>
       <CardGallery
         items={items}
-        filterLabel="Semua sumber"
-        searchPlaceholder="Cari di pustaka…"
-        emptyText="Tidak ada item yang cocok."
+        filterLabel={t("lib.allSources")}
+        searchPlaceholder={t("lib.searchLibrary")}
+        emptyText={t("lib.emptyMatch")}
       />
     </div>
   );

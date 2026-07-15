@@ -2,11 +2,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ds/Button";
+import { useT } from "@/i18n";
 import { DOCS, type DocBlock } from "./docs-content";
 
 // TOC (left, sticky) + content (right). Scroll-spy highlights the active section
 // via IntersectionObserver; TOC click smooth-scrolls to it.
 export default function DocsPage() {
+  const { t } = useT();
   const [active, setActive] = useState(DOCS[0].id);
 
   useEffect(() => {
@@ -36,15 +38,15 @@ export default function DocsPage() {
 
   return (
     <div className="docs-wrap">
-      <nav className="docs-toc" aria-label="Daftar isi">
-        <div className="docs-toc-h">Isi</div>
+      <nav className="docs-toc" aria-label={t("docs.tocAria")}>
+        <div className="docs-toc-h">{t("docs.tocHeading")}</div>
         {DOCS.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
             className={"docs-toc-a" + (active === s.id ? " active" : "")}
           >
-            {s.title}
+            {t(s.title)}
           </a>
         ))}
       </nav>
@@ -52,8 +54,8 @@ export default function DocsPage() {
       <div className="docs-body">
         {DOCS.map((s) => (
           <section key={s.id} id={s.id} className="docs-section">
-            <h2 className="docs-h2">{s.title}</h2>
-            <p className="docs-lead">{s.lead}</p>
+            <h2 className="docs-h2">{t(s.title)}</h2>
+            <p className="docs-lead">{t(s.lead)}</p>
             {s.blocks.map((b, i) => (
               <Block key={i} b={b} />
             ))}
@@ -65,12 +67,13 @@ export default function DocsPage() {
 }
 
 function Block({ b }: { b: DocBlock }) {
-  if (b.type === "p") return <p className="docs-p">{b.text}</p>;
+  const { t } = useT();
+  if (b.type === "p") return <p className="docs-p">{t(b.text)}</p>;
   if (b.type === "list")
     return (
       <ul className="docs-list">
         {b.items.map((it, i) => (
-          <li key={i}>{it}</li>
+          <li key={i}>{t(it)}</li>
         ))}
       </ul>
     );
@@ -81,8 +84,8 @@ function Block({ b }: { b: DocBlock }) {
           <div key={it.n} className="docs-step">
             <span className="docs-step-n">{it.n}</span>
             <div>
-              <div className="docs-step-t">{it.t}</div>
-              <div className="docs-step-d">{it.d}</div>
+              <div className="docs-step-t">{t(it.t)}</div>
+              <div className="docs-step-d">{t(it.d)}</div>
             </div>
           </div>
         ))}
@@ -92,7 +95,7 @@ function Block({ b }: { b: DocBlock }) {
   return (
     <Link href={b.href} style={{ textDecoration: "none", alignSelf: "flex-start" }}>
       <Button variant="primary" size="md">
-        {b.label}
+        {t(b.label)}
       </Button>
     </Link>
   );

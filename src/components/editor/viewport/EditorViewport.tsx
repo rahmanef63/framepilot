@@ -8,6 +8,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { ViewCell } from "./ViewCell";
 import { CellViewMenu } from "./CellViewMenu";
 import { ViewportCameraMenu } from "./ViewportCameraMenu";
@@ -19,15 +20,17 @@ import type { EngineHudRefs, ViewId, SlotId, ViewKind } from "@/lib/editor/engin
 const SLOT_IDS: SlotId[] = ["top", "left", "right"];
 const SLOT_DEFAULTS: Record<SlotId, ViewKind> = { top: "top", left: "left", right: "right" };
 
+// label = film-term HUD text (left as-is); maxTitle values are i18n keys (translated at render).
 const VIEW_META: { id: ViewId; label: string; maxTitle: string }[] = [
-  { id: "cam", label: "◉ CAMERA", maxTitle: "Fokus view (1)" },
-  { id: "top", label: "TOP", maxTitle: "Fokus view (2)" },
-  { id: "left", label: "LEFT", maxTitle: "Fokus view (3)" },
-  { id: "right", label: "RIGHT", maxTitle: "Fokus view (4)" },
-  { id: "iso", label: "ISOMETRIC", maxTitle: "Kembali ke Quad (5)" },
+  { id: "cam", label: "◉ CAMERA", maxTitle: "view.focusView1" },
+  { id: "top", label: "TOP", maxTitle: "view.focusView2" },
+  { id: "left", label: "LEFT", maxTitle: "view.focusView3" },
+  { id: "right", label: "RIGHT", maxTitle: "view.focusView4" },
+  { id: "iso", label: "ISOMETRIC", maxTitle: "view.backToQuad" },
 ];
 
 export function EditorViewport() {
+  const { t } = useT();
   const ctx = useEditor();
   const {
     ui,
@@ -108,7 +111,7 @@ export function EditorViewport() {
           const note = document.createElement("div");
           note.style.cssText =
             "position:absolute;inset:0;display:grid;place-items:center;font:600 12px var(--e-mono);color:var(--muted-foreground)";
-          note.textContent = "3D tak tersedia";
+          note.textContent = t("view.threeDUnavailable");
           quad.appendChild(note);
         }
       });
@@ -153,7 +156,7 @@ export function EditorViewport() {
           className="gl"
           ref={canvasRef}
           role="img"
-          aria-label="Viewport 3D untuk mengatur kamera, subjek, dan framing"
+          aria-label={t("view.canvasAriaLabel")}
         />
         {VIEW_META.map((m) => {
           const isSlot = (SLOT_IDS as string[]).includes(m.id);
@@ -163,7 +166,7 @@ export function EditorViewport() {
               key={m.id}
               view={m.id}
               label={m.label}
-              maxTitle={m.maxTitle}
+              maxTitle={t(m.maxTitle)}
               onMax={() => toggleFocus(m.id)}
               head={
                 m.id === "cam" ? (

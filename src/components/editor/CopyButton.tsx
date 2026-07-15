@@ -7,12 +7,13 @@
 import React, { CSSProperties, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button, ButtonVariant, ButtonSize } from "@/components/ds/Button";
+import { useT } from "@/i18n";
 import { copyText } from "./panel/outline/clipboard";
 
 export function CopyButton({
   text,
   label,
-  copiedLabel = "Tersalin",
+  copiedLabel,
   variant = "ghost",
   size = "sm",
   disabled = false,
@@ -28,7 +29,9 @@ export function CopyButton({
   iconSize?: number;
   style?: CSSProperties;
 }) {
+  const { t } = useT();
   const [copied, setCopied] = useState(false);
+  const doneLabel = copiedLabel ?? t("common.copied");
 
   const onClick = () => {
     const t = typeof text === "function" ? text() : text;
@@ -48,7 +51,7 @@ export function CopyButton({
     >
       {copied ? (
         <>
-          {copiedLabel} <Check size={iconSize} aria-hidden />
+          {doneLabel} <Check size={iconSize} aria-hidden />
         </>
       ) : (
         <>

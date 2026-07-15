@@ -10,6 +10,7 @@
 
 import React from "react";
 import { ChevronDown } from "lucide-react";
+import { useT } from "@/i18n";
 import { CameraPromptDock } from "@/components/editor/CameraPromptDock";
 import { PromptOptionsList } from "@/components/editor/PromptOptionsMenu";
 import { useMobileDock } from "@/components/editor/EditorDock";
@@ -47,47 +48,48 @@ function AccSection({
 
 export function MobilePanel() {
   const { section } = useMobileDock();
+  const { t } = useT();
   if (!section) return null; // dock closed → panel row collapses, canvas full-screen
 
   return (
     <div className="panel-page active mobile-acc" data-section={section}>
       {section === "prompt" ? (
         <>
-          <AccSection title="Prompt Kamera" open>
+          <AccSection title={t("panel.sectionCameraPrompt")} open>
             <CameraPromptDock showDetailToggles={false} />
           </AccSection>
-          <AccSection title="Detail prompt">
+          <AccSection title={t("panel.sectionPromptDetail")}>
             <PromptOptionsList />
           </AccSection>
         </>
       ) : null}
       {section === "kamera" ? (
         <>
-          <AccSection title="Kamera" open>
+          <AccSection title={t("panel.tabCamera")} open>
             <RigSliders />
             <CameraSelect />
           </AccSection>
-          <AccSection title="Subjek">
+          <AccSection title={t("panel.tabSubject")}>
             <SubjectControls />
           </AccSection>
         </>
       ) : null}
       {section === "preset" ? (
-        <AccSection title="Preset" open>
+        <AccSection title={t("panel.preset")} open>
           <PresetRows />
         </AccSection>
       ) : null}
       {section === "more" ? (
         <>
-          <AccSection title="Viewport" open>
+          <AccSection title={t("panel.tabViewport")} open>
             <ToggleRow />
             <OutputFrame />
             <GlobalCameraSettings />
           </AccSection>
-          <AccSection title="Detail brief (opsional)">
+          <AccSection title={t("panel.briefDetailOptional")}>
             <ShotBrief />
           </AccSection>
-          <AccSection title="Proyek">
+          <AccSection title={t("panel.projectSection")}>
             <SavedProjects />
           </AccSection>
         </>

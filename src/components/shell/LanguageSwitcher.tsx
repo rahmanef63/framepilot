@@ -1,0 +1,115 @@
+"use client";
+// LanguageSwitcher — globe dropdown in the header. Lists every locale by its
+// native name; picking one flips the whole app in place (I18nProvider persists
+// it + sets <html lang/dir>). Closes on outside-click / Esc.
+import React from "react";
+import { Globe, Check } from "lucide-react";
+import { useT, LOCALES, LOCALE_NAMES, type Locale } from "@/i18n";
+
+export function LanguageSwitcher() {
+  const { locale, setLocale, t } = useT();
+  const [open, setOpen] = React.useState(false);
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const pick = (l: Locale) => {
+    setLocale(l);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={wrapRef} style={{ position: "relative" }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        title={t("lang.label")}
+        aria-label={t("lang.label")}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          height: 32,
+          padding: "0 9px",
+          cursor: "pointer",
+          borderRadius: "var(--radius-md)",
+          border: "var(--border-width) solid var(--border)",
+          background: open ? "var(--muted)" : "transparent",
+          color: "var(--foreground)",
+          font: "600 12px var(--font-mono)",
+          textTransform: "uppercase",
+        }}
+      >
+        <Globe size={15} aria-hidden />
+        {locale}
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          aria-label={t("lang.label")}
+          style={{
+            position: "absolute",
+            top: "calc(100% + 4px)",
+            insetInlineEnd: 0,
+            zIndex: 40,
+            minWidth: 176,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            padding: 6,
+            background: "var(--card)",
+            border: "var(--border-width) solid var(--border)",
+            borderRadius: "var(--radius-md)",
+            boxShadow: "var(--elevation-overlay)",
+          }}
+        >
+          {LOCALES.map((l) => {
+            const on = l === locale;
+            return (
+              <button
+                key={l}
+                role="menuitemradio"
+                aria-checked={on}
+                onClick={() => pick(l)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  width: "100%",
+                  textAlign: "start",
+                  border: 0,
+                  borderRadius: "var(--radius-sm)",
+                  padding: "8px 9px",
+                  cursor: "pointer",
+                  background: on ? "var(--primary-soft)" : "transparent",
+                  color: on ? "var(--primary)" : "var(--foreground)",
+                  font: `${on ? 700 : 500} 12.5px var(--font-sans)`,
+                }}
+              >
+                <span aria-hidden style={{ width: 22, font: "600 10px var(--font-mono)", opacity: 0.7, textTransform: "uppercase" }}>
+                  {l}
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>{LOCALE_NAMES[l]}</span>
+                {on ? <Check size={14} aria-hidden /> : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}

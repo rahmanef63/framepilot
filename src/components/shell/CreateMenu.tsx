@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { NavItem } from "@/components/ds/NavItem";
+import { useT } from "@/i18n";
 import { Plus, Camera, Image, LayoutTemplate } from "lucide-react";
 
 /**
@@ -25,6 +26,7 @@ export function CreateMenu({
   /** horizontal trigger stretches full-width (sidebar) when true; auto-width (header nav) when false. */
   fill?: boolean;
 }) {
+  const { t } = useT();
   const [open, setOpen] = React.useState(false);
   const wrapRef = React.useRef<HTMLDivElement>(null);
   const [rect, setRect] = React.useState<DOMRect | null>(null);
@@ -69,7 +71,7 @@ export function CreateMenu({
       <NavItem
         orientation={orientation}
         icon={<Plus size={16} />}
-        label="Buat"
+        label={t("shell.create.trigger")}
         accent
         active={open}
         chevron={orientation === "horizontal"}
@@ -97,20 +99,20 @@ export function CreateMenu({
         >
           <MenuOption
             icon={<Camera size={16} />}
-            title="Susun di Studio 3D"
-            desc="Rancang kamera → Prompt Kamera"
+            title={t("shell.create.new3d.title")}
+            desc={t("shell.create.new3d.desc")}
             onClick={() => pick(onNew3D)}
           />
           <MenuOption
             icon={<Image size={16} />}
-            title="Impor dari Gambar"
-            desc="Foto → ekstrak data kamera"
+            title={t("shell.create.fromImage.title")}
+            desc={t("shell.create.fromImage.desc")}
             onClick={() => pick(onFromImage)}
           />
           <MenuOption
             icon={<LayoutTemplate size={16} />}
-            title="Dari template"
-            desc="Mulai dari preset scene siap pakai"
+            title={t("shell.create.fromTemplate.title")}
+            desc={t("shell.create.fromTemplate.desc")}
             onClick={() => pick(onFromTemplate)}
           />
         </div>

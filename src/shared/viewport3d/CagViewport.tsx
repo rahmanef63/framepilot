@@ -1,6 +1,7 @@
 "use client";
 import React, { CSSProperties, useEffect, useRef } from "react";
 import { setOrbit, deg2rad, fovFromFocal } from "@/lib/editorMath";
+import { useT } from "@/i18n";
 import {
   buildPerson,
   buildObject,
@@ -424,6 +425,7 @@ export function CagViewport({
   style,
   className,
 }: CagViewportProps) {
+  const { t } = useT();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const ctrlRef = useRef<Controller | null>(null);
   const propsRef = useRef({ az, el, dist, lens, roll, subj, camview, autoRotate });
@@ -442,7 +444,7 @@ export function CagViewport({
       .catch(() => {
         if (host)
           host.innerHTML =
-            '<div style="width:100%;height:100%;display:grid;place-items:center;font:600 10px monospace;color:#999">3D tak tersedia</div>';
+            `<div style="width:100%;height:100%;display:grid;place-items:center;font:600 10px monospace;color:#999">${t("view.threeDUnavailable")}</div>`;
       });
     return () => {
       alive = false;

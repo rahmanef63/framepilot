@@ -11,6 +11,7 @@ import {
   fovFromFocal,
   clamp,
 } from "@/lib/editorMath";
+import { tr } from "@/i18n";
 import type { EditorCore } from "./core";
 
 export interface RigActions {
@@ -58,7 +59,7 @@ export function useRigActions(
       stopPlayback();
       const rig = rigRef.current;
       rig.camPos = setOrbit(az, el, dist, rig.target);
-      afterRigMutate("Orbit");
+      afterRigMutate(tr("state.hist.orbit"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -67,7 +68,7 @@ export function useRigActions(
     (v: number) => {
       stopPlayback();
       rigRef.current.fov = v;
-      afterRigMutate("FOV");
+      afterRigMutate(tr("state.hist.fov"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -75,7 +76,7 @@ export function useRigActions(
     (v: number) => {
       stopPlayback();
       rigRef.current.roll = v;
-      afterRigMutate("Roll");
+      afterRigMutate(tr("state.hist.roll"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -83,7 +84,7 @@ export function useRigActions(
     (v: number) => {
       stopPlayback();
       rigRef.current.target.y = v;
-      afterRigMutate("Target Y");
+      afterRigMutate(tr("state.hist.targetY"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -94,7 +95,7 @@ export function useRigActions(
     (axis: "x" | "y" | "z", v: number) => {
       stopPlayback();
       rigRef.current.camPos[axis] = axis === "y" ? clamp(v, 0.05, 25) : v;
-      afterRigMutate("Posisi kamera");
+      afterRigMutate(tr("state.hist.camPos"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -102,7 +103,7 @@ export function useRigActions(
     (axis: "x" | "y" | "z", v: number) => {
       stopPlayback();
       rigRef.current.target[axis] = v;
-      afterRigMutate("Posisi anchor");
+      afterRigMutate(tr("state.hist.anchorPos"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -111,7 +112,7 @@ export function useRigActions(
     (v: number) => {
       stopPlayback();
       rigRef.current.subjRot = v;
-      afterRigMutate("Rotasi subjek");
+      afterRigMutate(tr("state.hist.subjRot"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -121,7 +122,7 @@ export function useRigActions(
       const rig = rigRef.current;
       rig.subjPos.x = v;
       if (rig.trackSubject) rig.target.x = v;
-      afterRigMutate("Posisi subjek");
+      afterRigMutate(tr("state.hist.subjPos"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -131,7 +132,7 @@ export function useRigActions(
       const rig = rigRef.current;
       rig.subjPos.z = v;
       if (rig.trackSubject) rig.target.z = v;
-      afterRigMutate("Posisi subjek");
+      afterRigMutate(tr("state.hist.subjPos"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -143,7 +144,7 @@ export function useRigActions(
       rig.subj = subj;
       rig.target.y = subj === "person" ? 1.35 : 1.0;
       engineRef.current?.setSubject(subj);
-      afterRigMutate("Ganti subjek");
+      afterRigMutate(tr("state.hist.changeSubject"));
     },
     [rigRef, engineRef, stopPlayback, afterRigMutate]
   );
@@ -155,7 +156,7 @@ export function useRigActions(
       const o = getOrbit(rig.camPos, rig.target);
       rig.roll = roll;
       rig.camPos = setOrbit(o.az, el, o.dist, rig.target);
-      afterRigMutate("Preset angle");
+      afterRigMutate(tr("state.hist.presetAngle"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -167,7 +168,7 @@ export function useRigActions(
       const o = getOrbit(rig.camPos, rig.target);
       const d = shotDistance(r, rig.fov, subjHeight(rig.subj));
       rig.camPos = setOrbit(o.az, o.el, d, rig.target);
-      afterRigMutate("Preset shot size");
+      afterRigMutate(tr("state.hist.presetShot"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -176,7 +177,7 @@ export function useRigActions(
     (mm: number) => {
       stopPlayback();
       rigRef.current.fov = clamp(fovFromFocal(mm), 12, 100);
-      afterRigMutate("Preset lensa");
+      afterRigMutate(tr("state.hist.presetLens"));
     },
     [rigRef, stopPlayback, afterRigMutate]
   );
@@ -188,7 +189,7 @@ export function useRigActions(
     rig.target.x = rig.subjPos.x;
     rig.target.z = rig.subjPos.z;
     rig.camPos = setOrbit(o.az, o.el, o.dist, rig.target);
-    afterRigMutate("Fokus ke subjek");
+    afterRigMutate(tr("state.hist.focusSubject"));
   }, [rigRef, stopPlayback, afterRigMutate]);
 
   const resetRig = useCallback(() => {
@@ -201,13 +202,13 @@ export function useRigActions(
     rig.target = { x: 0, y: rig.subj === "person" ? 1.35 : 1.0, z: 0 };
     rig.camPos = setOrbit(30, 4, 3, rig.target);
     rig.trackSubject = false;
-    afterRigMutate("Reset rig");
+    afterRigMutate(tr("state.hist.resetRig"));
   }, [rigRef, stopPlayback, afterRigMutate]);
 
   const onRigChangedFromEngine = useCallback(() => {
     rigRef.current = engineRef.current ? engineRef.current.getRig() : rigRef.current;
     bump();
-    scheduleHistoryCommit("Gerakkan kamera");
+    scheduleHistoryCommit(tr("state.hist.moveCamera"));
   }, [rigRef, engineRef, bump, scheduleHistoryCommit]);
 
   return {

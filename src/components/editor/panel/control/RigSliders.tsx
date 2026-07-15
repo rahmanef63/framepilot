@@ -8,23 +8,25 @@
 
 import React from "react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { Slider } from "../../ui/Slider";
 import { getOrbit, focalLength } from "@/lib/editorMath";
 
 export function RigSliders() {
   const ctx = useEditor();
+  const { t } = useT();
   const rig = ctx.rigRef.current;
   const o = getOrbit(rig.camPos, rig.target);
   const c = rig.camPos;
-  const t = rig.target;
+  const tg = rig.target;
 
   return (
     <>
       {/* ---- camera rig (G5) ---- */}
       <div className="group">
-        <h3>Kamera · Rig</h3>
+        <h3>{t("panel.cameraRig")}</h3>
         <Slider
-          label="Azimuth"
+          label={t("panel.azimuth")}
           min={0}
           max={360}
           step={1}
@@ -33,7 +35,7 @@ export function RigSliders() {
           onInput={(v) => ctx.orbit(v, o.el, o.dist)}
         />
         <Slider
-          label="Elevasi"
+          label={t("panel.elevation")}
           min={-85}
           max={88}
           step={1}
@@ -42,7 +44,7 @@ export function RigSliders() {
           onInput={(v) => ctx.orbit(o.az, v, o.dist)}
         />
         <Slider
-          label="Jarak"
+          label={t("panel.distance")}
           min={0.4}
           max={20}
           step={0.1}
@@ -51,7 +53,7 @@ export function RigSliders() {
           onInput={(v) => ctx.orbit(o.az, o.el, v)}
         />
         <Slider
-          label="FOV / Lensa"
+          label={t("panel.fovLens")}
           min={12}
           max={100}
           step={1}
@@ -60,7 +62,7 @@ export function RigSliders() {
           onInput={(v) => ctx.setFov(v)}
         />
         <Slider
-          label="Roll"
+          label={t("panel.roll")}
           min={-45}
           max={45}
           step={1}
@@ -72,7 +74,7 @@ export function RigSliders() {
 
       {/* ---- posisi kamera (raw camPos) ---- */}
       <div className="group">
-        <h3>Posisi Kamera</h3>
+        <h3>{t("panel.cameraPosition")}</h3>
         <Slider
           label="X"
           min={-15}
@@ -83,7 +85,7 @@ export function RigSliders() {
           onInput={(v) => ctx.setCamPos("x", v)}
         />
         <Slider
-          label="Y (tinggi)"
+          label={t("panel.axisYHeight")}
           min={0.05}
           max={15}
           step={0.05}
@@ -104,22 +106,22 @@ export function RigSliders() {
 
       {/* ---- posisi anchor (raw target) ---- */}
       <div className="group">
-        <h3>Posisi Anchor</h3>
+        <h3>{t("panel.anchorPosition")}</h3>
         <Slider
           label="X"
           min={-8}
           max={8}
           step={0.1}
-          value={t.x}
+          value={tg.x}
           format={(v) => `${v.toFixed(2)}m`}
           onInput={(v) => ctx.setTarget("x", v)}
         />
         <Slider
-          label="Y (tinggi)"
+          label={t("panel.axisYHeight")}
           min={0.1}
           max={3}
           step={0.05}
-          value={t.y}
+          value={tg.y}
           format={(v) => `${v.toFixed(2)}m`}
           onInput={(v) => ctx.setTarget("y", v)}
         />
@@ -128,7 +130,7 @@ export function RigSliders() {
           min={-8}
           max={8}
           step={0.1}
-          value={t.z}
+          value={tg.z}
           format={(v) => `${v.toFixed(2)}m`}
           onInput={(v) => ctx.setTarget("z", v)}
         />

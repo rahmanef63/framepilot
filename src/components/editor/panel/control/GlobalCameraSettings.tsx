@@ -7,26 +7,28 @@
 import React from "react";
 import { Camera } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 
 const hint: React.CSSProperties = { font: "400 11px var(--e-sans)", color: "var(--muted)", margin: "5px 0 0" };
 
 export function GlobalCameraSettings() {
   const ctx = useEditor();
+  const { t } = useT();
   const settings = ctx.project.settings;
   const global = settings.globalCamera;
   const preset = cameraById(settings.camera);
 
   return (
     <div className="group">
-      <h3>Kamera Global</h3>
+      <h3>{t("panel.globalCamera")}</h3>
       <div className="chips">
         <button className={global ? "on" : undefined} onClick={() => ctx.setGlobalCamera(!global)}>
-          Kamera global · {global ? "ON" : "OFF"}
+          {t("panel.globalCameraToggle", { s: global ? "ON" : "OFF" })}
         </button>
       </div>
       <div className="field">
-        <label>Kamera untuk semua frame</label>
+        <label>{t("panel.cameraForAllFrames")}</label>
         <select
           value={settings.camera}
           disabled={!global}
@@ -41,8 +43,8 @@ export function GlobalCameraSettings() {
         {preset?.look ? <p style={hint}><Camera size={13} aria-hidden /> {preset.sensor} · {preset.look}</p> : null}
         <p style={hint}>
           {global
-            ? "Semua frame pakai kamera ini."
-            : "Aktifkan untuk satu kamera di semua frame; jika mati, tiap frame pilih sendiri."}
+            ? t("panel.allFramesUseCamera")
+            : t("panel.globalCameraHint")}
         </p>
       </div>
     </div>

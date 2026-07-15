@@ -7,22 +7,21 @@ import { ModalDialog } from "@/components/ds/Modal";
 import { Button } from "@/components/ds/Button";
 import { schemaJson } from "@/lib/dataPrompt";
 import { useApp } from "@/state/AppState";
+import { useT } from "@/i18n";
 import { hint } from "./modalStyles";
 
 export function SchemaModal() {
   const app = useApp();
+  const { t } = useT();
   return (
     <ModalDialog
       open={app.schemaOpen}
       onClose={app.closeSchema}
-      title="Skema JSON · Schema"
+      title={t("shell.schema.title")}
       width="min(660px,94vw)"
       height="min(600px,90vh)"
     >
-      <div style={{ ...hint, marginBottom: 12 }}>
-        Berikan skema ini ke AI Anda bersama foto/video. Template lengkap — AI cukup mengisi field yang terlihat. · Hand
-        this schema to your AI with the photo/video; the template is complete, the AI fills only what it sees.
-      </div>
+      <div style={{ ...hint, marginBottom: 12 }}>{t("shell.schema.hint")}</div>
       <div
         style={{
           display: "inline-flex",
@@ -34,14 +33,14 @@ export function SchemaModal() {
         }}
       >
         <Button variant={app.schemaMode === "full" ? "primary" : "ghost"} size="sm" onClick={() => app.setSchemaMode("full")}>
-          Lengkap · Full
+          {t("shell.schema.full")}
         </Button>
         <Button
           variant={app.schemaMode === "simplified" ? "primary" : "ghost"}
           size="sm"
           onClick={() => app.setSchemaMode("simplified")}
         >
-          Ringkas · Simplified
+          {t("shell.schema.simplified")}
         </Button>
       </div>
       <pre
@@ -62,10 +61,10 @@ export function SchemaModal() {
       </pre>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <Button variant="primary" size="sm" onClick={app.downloadSchema}>
-          Unduh .json · Download
+          {t("shell.schema.download")}
         </Button>
         <Button variant="outline" size="sm" onClick={app.copySchemaPrompt}>
-          Salin prompt + skema · Copy prompt
+          {t("shell.schema.copyPrompt")}
         </Button>
       </div>
     </ModalDialog>

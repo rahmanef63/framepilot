@@ -13,17 +13,19 @@ import { ARS } from "@/lib/dataPrompt";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 import { ANGLE_PRESETS, SHOT_PRESETS } from "@/lib/editor/presets";
 import { Aperture, ChevronDown, Plus } from "lucide-react";
+import { useT } from "@/i18n";
 import "./CellViewMenu.css";
 
 type SectionId = "ratio" | "angle" | "saved" | "shot" | "camera";
 
 export function ViewportCameraMenu() {
+  const { t } = useT();
   const ctx = useEditor();
   const settings = ctx.project.settings;
   const current = ctx.currentFrame();
   const global = settings.globalCamera;
   const camValue = global ? settings.camera : current?.camera ?? "";
-  const camLabel = camValue ? cameraById(camValue)?.label ?? "Kamera" : "Tanpa kamera";
+  const camLabel = camValue ? cameraById(camValue)?.label ?? t("view.camera") : t("view.noCamera");
   const savedViews = ctx.project.savedViews ?? [];
 
   const [open, setOpen] = useState(false);
@@ -84,22 +86,22 @@ export function ViewportCameraMenu() {
     <div className="cell-viewmenu" ref={rootRef}>
       <button
         className="cvm-trigger"
-        title="Kamera & frame — rasio, sudut, posisi, ukuran, preset"
+        title={t("view.cameraMenuTitle")}
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls="cvm-camera-pop"
         onClick={() => setOpen((o) => !o)}
       >
-        <Aperture size={16} aria-hidden /> Kamera
+        <Aperture size={16} aria-hidden /> {t("view.camera")}
         <span className="cvm-chev"><ChevronDown size={14} aria-hidden /></span>
       </button>
 
       {open ? (
         <div className="cvm-pop cvm-acc" id="cvm-camera-pop" role="menu" ref={popRef}>
           {/* RASIO — aspect ratio (persistent) */}
-          <AccRow id="ratio" label="Rasio" value={settings.aspectRatio} open={sec === "ratio"} onToggle={toggleSec} />
+          <AccRow id="ratio" label={t("view.ratio")} value={settings.aspectRatio} open={sec === "ratio"} onToggle={toggleSec} />
           {sec === "ratio" ? (
-            <div className="cvm-sub" id="cvm-sub-ratio" role="group" aria-label="Rasio">
+            <div className="cvm-sub" id="cvm-sub-ratio" role="group" aria-label={t("view.ratio")}>
               {ARS.map((a) => (
                 <button key={a} className="cvm-item" data-active={settings.aspectRatio === a} onClick={() => ctx.setAspect(a)}>
                   <span className="cvm-name">{a}</span>
@@ -109,9 +111,9 @@ export function ViewportCameraMenu() {
           ) : null}
 
           {/* SUDUT KAMERA — angle presets (momentary) */}
-          <AccRow id="angle" label="Sudut kamera" value="preset" open={sec === "angle"} onToggle={toggleSec} />
+          <AccRow id="angle" label={t("view.cameraAngle")} value={t("view.presetTag")} open={sec === "angle"} onToggle={toggleSec} />
           {sec === "angle" ? (
-            <div className="cvm-sub cvm-grid" id="cvm-sub-angle" role="group" aria-label="Sudut kamera">
+            <div className="cvm-sub cvm-grid" id="cvm-sub-angle" role="group" aria-label={t("view.cameraAngle")}>
               {ANGLE_PRESETS.map((p) => (
                 <button key={p.label} className="cvm-chip" title={`el ${p.el}° · roll ${p.roll}°`} onClick={() => ctx.applyAnglePreset(p.el, p.roll)}>
                   {p.label}
@@ -121,24 +123,24 @@ export function ViewportCameraMenu() {
           ) : null}
 
           {/* POSISI TERSIMPAN — saved camera orbits (restore / snapshot) */}
-          <AccRow id="saved" label="Posisi tersimpan" value={String(savedViews.length)} open={sec === "saved"} onToggle={toggleSec} />
+          <AccRow id="saved" label={t("view.savedPositions")} value={String(savedViews.length)} open={sec === "saved"} onToggle={toggleSec} />
           {sec === "saved" ? (
-            <div className="cvm-sub" id="cvm-sub-saved" role="group" aria-label="Posisi tersimpan">
-              {savedViews.length === 0 ? <div className="cvm-empty">Belum ada posisi tersimpan.</div> : null}
+            <div className="cvm-sub" id="cvm-sub-saved" role="group" aria-label={t("view.savedPositions")}>
+              {savedViews.length === 0 ? <div className="cvm-empty">{t("view.noSavedPositions")}</div> : null}
               {savedViews.map((v) => (
-                <button key={v.id} className="cvm-item" title="Pulihkan kamera ke posisi ini" onClick={() => restoreView(v.az, v.el, v.dist)}>
+                <button key={v.id} className="cvm-item" title={t("view.restoreCameraHint")} onClick={() => restoreView(v.az, v.el, v.dist)}>
                   <span className="cvm-name">{v.name}</span>
-                  <span className="cvm-tag">pulihkan</span>
+                  <span className="cvm-tag">{t("view.restore")}</span>
                 </button>
               ))}
               <div className="cvm-add">
                 <input
                   value={saveName}
-                  placeholder="Simpan posisi kamera…"
+                  placeholder={t("view.saveCameraPositionPlaceholder")}
                   onChange={(e) => setSaveName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && saveCurrent()}
                 />
-                <button className="cvm-icon" aria-label="Simpan posisi kamera saat ini" title="Simpan posisi kamera saat ini" onClick={saveCurrent}>
+                <button className="cvm-icon" aria-label={t("view.saveCurrentCameraPosition")} title={t("view.saveCurrentCameraPosition")} onClick={saveCurrent}>
                   <Plus size={16} aria-hidden />
                 </button>
               </div>
@@ -146,9 +148,9 @@ export function ViewportCameraMenu() {
           ) : null}
 
           {/* UKURAN SHOT — shot-size presets (momentary) */}
-          <AccRow id="shot" label="Ukuran shot" value="preset" open={sec === "shot"} onToggle={toggleSec} />
+          <AccRow id="shot" label={t("view.shotSize")} value={t("view.presetTag")} open={sec === "shot"} onToggle={toggleSec} />
           {sec === "shot" ? (
-            <div className="cvm-sub cvm-grid" id="cvm-sub-shot" role="group" aria-label="Ukuran shot">
+            <div className="cvm-sub cvm-grid" id="cvm-sub-shot" role="group" aria-label={t("view.shotSize")}>
               {SHOT_PRESETS.map((p) => (
                 <button key={p.label} className="cvm-chip" onClick={() => ctx.applyShotPreset(p.r)}>
                   {p.label}
@@ -158,17 +160,17 @@ export function ViewportCameraMenu() {
           ) : null}
 
           {/* PRESET KAMERA — brand look tag (persistent; per-frame or global) */}
-          <AccRow id="camera" label={global ? "Preset kamera · global" : "Preset kamera"} value={camLabel} open={sec === "camera"} onToggle={toggleSec} />
+          <AccRow id="camera" label={global ? t("view.cameraPresetGlobal") : t("view.cameraPreset")} value={camLabel} open={sec === "camera"} onToggle={toggleSec} />
           {sec === "camera" ? (
-            <div className="cvm-sub" id="cvm-sub-camera" role="group" aria-label="Preset kamera">
+            <div className="cvm-sub" id="cvm-sub-camera" role="group" aria-label={t("view.cameraPreset")}>
               {/* global toggle in-place so the section works even before any frame
                   exists (one camera for all frames), mirroring GlobalCameraSettings. */}
               <button className="cvm-item" data-active={global} onClick={() => ctx.setGlobalCamera(!global)}>
-                <span className="cvm-name">Kamera global</span>
+                <span className="cvm-name">{t("view.globalCamera")}</span>
                 <span className="cvm-state">{global ? "ON" : "OFF"}</span>
               </button>
               {!global && !current ? (
-                <div className="cvm-empty">Pilih / buat frame, atau nyalakan kamera global.</div>
+                <div className="cvm-empty">{t("view.pickFrameHint")}</div>
               ) : null}
               {CAMERAS.map((c) => (
                 <button

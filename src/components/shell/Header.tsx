@@ -5,13 +5,15 @@ import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
 import { HeaderNav } from "@/components/shell/HeaderNav";
 import { BrandMark } from "@/components/shell/BrandMark";
+import { LanguageSwitcher } from "@/components/shell/LanguageSwitcher";
+import { useT } from "@/i18n";
 import { Menu, Plus, Braces } from "lucide-react";
 
-const SCREEN_NAMES: Record<string, string> = {
-  "/": "Studio 3D",
-  "/library": "Pustaka",
-  "/panduan": "Panduan · Guide",
-  "/admin": "Admin",
+const CRUMB_KEYS: Record<string, string> = {
+  "/": "header.crumb.studio",
+  "/library": "header.crumb.library",
+  "/panduan": "header.crumb.guide",
+  "/admin": "header.crumb.admin",
 };
 
 /**
@@ -24,8 +26,9 @@ const SCREEN_NAMES: Record<string, string> = {
  */
 export function Header() {
   const app = useApp();
+  const { t } = useT();
   const pathname = usePathname();
-  const crumb = SCREEN_NAMES[pathname] || "Studio 3D · Prompt Kamera";
+  const crumb = CRUMB_KEYS[pathname] ? t(CRUMB_KEYS[pathname]) : t("header.crumb.fallback");
   const onData = pathname === "/library";
   const isStudio = pathname === "/";
 
@@ -36,7 +39,7 @@ export function Header() {
         <button
           type="button"
           onClick={app.toggleSidebar}
-          aria-label="Buka/tutup sidebar"
+          aria-label={t("header.toggleSidebar")}
           aria-expanded={app.sidebarOpen}
           aria-controls="fp-sidebar"
           className="app-header-burger"
@@ -63,22 +66,23 @@ export function Header() {
       <div className="app-header-right">
         {/* display:contents so the portaled editor buttons lay out inline here */}
         <div id="fp-header-actions" style={{ display: "contents" }} />
+        <LanguageSwitcher />
         {onData ? (
           <>
             <span className="app-header-stats">{app.projStats}</span>
             <Button variant="outline" size="sm" icon={<Braces size={14} aria-hidden />} onClick={app.openSchema}>
-              Skema
+              {t("header.schema")}
             </Button>
             <Button variant="outline" size="sm" onClick={app.exportProject}>
-              Ekspor
+              {t("common.export")}
             </Button>
             <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => app.openImport("paste")}>
-              Impor
+              {t("common.import")}
             </Button>
           </>
         ) : isStudio ? null : (
           <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => app.openImport("paste")}>
-            Impor
+            {t("common.import")}
           </Button>
         )}
       </div>

@@ -5,17 +5,19 @@ import { useApp, type LibraryView } from "@/state/AppState";
 import { GridView } from "./GridView";
 import { TableView } from "./TableView";
 import { SplitView } from "./SplitView";
+import { useT } from "@/i18n";
 import { LayoutGrid, List, Columns2, Plus, type LucideIcon } from "lucide-react";
 
-const VIEWS: { id: LibraryView; label: string; glyph: LucideIcon }[] = [
-  { id: "grid", label: "Grid", glyph: LayoutGrid },
-  { id: "table", label: "Tabel", glyph: List },
-  { id: "split", label: "Split", glyph: Columns2 },
+const VIEWS: { id: LibraryView; labelKey: string; glyph: LucideIcon }[] = [
+  { id: "grid", labelKey: "lib.viewGrid", glyph: LayoutGrid },
+  { id: "table", labelKey: "lib.viewTable", glyph: List },
+  { id: "split", labelKey: "lib.viewSplit", glyph: Columns2 },
 ];
 
 // Small segmented view-switcher, ds-token styled (light + dark). Sits in the
 // sub-header next to the count; picks which of the three library layouts renders.
 function ViewSwitcher({ view, setView }: { view: LibraryView; setView: (v: LibraryView) => void }) {
+  const { t } = useT();
   return (
     <div
       style={{
@@ -35,7 +37,7 @@ function ViewSwitcher({ view, setView }: { view: LibraryView; setView: (v: Libra
             key={v.id}
             type="button"
             onClick={() => setView(v.id)}
-            title={v.label}
+            title={t(v.labelKey)}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -50,7 +52,7 @@ function ViewSwitcher({ view, setView }: { view: LibraryView; setView: (v: Libra
             }}
           >
             <span aria-hidden style={{ font: "500 12px var(--font-mono)" }}><Glyph size={14} /></span>
-            {v.label}
+            {t(v.labelKey)}
           </button>
         );
       })}
@@ -64,6 +66,7 @@ function ViewSwitcher({ view, setView }: { view: LibraryView; setView: (v: Libra
 // Impor entry point.
 export function DataPromptScreen() {
   const app = useApp();
+  const { t } = useT();
   const entries = app.entriesAll;
 
   return (
@@ -81,12 +84,12 @@ export function DataPromptScreen() {
           background: "var(--background)",
         }}
       >
-        <b style={{ font: "700 15px var(--font-sans)", color: "var(--foreground)" }}>Pustaka data prompt</b>
+        <b style={{ font: "700 15px var(--font-sans)", color: "var(--foreground)" }}>{t("lib.heading")}</b>
         <span style={{ font: "500 12px var(--font-mono)", color: "var(--muted-foreground)" }}>{app.entriesCountText}</span>
         <div style={{ flex: 1 }} />
         {entries.length > 0 ? <ViewSwitcher view={app.view} setView={app.setView} /> : null}
         <Button variant="primary" size="sm" icon={<Plus size={14} aria-hidden />} onClick={() => app.openImport()}>
-          Impor data
+          {t("lib.importData")}
         </Button>
       </div>
 
@@ -103,14 +106,13 @@ export function DataPromptScreen() {
         <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "40px 30px" }}>
           <div style={{ maxWidth: 520, margin: "0 auto", textAlign: "center" }}>
             <div style={{ font: "700 17px var(--font-sans)", color: "var(--foreground)", marginBottom: 6 }}>
-              Impor data prompt pertama · Import your first
+              {t("lib.emptyTitle")}
             </div>
             <p style={{ font: "400 13px/1.6 var(--font-sans)", color: "var(--muted-foreground)", margin: "0 auto 18px" }}>
-              Kirim foto atau tautan ke AI, minta JSON sesuai skema, lalu impor. · Send a photo or link to your AI, then
-              import the JSON.
+              {t("lib.emptyDesc")}
             </p>
             <Button variant="primary" size="sm" icon={<Plus size={14} aria-hidden />} onClick={() => app.openImport()}>
-              Impor data
+              {t("lib.importData")}
             </Button>
           </div>
         </div>

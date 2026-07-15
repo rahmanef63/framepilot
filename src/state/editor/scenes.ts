@@ -3,6 +3,7 @@
 
 import { useCallback } from "react";
 import { uid } from "@/lib/dataPrompt";
+import { tr } from "@/i18n";
 import { EditorScene, newScene, deepCopy } from "@/lib/editorModel";
 import type { EditorCore } from "./core";
 
@@ -35,7 +36,7 @@ export function useSceneActions(
     const sc = newScene(undefined, projectRef.current.scenes.length + 1);
     projectRef.current.scenes.push(sc);
     projectRef.current.activeSceneId = sc.id;
-    commitHistory("Tambah scene");
+    commitHistory(tr("state.hist.addScene"));
     bump();
   }, [projectRef, stopPlayback, commitHistory, bump]);
 
@@ -62,7 +63,7 @@ export function useSceneActions(
       const sc = projectRef.current.scenes.find((s) => s.id === id);
       if (!sc) return;
       sc.name = name;
-      scheduleHistoryCommit("Ganti nama scene");
+      scheduleHistoryCommit(tr("state.hist.renameScene"));
       bump();
     },
     [projectRef, scheduleHistoryCommit, bump]
@@ -78,7 +79,7 @@ export function useSceneActions(
         p.scenes.push(s);
       }
       if (!p.scenes.some((s) => s.id === p.activeSceneId)) p.activeSceneId = p.scenes[0].id;
-      commitHistory("Hapus scene");
+      commitHistory(tr("state.hist.deleteScene"));
       bump();
     },
     [projectRef, stopPlayback, commitHistory, bump]
@@ -99,7 +100,7 @@ export function useSceneActions(
       };
       p.scenes.splice(i + 1, 0, copy);
       p.activeSceneId = copy.id;
-      commitHistory("Gandakan scene");
+      commitHistory(tr("state.hist.duplicateScene"));
       bump();
     },
     [projectRef, stopPlayback, commitHistory, bump]
@@ -113,7 +114,7 @@ export function useSceneActions(
       const j = i + dir;
       if (i < 0 || j < 0 || j >= scenes.length) return;
       [scenes[i], scenes[j]] = [scenes[j], scenes[i]];
-      commitHistory("Pindahkan scene");
+      commitHistory(tr("state.hist.moveScene"));
       bump();
     },
     [projectRef, stopPlayback, commitHistory, bump]
@@ -124,7 +125,7 @@ export function useSceneActions(
       const sc = projectRef.current.scenes.find((s) => s.id === id);
       if (!sc) return;
       sc.notes = notes;
-      scheduleHistoryCommit("Catatan scene");
+      scheduleHistoryCommit(tr("state.hist.sceneNotes"));
       bump();
     },
     [projectRef, scheduleHistoryCommit, bump]

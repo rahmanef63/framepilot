@@ -8,6 +8,7 @@
 import React, { useState } from "react";
 import { Check } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
+import { useT } from "@/i18n";
 import { Badge } from "@/components/ds/Badge";
 import { Button } from "@/components/ds/Button";
 import { encodeShot, toNeutral } from "@/lib/prompt/cameraPrompt";
@@ -24,6 +25,7 @@ import { CopyButton } from "./CopyButton";
 // false here to avoid a duplicate.
 export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggles?: boolean } = {}) {
   const ctx = useEditor();
+  const { t } = useT();
   const [platform, setPlatform] = usePlatform();
   const [opts] = usePromptOptions();
   const [copied, setCopied] = useState(false);
@@ -35,7 +37,9 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
 
   // Current selection → the shown, paste-ready camera prompt. `opts` picks which
   // clauses are folded in, so ticking a box rebuilds this string live.
-  const scope = current ? `Shot terpilih · ${current.name}` : `Proyek · ${totalShots} shot`;
+  const scope = current
+    ? t("editor.scopeSelectedShot", { name: current.name })
+    : t("editor.scopeProject", { n: totalShots });
   const prompt = current
     ? encodeShot(
         toNeutral(current, {
@@ -58,10 +62,10 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
   };
 
   return (
-    <section className="cam-dock" aria-label="Prompt Kamera">
+    <section className="cam-dock" aria-label={t("editor.cameraPrompt")}>
       <div className="cam-dock-top">
         <div className="cam-dock-title">
-          <Badge tone="new">Prompt Kamera</Badge>
+          <Badge tone="new">{t("editor.cameraPrompt")}</Badge>
           <span className="cam-scope">{scope}</span>
         </div>
       </div>
@@ -69,9 +73,9 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
       <div className="cam-dock-row" data-tour="copy">
         <PlatformSelect value={platform} onChange={setPlatform} />
         <Button variant="primary" size="sm" disabled={!hasShots} onClick={copy}>
-          {copied ? <>Tersalin <Check size={14} aria-hidden /></> : hasShots ? "Salin" : "Belum ada shot"}
+          {copied ? <>{t("common.copied")} <Check size={14} aria-hidden /></> : hasShots ? t("common.copy") : t("editor.noShotsYet")}
         </Button>
-        <CopyButton variant="ghost" text={() => projectDetail(ctx.project)} label="Salin detail" disabled={!hasShots} />
+        <CopyButton variant="ghost" text={() => projectDetail(ctx.project)} label={t("editor.copyDetails")} disabled={!hasShots} />
       </div>
 
       <textarea
@@ -79,7 +83,7 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
         readOnly
         spellCheck={false}
         value={prompt}
-        placeholder="Atur kamera + tambah frame — prompt kamera siap-tempel muncul di sini."
+        placeholder={t("editor.dockPromptPlaceholder")}
       />
 
       {/* toggles sit BELOW the output so ticking a box rebuilds the prompt in view */}
@@ -89,7 +93,7 @@ export function CameraPromptDock({ showDetailToggles = true }: { showDetailToggl
 
       {hasShots ? (
         <details className="cam-detail">
-          <summary>Detail produksi (bilingual · semua shot)</summary>
+          <summary>{t("editor.productionDetails")}</summary>
           <pre>{projectDetail(ctx.project)}</pre>
         </details>
       ) : null}

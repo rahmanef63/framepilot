@@ -4,6 +4,7 @@ import React from "react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useIsAdmin } from "@/components/admin/useIsAdmin";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { useT } from "@/i18n";
 
 /** Centered notice card — reused for the various not-allowed / loading states. */
 function NoticeCard({ title, body }: { title: string; body: string }) {
@@ -35,16 +36,17 @@ function NoticeCard({ title, body }: { title: string; body: string }) {
  *   true      → mount AdminDashboard (which issues the admin-only queries)
  */
 function AdminGate() {
+  const { t } = useT();
   const isAdmin = useIsAdmin();
 
   if (isAdmin === undefined) {
-    return <NoticeCard title="Memuat…" body="Memeriksa akses admin." />;
+    return <NoticeCard title={t("common.loading")} body={t("admin.checkingAccess")} />;
   }
   if (!isAdmin) {
     return (
       <NoticeCard
-        title="Khusus admin"
-        body="Halaman ini hanya untuk admin. Akun kamu tidak punya akses. · Admins only."
+        title={t("admin.adminsOnlyTitle")}
+        body={t("admin.adminsOnlyBody")}
       />
     );
   }
@@ -62,12 +64,13 @@ function AdminGate() {
  *     so even a forged client cannot read admin data. This client gate is UX only.
  */
 export default function AdminPage() {
+  const { t } = useT();
   return (
     <div style={{ padding: "28px 20px 48px" }}>
       <Unauthenticated>
         <NoticeCard
-          title="Perlu masuk"
-          body="Masuk dulu untuk mengakses panel admin. · Sign in to continue."
+          title={t("admin.signInRequiredTitle")}
+          body={t("admin.signInRequiredBody")}
         />
       </Unauthenticated>
       <Authenticated>

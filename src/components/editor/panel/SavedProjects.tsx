@@ -9,6 +9,7 @@ import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
+import { useT } from "@/i18n";
 import { useProjectSync } from "@/components/editor/useProjectSync";
 import { usePlatform } from "@/components/editor/usePlatform";
 import { Button } from "@/components/ds/Button";
@@ -70,6 +71,7 @@ export function SavedProjects() {
   const { showToast, project: libraryProject } = useApp();
   const { signedIn, cloudList, loadCloud, removeCloud } = useProjectSync();
   const [platform] = usePlatform();
+  const { t } = useT();
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   // One-way handoff: pull the scenes staged in the DataPrompt library ("Terapkan")
@@ -77,12 +79,12 @@ export function SavedProjects() {
   const doImportLibrary = () => {
     const hasFrames = libraryProject?.scenes?.some((s) => s.frames?.length);
     if (!hasFrames) {
-      showToast("Pustaka masih kosong — terapkan data di layar Pustaka dulu");
+      showToast(t("panel.libraryEmpty"));
       return;
     }
-    if (!confirm("Impor scene dari Pustaka? Proyek editor saat ini akan diganti.")) return;
+    if (!confirm(t("panel.importLibraryConfirm"))) return;
     ctx.importFromLibrary(libraryProject);
-    showToast("Diimpor dari Pustaka");
+    showToast(t("panel.importedFromLibrary"));
   };
 
   // hydrate the saved-projects list on mount (concept renderSavedList)
@@ -96,29 +98,29 @@ export function SavedProjects() {
   const doJSON = () => {
     const p = project();
     downloadBlob(safeFileName(p.name) + ".json", exportJSON(p));
-    showToast("Proyek diekspor sebagai JSON");
+    showToast(t("panel.exportedJSON"));
   };
   const doCSV = () => {
     const p = project();
     downloadBlob(safeFileName(p.name) + "-shotlist.csv", exportCSV(p));
-    showToast("Shot List CSV diekspor");
+    showToast(t("panel.exportedCSV"));
   };
   const doTxt = () => {
     const p = project();
     // skinned camera prompt at the selected platform (same output as Copy)
     const blob = new Blob([projectPrompt(p, platform)], { type: "text/plain;charset=utf-8" });
     downloadBlob(safeFileName(p.name) + "-prompt.txt", blob);
-    showToast("Prompt kamera TXT diekspor");
+    showToast(t("panel.exportedTxt"));
   };
   const doBoard = async () => {
     const p = project();
     const blob = await exportStoryboardPNG(p);
     if (!blob) {
-      showToast("Belum ada frame untuk storyboard");
+      showToast(t("panel.noFrameStoryboard"));
       return;
     }
     downloadBlob(safeFileName(p.name) + "-storyboard.png", blob);
-    showToast("Storyboard PNG diekspor");
+    showToast(t("panel.exportedBoard"));
   };
   const onImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -129,9 +131,9 @@ export function SavedProjects() {
       try {
         const imported = importProject(String(reader.result));
         ctx.importProjectObject(imported);
-        showToast("Proyek diimpor");
+        showToast(t("panel.projectImported"));
       } catch {
-        showToast("File JSON tidak valid");
+        showToast(t("panel.invalidJSON"));
       }
     };
     reader.readAsText(file);
@@ -148,7 +150,7 @@ export function SavedProjects() {
       meta: `${scs}s·${frs}f · ${new Date(item.updated).toLocaleDateString("id-ID")}`,
       onLoad: () => {
         ctx.loadSavedProject(item.id);
-        showToast(`Proyek “${item.name}” dimuat`);
+        showToast(t("panel.projectLoaded", { name: item.name }));
       },
       onDelete: () => ctx.deleteSavedProject(item.id),
     };
@@ -159,7 +161,7 @@ export function SavedProjects() {
     name: p.name,
     meta: new Date(p.updatedAt).toLocaleDateString("id-ID"),
     onLoad: () => {
-      void loadCloud(p._id).then(() => showToast(`Proyek “${p.name}” dimuat`));
+      void loadCloud(p._id).then(() => showToast(t("panel.projectLoaded", { name: p.name })));
     },
     onDelete: () => {
       void removeCloud(p._id);
@@ -170,48 +172,48 @@ export function SavedProjects() {
 
   return (
     <div className="group">
-      <h3>Proyek Tersimpan</h3>
+      <h3>{t("panel.savedProjects")}</h3>
       <div className="saved-list">
         {rows.length === 0 ? (
-          <div className="storage-note">Belum ada proyek tersimpan.</div>
+          <div className="storage-note">{t("panel.noSavedProjects")}</div>
         ) : (
           rows.map((row) => (
             <div className="saved-item" key={row.id}>
               <span className="name">{row.name}</span>
               <span className="meta">{row.meta}</span>
               <Button variant="outline" size="sm" onClick={row.onLoad}>
-                Muat
+                {t("panel.load")}
               </Button>
-              <ArmDelete title="Hapus proyek (klik 2×)" onConfirm={row.onDelete} />
+              <ArmDelete title={t("panel.deleteProjectTitle")} onConfirm={row.onDelete} />
             </div>
           ))
         )}
       </div>
       <div className="io-row">
         <Button variant="outline" size="sm" onClick={doJSON}>
-          Ekspor JSON
+          {t("panel.exportJSON")}
         </Button>
         <Button variant="outline" size="sm" onClick={doCSV}>
-          Shot List CSV
+          {t("panel.shotListCSV")}
         </Button>
         <Button variant="outline" size="sm" onClick={doTxt}>
-          Prompt TXT
+          {t("panel.promptTxt")}
         </Button>
         <Button variant="outline" size="sm" onClick={doBoard}>
-          Storyboard PNG
+          {t("panel.storyboardPNG")}
         </Button>
         <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
-          Impor JSON
+          {t("panel.importJSON")}
         </Button>
         <Button variant="outline" size="sm" onClick={doImportLibrary}>
-          Impor dari Pustaka
+          {t("panel.importFromLibrary")}
         </Button>
         <input ref={fileRef} type="file" accept=".json" hidden onChange={onImportFile} />
       </div>
       <p className="storage-note">
         {signedIn
-          ? "Proyek tersimpan di cloud (akun kamu) dan tersinkron antar perangkat. Ekspor JSON tetap disarankan sebagai backup."
-          : "Autosave aktif di browser. Ekspor JSON tetap disarankan sebagai backup proyek."}
+          ? t("panel.cloudNote")
+          : t("panel.localNote")}
       </p>
     </div>
   );
