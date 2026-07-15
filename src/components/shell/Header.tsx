@@ -1,13 +1,12 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ds/Button";
 import { useApp } from "@/state/AppState";
 import { HeaderNav } from "@/components/shell/HeaderNav";
 import { BrandMark } from "@/components/shell/BrandMark";
 import { LanguageSwitcher } from "@/components/shell/LanguageSwitcher";
 import { useT } from "@/i18n";
-import { Menu, Plus, Braces } from "lucide-react";
+import { Menu } from "lucide-react";
 
 const CRUMB_KEYS: Record<string, string> = {
   "/": "header.crumb.studio",
@@ -22,15 +21,16 @@ const CRUMB_KEYS: Record<string, string> = {
  * project CRUD into `#fp-header-actions` on the right).
  *
  * Three sections: LEFT = sidebar trigger + brand breadcrumb · CENTER = primary
- * nav (Buat / Studio 3D / Pustaka) · RIGHT = CRUD contextual to the active route.
+ * nav (Buat / Studio 3D / Pustaka) · RIGHT = GLOBAL controls only (language + the
+ * editor's portaled project CRUD). Per-screen feature actions (Schema/Export/
+ * Import, view switcher, …) live in each screen's own feature header — not here —
+ * so this app bar stays uncramped on mobile and reads as distinct global chrome.
  */
 export function Header() {
   const app = useApp();
   const { t } = useT();
   const pathname = usePathname();
   const crumb = CRUMB_KEYS[pathname] ? t(CRUMB_KEYS[pathname]) : t("header.crumb.fallback");
-  const onData = pathname === "/library";
-  const isStudio = pathname === "/";
 
   return (
     <header className="app-header">
@@ -61,30 +61,13 @@ export function Header() {
         <HeaderNav />
       </div>
 
-      {/* RIGHT — contextual CRUD. On `/` the editor portals its actions into the
-          slot; other routes render their own. */}
+      {/* RIGHT — GLOBAL controls only: the editor portals its project CRUD into the
+          slot (desktop); the language switcher is always here. Feature actions live
+          in each screen's feature header. */}
       <div className="app-header-right">
         {/* display:contents so the portaled editor buttons lay out inline here */}
         <div id="fp-header-actions" style={{ display: "contents" }} />
         <LanguageSwitcher />
-        {onData ? (
-          <>
-            <span className="app-header-stats">{app.projStats}</span>
-            <Button variant="outline" size="sm" icon={<Braces size={14} aria-hidden />} onClick={app.openSchema}>
-              {t("header.schema")}
-            </Button>
-            <Button variant="outline" size="sm" onClick={app.exportProject}>
-              {t("common.export")}
-            </Button>
-            <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => app.openImport("paste")}>
-              {t("common.import")}
-            </Button>
-          </>
-        ) : isStudio ? null : (
-          <Button variant="primary" size="sm" icon={<Plus size={14} />} onClick={() => app.openImport("paste")}>
-            {t("common.import")}
-          </Button>
-        )}
       </div>
     </header>
   );

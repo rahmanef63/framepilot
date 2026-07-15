@@ -10,6 +10,17 @@ export function LanguageSwitcher() {
   const { locale, setLocale, t } = useT();
   const [open, setOpen] = React.useState(false);
   const wrapRef = React.useRef<HTMLDivElement>(null);
+  // Fixed-position the menu off the trigger's rect so it never gets clipped by a
+  // container's overflow (header, or the editor tab bar). Right-anchored.
+  const [pos, setPos] = React.useState<React.CSSProperties>({});
+  const toggle = () => {
+    const el = wrapRef.current;
+    if (el && !open) {
+      const r = el.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, right: Math.max(8, window.innerWidth - r.right) });
+    }
+    setOpen((v) => !v);
+  };
 
   React.useEffect(() => {
     if (!open) return;
@@ -34,7 +45,7 @@ export function LanguageSwitcher() {
     <div ref={wrapRef} style={{ position: "relative" }}>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         title={t("lang.label")}
         aria-label={t("lang.label")}
         aria-haspopup="menu"
@@ -62,10 +73,9 @@ export function LanguageSwitcher() {
           role="menu"
           aria-label={t("lang.label")}
           style={{
-            position: "absolute",
-            top: "calc(100% + 4px)",
-            insetInlineEnd: 0,
-            zIndex: 40,
+            position: "fixed",
+            ...pos,
+            zIndex: 60,
             minWidth: 176,
             display: "flex",
             flexDirection: "column",
@@ -84,6 +94,7 @@ export function LanguageSwitcher() {
                 key={l}
                 role="menuitemradio"
                 aria-checked={on}
+                aria-label={LOCALE_NAMES[l]}
                 onClick={() => pick(l)}
                 style={{
                   display: "flex",

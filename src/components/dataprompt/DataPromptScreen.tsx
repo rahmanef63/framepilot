@@ -6,7 +6,7 @@ import { GridView } from "./GridView";
 import { TableView } from "./TableView";
 import { SplitView } from "./SplitView";
 import { useT } from "@/i18n";
-import { LayoutGrid, List, Columns2, Plus, type LucideIcon } from "lucide-react";
+import { LayoutGrid, List, Columns2, Plus, Braces, type LucideIcon } from "lucide-react";
 
 const VIEWS: { id: LibraryView; labelKey: string; glyph: LucideIcon }[] = [
   { id: "grid", labelKey: "lib.viewGrid", glyph: LayoutGrid },
@@ -88,6 +88,13 @@ export function DataPromptScreen() {
         <span style={{ font: "500 12px var(--font-mono)", color: "var(--muted-foreground)" }}>{app.entriesCountText}</span>
         <div style={{ flex: 1 }} />
         {entries.length > 0 ? <ViewSwitcher view={app.view} setView={app.setView} /> : null}
+        {/* Feature actions live here (the app header carries only global controls) */}
+        <Button variant="outline" size="sm" icon={<Braces size={14} aria-hidden />} onClick={app.openSchema}>
+          {t("header.schema")}
+        </Button>
+        <Button variant="outline" size="sm" onClick={app.exportProject}>
+          {t("common.export")}
+        </Button>
         <Button variant="primary" size="sm" icon={<Plus size={14} aria-hidden />} onClick={() => app.openImport()}>
           {t("lib.importData")}
         </Button>

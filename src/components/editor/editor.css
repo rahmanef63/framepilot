@@ -194,6 +194,11 @@
 .cag-editor .tabbar-helpbtn {
   display: none;
 }
+/* language switcher in the tabbar — mobile only (desktop editor keeps the app
+   header globe; the ≤820 rule shows this one). */
+.cag-editor .tabbar-lang {
+  display: none;
+}
 /* ☰ drawer trigger in the tabbar — mobile only (the ≤820 rule shows it). */
 .cag-editor .tabbar-burger {
   display: none;
@@ -1880,6 +1885,10 @@
     align-items: center;
     gap: 6px;
     margin-left: auto;
+  }
+  .cag-editor .tabbar-lang {
+    display: inline-flex;
+    align-items: center;
   }
   .cag-editor .tabbar-helpbtn {
     display: inline-flex;

@@ -320,6 +320,11 @@ header { flex-wrap: wrap; }
   padding: 9px 16px;
   border-bottom: var(--border-width) solid var(--border);
   background: var(--card);
+  /* Global chrome reads as a distinct, elevated bar ABOVE each screen's own
+     feature header (the sub-header/tab bar below) — a clear app↔feature seam. */
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 4px 12px -8px rgba(0, 0, 0, 0.16);
 }
 .app-header-left {
   display: flex;

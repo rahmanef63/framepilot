@@ -9,6 +9,7 @@ import { Menu, GraduationCap, Settings, ChevronDown } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useApp } from "@/state/AppState";
 import { useT } from "@/i18n";
+import { LanguageSwitcher } from "@/components/shell/LanguageSwitcher";
 import { Seg } from "./ui/Seg";
 import type { DragMode, MainTab, ViewId } from "@/lib/editor/engineApi";
 
@@ -70,6 +71,11 @@ export function EditorTabBar() {
           the help button hidden, so this collapses to just the inline tools). Tur
           replays the onboarding coach-marks. */}
       <div className="tabbar-help">
+        {/* mobile-only (CSS): the editor hides the app header, so the language
+            switcher rides here on the ☰ · tabs · Alat top bar. */}
+        <span className="tabbar-lang">
+          <LanguageSwitcher />
+        </span>
         <button
           type="button"
           className="tabbar-helpbtn"
