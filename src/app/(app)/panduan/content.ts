@@ -33,7 +33,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     kicker: "01 · Kenalan",
     title: "Apa ini & untuk siapa",
     intro:
-      "Camera Angle Guide Pro (FramePilot) membantu kamu menerjemahkan ide atau referensi visual menjadi data sudut kamera yang terstruktur (schema camera-angle-guide/v2) sekaligus prompt AI yang tinggal salin-tempel. Ada dua layar yang saling terhubung: Data Prompt (Pustaka) untuk mengimpor & mengelola entri, dan Studio 3D untuk merancang rig kamera dan menangkap frame.",
+      "Camera Angle Guide Pro (FramePilot) membantu kamu menerjemahkan ide atau referensi visual menjadi data sudut kamera yang terstruktur (schema camera-angle-guide/v2) sekaligus prompt AI yang tinggal salin-tempel. Ada dua layar yang saling terhubung: Data Prompt (Pustaka) untuk mengimpor, mengelola entri, dan mulai dari kartu ✦ Preset (template shot siap pakai), dan Studio 3D untuk merancang rig kamera dan menangkap frame.",
     bullets: [
       "Sutradara & videografer yang mau merencanakan sudut kamera sebelum syuting.",
       "Kreator AI video/gambar yang butuh prompt kamera yang konsisten dan rapi.",
@@ -81,7 +81,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     id: "impor",
     kicker: "03 · Resep Pustaka",
     title: "Cara impor tiap jenis sumber",
-    intro: "Empat cara memasukkan data di Pustaka. Pilih sesuai bahan yang kamu punya.",
+    intro: "Empat cara memasukkan data di Pustaka. Pilih sesuai bahan yang kamu punya — atau lewati impor dan mulai dari kartu ✦ Preset lewat “Gunakan Template”.",
     steps: [
       {
         title: "Foto referensi",

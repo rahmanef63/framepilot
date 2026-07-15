@@ -5,7 +5,7 @@ import { NavUserMenu } from "@/components/shell/NavUserMenu";
 import { BrandMark } from "@/components/shell/BrandMark";
 import { NavItem } from "@/components/ds/NavItem";
 import { useApp } from "@/state/AppState";
-import { Camera, Library, LayoutTemplate } from "lucide-react";
+import { Camera, Library } from "lucide-react";
 
 /**
  * The left rail — now dedicated to the scene/frame manager. Three sections:
@@ -100,7 +100,6 @@ export function Sidebar() {
             {/* only rendered on Studio (isStudio), so Studio 3D is the active one */}
             <NavItem orientation="horizontal" icon={<Camera size={16} />} label="Studio 3D" active onClick={() => router.push("/")} />
             <NavItem orientation="horizontal" icon={<Library size={16} />} label="Pustaka" onClick={() => router.push("/library")} />
-            <NavItem orientation="horizontal" icon={<LayoutTemplate size={16} />} label="Template" onClick={() => router.push("/template")} />
           </nav>
         ) : null}
 

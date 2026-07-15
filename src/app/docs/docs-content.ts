@@ -111,6 +111,11 @@ export const DOCS: DocSection[] = [
         text:
           "Tempel foto, link YouTube, teks, atau JSON di Pustaka Data — framepilot mengekstraknya jadi data sudut kamera terstruktur (skema camera-angle-guide/v2) yang bisa diterapkan ke scene, lalu disempurnakan di Studio 3D.",
       },
+      {
+        type: "p",
+        text:
+          "Belum punya referensi? Pustaka juga memuat kartu ✦ Preset — template shot siap pakai. Klik “Gunakan Template” untuk membangun proyek dari preset dan langsung membukanya di Studio 3D. (Rute /template kini diarahkan ke /library, jadi preset dan proyek tersimpan ada di satu Pustaka.)",
+      },
       { type: "cta", label: "Buka Pustaka →", href: "/library" },
     ],
   },

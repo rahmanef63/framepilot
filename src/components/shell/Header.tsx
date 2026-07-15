@@ -10,7 +10,6 @@ import { Menu, Plus, Braces } from "lucide-react";
 const SCREEN_NAMES: Record<string, string> = {
   "/": "Studio 3D",
   "/library": "Pustaka",
-  "/template": "Template",
   "/panduan": "Panduan · Guide",
   "/admin": "Admin",
 };

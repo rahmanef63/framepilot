@@ -77,9 +77,11 @@ export function TableView({ entries }: { entries: EntryView[] }) {
               <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={e.onOpenStudio} title="Buka di Studio 3D">
                 Studio 3D
               </Button>
-              <Button variant="ghost" size="sm" onClick={e.onDelete} title="Hapus · Delete">
-                Hapus
-              </Button>
+              {!e.preset && (
+                <Button variant="ghost" size="sm" onClick={e.onDelete} title="Hapus · Delete">
+                  Hapus
+                </Button>
+              )}
             </div>
           </div>
         ))}

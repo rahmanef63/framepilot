@@ -17,6 +17,7 @@ import { useEditor } from "@/state/EditorState";
 import { activeScene, type EditorFrame } from "@/lib/editorModel";
 import { IconPlay, IconPause } from "./EditorIcons";
 import { MobileFrameMenu } from "./MobileFrameMenu";
+import { MobileSceneMenu } from "./MobileSceneMenu";
 
 const LONG_PRESS_MS = 450;
 
@@ -33,6 +34,7 @@ export function MobileFrameStrip() {
   const inside = insideId ? scenes.find((s) => s.id === insideId) ?? null : null;
 
   const [menu, setMenu] = useState<{ frame: EditorFrame; index: number; rect: DOMRect } | null>(null);
+  const [sceneMenu, setSceneMenu] = useState<{ scene: (typeof scenes)[number]; index: number; rect: DOMRect } | null>(null);
   const timer = useRef<number | null>(null);
   const longPressed = useRef(false);
   const start = useRef({ x: 0, y: 0 });
@@ -51,6 +53,16 @@ export function MobileFrameStrip() {
       longPressed.current = true;
       navigator.vibrate?.(10);
       setMenu({ frame, index, rect });
+    }, LONG_PRESS_MS);
+  };
+  const onSceneDown = (e: React.PointerEvent, scene: (typeof scenes)[number], index: number) => {
+    longPressed.current = false;
+    start.current = { x: e.clientX, y: e.clientY };
+    const rect = e.currentTarget.getBoundingClientRect();
+    timer.current = window.setTimeout(() => {
+      longPressed.current = true;
+      navigator.vibrate?.(10);
+      setSceneMenu({ scene, index, rect });
     }, LONG_PRESS_MS);
   };
   const onMove = (e: React.PointerEvent) => {
@@ -81,14 +93,25 @@ export function MobileFrameStrip() {
   // ---- SCENE mode: enterable folder tiles ----
   if (!inside) {
     return (
-      <div className="mobile-frame-strip" role="group" aria-label="Scene — ketuk untuk buka, tahan frame untuk aksi">
+      <div className="mobile-frame-strip" role="group" aria-label="Scene — ketuk untuk buka, tahan scene untuk aksi">
         <div className="mfs-scroll">
-          {scenes.map((sc) => (
+          {scenes.map((sc, idx) => (
             <div key={sc.id} className={"mfs-scene" + (sc.id === activeId ? " current" : "")}>
               <button
                 className="mfs-scene-open"
-                onClick={() => enterScene(sc.id)}
-                title={sc.name}
+                onPointerDown={(e) => onSceneDown(e, sc, idx)}
+                onPointerMove={onMove}
+                onPointerUp={cancelTimer}
+                onPointerLeave={cancelTimer}
+                onClick={(e) => {
+                  if (longPressed.current) {
+                    e.preventDefault();
+                    longPressed.current = false;
+                    return;
+                  }
+                  enterScene(sc.id);
+                }}
+                title={sc.name + " — tahan untuk aksi"}
                 aria-label={"Buka scene " + sc.name}
               >
                 {sc.frames[0]?.thumb ? (
@@ -117,6 +140,15 @@ export function MobileFrameStrip() {
             </div>
           ))}
         </div>
+        {sceneMenu ? (
+          <MobileSceneMenu
+            scene={sceneMenu.scene}
+            index={sceneMenu.index}
+            total={scenes.length}
+            rect={sceneMenu.rect}
+            onClose={() => setSceneMenu(null)}
+          />
+        ) : null}
       </div>
     );
   }

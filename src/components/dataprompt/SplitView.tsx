@@ -126,9 +126,11 @@ export function SplitView({ entries }: { entries: EntryView[] }) {
                   <Button variant="primary" size="sm" icon={<Camera size={14} aria-hidden />} onClick={active.onOpenStudio}>
                     Buka di Studio 3D
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={active.onDelete}>
-                    Hapus
-                  </Button>
+                  {!active.preset && (
+                    <Button variant="ghost" size="sm" onClick={active.onDelete}>
+                      Hapus
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

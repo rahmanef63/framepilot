@@ -40,7 +40,7 @@ The UI is in **Bahasa Indonesia**.
 
 - **10 prompt-detail toggles** — checkboxes for lens, depth-of-field, elevation, view, distance, height, dutch tilt, movement, framing, and camera-brand. Each folds one clause into the prompt live; the state is persisted per browser and shared by the Prompt dock and the Full Preview panel.
 - **Scene / frame manager** — add frames from the current camera, update dirty frames, per-frame duration, and a transport row (prev / play-pause / next / stop / loop / smooth transition) with playback indicator, portaled into the Studio sidebar.
-- **Pustaka library (`/library`)** — saved projects over the SSOT store with Grid / Table / Split views. Import camera-angle-guide/v2 JSON (paste, upload, or via an AI extraction-prompt helper for Photo / YouTube / File / Text sources), or start from presets at `/template`.
+- **Pustaka library (`/library`)** — saved projects over the SSOT store with Grid / Table / Split views, alongside **✦ Preset** starter cards ("Gunakan Template" builds a project from a preset and opens Studio 3D). Import camera-angle-guide/v2 JSON (paste, upload, or via an AI extraction-prompt helper for Photo / YouTube / File / Text sources). Presets and saved projects share this one library screen — `/template` now redirects here, so there is a single library destination.
 - **Export** — Project JSON, Shot List CSV, Prompt TXT (skinned at the selected platform), and Storyboard PNG.
 - **Onboarding tour** — a dependency-free 9-step coach-mark walkthrough that auto-runs once per browser on desktop, replayable from the header.
 - **Standalone docs (`/docs`)** and an in-app guide (`/panduan`).
@@ -48,7 +48,7 @@ The UI is in **Bahasa Indonesia**.
   <img width="420" src="docs/assets/docs.png" alt="The standalone /docs page with a two-column TOC and scroll-spy" />
 
 - **Auth + cloud sync** — Convex Cloud with `@convex-dev/auth` (Password). Signed-in users get per-user cloud projects; anonymous users stay fully local. An admin panel (`/admin`) is gated by a server-side email allowlist.
-- **Mobile editor** — a purpose-built ≤820px layout where the tabbar **is** the top bar (`☰ · Editor · Full Preview · ⚙ Alat` — no separate app header), a square-thumbnail frame strip, a big 3D canvas, and a **bottom dock** (Prompt · Kamera · **＋** · Preset · Lainnya) that opens each controller section as an in-flow split panel. Two-finger **pinch-zoom + pan**; a **long-press** on any frame thumbnail opens a rename / duplicate / move / delete menu; and the **☰ drawer** holds the app nav plus every project action (undo/redo, save, import/export, schema, tour, reload) that lives in the desktop ⋯ menu.
+- **Mobile editor** — a purpose-built ≤820px layout where the tabbar **is** the top bar (`☰ · Editor · Full Preview · ⚙ Alat` — no separate app header), a square-thumbnail frame strip, a big 3D canvas, and a **bottom dock** (Prompt · Kamera · **＋** · Preset · Lainnya) that opens each controller section as an in-flow split panel. Two-finger **pinch-zoom + pan**; a **long-press** on any frame thumbnail — or any scene tile — opens a rename / duplicate / move / delete menu; and the **☰ drawer** holds the app nav plus every project action (undo/redo, save, import/export, schema, tour, reload) that lives in the desktop ⋯ menu.
 
   <p>
     <img width="200" src="docs/assets/mobile.png" alt="Mobile editor: merged top bar, square frame strip, 3D canvas, and the 5-button bottom dock" />
@@ -64,7 +64,8 @@ The UI is in **Bahasa Indonesia**.
 - **LTX Studio** joins the platform list (11 total) — flowing present-tense prose with an end-state camera sentence, per its prompt guide.
 - **Camera brands** — per-frame or global camera body whose look is web-researched and folded into the prompt.
 - **Next.js 16 + React 19.2**, and an **installable PWA**.
-- A rebuilt **mobile editor**: one-row header, bottom dock, long-press frame CRUD, pinch-zoom + pan.
+- A rebuilt **mobile editor**: one-row header, bottom dock, long-press frame + scene CRUD, pinch-zoom + pan.
+- **Pustaka + presets merged** — starter templates now show as **✦ Preset** cards inside the library; `/template` redirects to `/library` (one library destination, no Pustaka-vs-Template split).
 
 ## How it works
 
@@ -132,8 +133,8 @@ A tenth toggle folds an optional **camera-brand** look tag (`shot on ARRI Alexa 
 | --- | --- |
 | `/` | **Studio 3D** — the app home: 3D shot planner + Prompt Kamera output |
 | `/editor` | Server redirect to `/` (kept so old links still resolve) |
-| `/library` | **Pustaka** — saved projects (localStorage + Convex) with Grid / Table / Split views |
-| `/template` | Starter camera-angle-guide presets; "Gunakan Template" opens one in the Studio |
+| `/library` | **Pustaka** — saved projects (localStorage + Convex) with Grid / Table / Split views, **plus ✦ Preset starter cards**; "Gunakan Template" builds a project from a preset and opens Studio 3D |
+| `/template` | Server redirect to `/library` (kept so old links still resolve — presets now live in the library) |
 | `/panduan` | In-app learning guide (intro + card sections) |
 | `/docs` | Standalone docs, outside the app Shell (TOC + scroll-spy) |
 | `/admin` | Admin panel; gated by a server-side email allowlist |
@@ -184,7 +185,7 @@ src/
 │  │  ├─ page.tsx       # / — Studio 3D (EditorScreen)
 │  │  ├─ editor/        # /editor — redirects to /
 │  │  ├─ library/       # /library — Pustaka (DataPromptScreen)
-│  │  ├─ template/      # /template — preset gallery
+│  │  ├─ template/      # /template — redirects to /library (presets shown there)
 │  │  ├─ panduan/       # /panduan — in-app guide
 │  │  └─ admin/         # /admin — gated admin dashboard
 │  └─ docs/             # /docs — standalone, outside the Shell

@@ -5,7 +5,11 @@
 // state into one AppContextValue (mirrors the state/editor/* decomposition). The
 // public API — useApp(), AppStateProvider, EntryView, LibraryView — is unchanged.
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Project, SRC_META, fmtWhen, seedProject } from "@/lib/dataPrompt";
+import { STARTER_TEMPLATES, type StarterTemplate } from "@/app/(app)/template/templates";
+import { toEditorProject } from "@/lib/editorModel";
+import { AUTOKEY, saveProject } from "@/lib/editorStorage";
 import { useLibraryStore } from "./app/useLibraryStore";
 import { useLibraryIo } from "./app/useLibraryIo";
 import type { AppContextValue, EntryView, LibraryView } from "./app/types";
@@ -56,8 +60,60 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const store = useLibraryStore({ now, showToast });
   const io = useLibraryIo({ showToast, persistEntry: store.persistEntry, refreshLocal: store.refreshLocal, project });
 
+  // ---- starter Template presets → read-only library entries (front of the grid) ----
+  const router = useRouter();
+  // Mirrors the old /template page: build a project from the preset, persist it into
+  // the SSOT store + seed AUTOKEY, then open Studio 3D.
+  const useTemplate = useCallback(
+    (t: StarterTemplate) => {
+      const project = toEditorProject(t.project);
+      project.name = t.title;
+      project.settings.aspectRatio = t.aspectRatio;
+      saveProject(project);
+      try {
+        localStorage.setItem(AUTOKEY, JSON.stringify(project));
+      } catch {
+        /* ignore quota/private-mode — editor akan mulai dari proyek baru */
+      }
+      router.push("/");
+    },
+    [router],
+  );
+  const presetEntries = useMemo<EntryView[]>(
+    () =>
+      STARTER_TEMPLATES.map((t) => {
+        const scenes = t.project.scenes;
+        const frameCount = scenes.reduce((a, s) => a + s.frames.length, 0);
+        const f0 = scenes[0].frames[0];
+        return {
+          id: "preset:" + t.id,
+          name: t.title,
+          when: t.aspectRatio,
+          sourceGlyph: "✦",
+          sourceLabel: "Preset",
+          sourceTone: "new",
+          thumbCaption: "preset",
+          sceneCount: scenes.length,
+          frameCount,
+          pAz: f0.az,
+          pEl: f0.el,
+          pDist: f0.dist,
+          pRoll: f0.roll ?? 0,
+          pLens: f0.lens,
+          pSubj: f0.subj ?? "person",
+          frames: scenes
+            .flatMap((s) => s.frames)
+            .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll ?? 0, subj: f.subj ?? "person", name: f.name })),
+          example: false,
+          preset: true,
+          onOpenStudio: () => useTemplate(t),
+        };
+      }),
+    [useTemplate],
+  );
+
   // ---- derived card view models (single grid, no filter / selection / view switch) ----
-  const entriesAll = useMemo<EntryView[]>(() => {
+  const userEntries = useMemo<EntryView[]>(() => {
     return store.entries.map((en): EntryView => {
       const scenes = en.data.scenes;
       const frameCount = scenes.reduce((a, sc) => a + sc.frames.length, 0);
@@ -91,6 +147,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       };
     });
   }, [store.entries, store.showingExamples, now, store.openInStudio3d, store.del]);
+
+  // Presets lead the grid, followed by the user's own SSOT-store entries.
+  const entriesAll = useMemo<EntryView[]>(() => [...presetEntries, ...userEntries], [presetEntries, userEntries]);
 
   const entriesCountText = entriesAll.length + " item";
   const totalShots = project.scenes.reduce((a, sc) => a + sc.frames.length, 0);

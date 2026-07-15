@@ -23,7 +23,7 @@ export function HeaderNav() {
         fill={false}
         onNew3D={() => router.push("/")}
         onFromImage={() => app.openImport("photo")}
-        onFromTemplate={() => router.push("/template")}
+        onFromTemplate={() => router.push("/library")}
       />
       <HeaderTab icon={<Camera size={16} />} label="Studio 3D" active={pathname === "/"} onClick={() => router.push("/")} />
       <HeaderTab icon={<Library size={16} />} label="Pustaka" active={pathname === "/library"} onClick={() => router.push("/library")} />

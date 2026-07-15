@@ -9,7 +9,7 @@ import { Plus, Camera, Image, LayoutTemplate } from "lucide-react";
  * orientations); the menu is a lightweight token-styled popover that closes on
  * outside-click and Esc. Three options: start a new Studio 3D project, start
  * from an uploaded image (opens the import flow on the photo tab), or start
- * from a template (routes to /template).
+ * from a template (presets now live in the merged Pustaka/library).
  */
 export function CreateMenu({
   orientation,

@@ -44,8 +44,10 @@ Everything does the real work:
   + azimuth ring), openable from any view; **Perbesar 3D** opens a quad-view modal
   (Perspektif · Atas · Samping · POV kamera) with a per-frame picker.
 
-The other sidebar routes (`/beranda`, `/proyek`, `/template`, `/panduan`) are
-minimal stub screens, as agreed.
+The other sidebar routes (`/beranda`, `/proyek`, `/panduan`) are
+minimal stub screens, as agreed. `/template` has since merged into the `/library`
+Pustaka — its starter presets now appear there as ✦ Preset cards, and the route
+redirects to `/library`.
 
 ## Structure
 
@@ -58,7 +60,7 @@ src/
     (app)/
       layout.tsx          AppStateProvider + Shell
       page.tsx            Data Prompt screen (/)
-      beranda|proyek|template|panduan/page.tsx   stub routes
+      beranda|proyek|panduan/page.tsx   stub routes (template/ redirects to /library)
   components/
     ds/                   ported ds-a primitives (Button, Badge, NavItem, Tabs, Modal)
     shell/                Sidebar, Header, GlobalModals, Shell

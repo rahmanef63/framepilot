@@ -26,8 +26,10 @@ export interface EntryView {
   frames: { az: number; el: number; dist: number; lens: number; roll: number; subj: string; name?: string }[];
   /** true = a read-only "Contoh" seed demo (shown only when the store is empty). */
   example: boolean;
+  /** true = a read-only starter Template preset ("Gunakan Template", no delete). */
+  preset?: boolean;
   onOpenStudio: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 /** Library layout the user picked: card grid, dense table, or list+inspector split. */
