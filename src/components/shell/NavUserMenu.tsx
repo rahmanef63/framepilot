@@ -6,8 +6,8 @@ import { NavItem } from "@/components/ds/NavItem";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
 import { useIsAdmin } from "@/components/admin/useIsAdmin";
-import { useT } from "@/i18n";
-import { Check, PanelLeft, Settings, BookOpen } from "lucide-react";
+import { useT, LOCALES, LOCALE_NAMES } from "@/i18n";
+import { Check, PanelLeft, Settings, BookOpen, Globe } from "lucide-react";
 
 /**
  * NavUserMenu — collapses the whole sidebar footer (theme mode, Docs, Panduan,
@@ -99,6 +99,7 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
           }}
         >
           <ThemeModeToggle />
+          <LangRow />
           <Divider />
           <MenuLink icon={<PanelLeft size={16} />} label={t("shell.user.docs")} active={pathname.startsWith("/docs")} onClick={() => go("/docs")} />
           <MenuLink icon={<BookOpen size={16} aria-hidden />} label={t("header.crumb.guide")} active={pathname === "/panduan"} onClick={() => go("/panduan")} />
@@ -119,6 +120,60 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
 
 function Divider() {
   return <div style={{ height: "var(--border-width)", background: "var(--border)", margin: "2px 0" }} />;
+}
+
+// Language picker inside the user menu — the mobile-reachable switcher (the
+// editor hides the header, so the header globe is desktop-only there). Compact
+// row of locale-code chips, active one highlighted; flips the app in place.
+function LangRow() {
+  const { locale, setLocale, t } = useT();
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "4px 2px 2px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          font: "700 9.5px var(--font-mono)",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "var(--muted-foreground)",
+          padding: "0 6px",
+        }}
+      >
+        <Globe size={13} aria-hidden /> {t("lang.label")}
+      </div>
+      <div role="radiogroup" aria-label={t("lang.label")} style={{ display: "flex", flexWrap: "wrap", gap: 4, padding: "0 4px" }}>
+        {LOCALES.map((l) => {
+          const on = l === locale;
+          return (
+            <button
+              key={l}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => setLocale(l)}
+              title={LOCALE_NAMES[l]}
+              style={{
+                flex: "1 1 0",
+                minWidth: 38,
+                padding: "6px 8px",
+                cursor: "pointer",
+                borderRadius: "var(--radius-sm)",
+                border: "var(--border-width) solid " + (on ? "var(--primary)" : "var(--border)"),
+                background: on ? "var(--primary-soft)" : "transparent",
+                color: on ? "var(--primary)" : "var(--foreground)",
+                font: `${on ? 700 : 600} 11px var(--font-mono)`,
+                textTransform: "uppercase",
+              }}
+            >
+              {l}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 function MenuLink({
