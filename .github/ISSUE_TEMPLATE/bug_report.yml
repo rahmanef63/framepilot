@@ -1,0 +1,82 @@
+name: Bug report
+description: Report something broken in Camera Angle Guide Pro (framepilot)
+title: "fix: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug! Please fill out the fields below.
+        For security vulnerabilities, do **not** use this form — see [SECURITY.md](../blob/main/SECURITY.md) and report privately via the Security tab.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug and its actual behavior.
+      placeholder: When I export a shot to a Kling prompt, the camera-move line is empty...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact steps so we can see it too.
+      placeholder: |
+        1. Open the Studio (home)
+        2. Add a dolly-in move
+        3. Switch platform to Kling
+        4. Copy the prompt
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: route
+    attributes:
+      label: Which route?
+      description: Where in the app did this happen?
+      options:
+        - / (Studio editor / home)
+        - /library (Pustaka)
+        - /template (starter presets)
+        - /panduan (cookbook)
+        - /admin
+        - /docs
+        - Other / not sure
+    validations:
+      required: true
+
+  - type: input
+    id: browser-device
+    attributes:
+      label: Browser + device
+      description: The app is mobile-heavy — please include OS, device, and browser (with version).
+      placeholder: e.g. iOS 18 / iPhone 14 / Safari, or Windows 11 / Chrome 141
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: Paste any errors from the browser devtools console (or note "none"). This will be formatted as code.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots / screen recording / extra context
+      description: Drag images or a short recording here. Mobile screenshots are very helpful.
+    validations:
+      required: false

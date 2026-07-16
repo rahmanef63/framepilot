@@ -2,6 +2,38 @@
   "name": "camera-angle-guide-data-prompt",
   "version": "0.1.0",
   "private": true,
+  "description": "Browser-based 3D camera previsualization and shot planner for designing scenes, frames, camera angles, lenses, and movements — and encoding them into AI-video-ready prompts (Runway, Kling, Veo, Luma, and more).",
+  "license": "MIT",
+  "author": "Abdurrahman Fakhrul (@rahmanef63)",
+  "homepage": "https://frame-pilot.rahmanef.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rahmanef63/framepilot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rahmanef63/framepilot/issues"
+  },
+  "keywords": [
+    "three.js",
+    "webgl",
+    "previsualization",
+    "previz",
+    "camera",
+    "cinematography",
+    "camera-angles",
+    "storyboard",
+    "shot-planner",
+    "ai-video",
+    "prompt-engineering",
+    "text-to-video",
+    "nextjs",
+    "react",
+    "convex",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",

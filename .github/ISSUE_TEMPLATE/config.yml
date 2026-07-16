@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Try Camera Angle Guide Pro (live)
+    url: https://frame-pilot.rahmanef.com
+    about: Use the live app to reproduce or explore before filing an issue.
+  - name: Documentation & cookbook
+    url: https://frame-pilot.rahmanef.com/docs
+    about: Read the docs and the /panduan cookbook — your question may already be answered.
+  - name: Report a security vulnerability
+    url: https://github.com/rahmanef63/framepilot/security/advisories/new
+    about: Please report vulnerabilities privately via GitHub — never in a public issue.

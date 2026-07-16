@@ -8,6 +8,8 @@
 
 **[Live → frame-pilot.rahmanef.com](https://frame-pilot.rahmanef.com)**
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](./LICENSE)
+![Version](https://img.shields.io/badge/version-0.1.0-informational)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000)
 ![React](https://img.shields.io/badge/React-19.2-149ECA)
 ![Three.js](https://img.shields.io/badge/Three.js-0.161-000000)
@@ -23,18 +25,18 @@
 
 Camera Angle Guide Pro (package `camera-angle-guide-data-prompt`) turns the vague job of "describe the shot you want" into a concrete, repeatable workflow. You block out a shot in a real 3D viewport — orbit the camera, set the lens, place the subject — and the app reads that camera geometry back out as a paste-ready prompt, re-skinned for whichever AI video platform you target.
 
-Because the shot is real 3D data (azimuth, elevation, distance, roll, FOV, subject transform), the same intent can be re-encoded for **11 different platforms** without you rewriting a word — and a real camera-body look tag can ride along. Anonymous use runs entirely on `localStorage`; sign in and your projects sync to Convex Cloud.
+Because the shot is real 3D data (azimuth, elevation, distance, roll, FOV, subject transform), the same intent can be re-encoded for **10 different platforms** without you rewriting a word — and a real camera-body look tag can ride along. Anonymous use runs entirely on `localStorage`; sign in and your projects sync to Convex Cloud.
 
 The UI is in **Bahasa Indonesia**.
 
 ## Features
 
 - **3D shot planner (`/`)** — one persistent WebGL canvas rendering a scissor multi-viewport quad (cam / top / left / right), or a single focused view, or a full-bleed preview. WASD fly-nav, drag modes for Navigation / Subject / Camera, and rig sliders for azimuth, elevation, distance, FOV/lens, roll, plus raw camera and anchor positions.
-- **Live Prompt Kamera** — the Prompt tab shows the paste-ready prompt for the current selection (active frame → single shot; otherwise the whole project), with an **11-platform** picker, a Copy button, per-platform hints, and a collapsible bilingual production detail dump.
+- **Live Prompt Kamera** — the Prompt tab shows the paste-ready prompt for the current selection (active frame → single shot; otherwise the whole project), with a **10-platform** picker, a Copy button, per-platform hints, and a collapsible bilingual production detail dump.
 
   <img width="420" src="docs/assets/prompt.png" alt="Prompt tab: LTX Studio platform, the live Prompt Kamera output with an ARRI Alexa 35 look tag, and the 10 detail toggles" />
 
-- **Camera brands** — pick a real camera body (ARRI Alexa 35, RED V-Raptor, Sony Venice 2, Blackmagic, Canon C300, DJI Ronin/Mavic drone, iPhone 15 Pro, GoPro) and its signature look folds into the prompt (`shot on ARRI Alexa 35, REVEAL filmic color, natural skin tones, gentle highlight rolloff`). Each frame can use a **different** camera, or flip a **global toggle** to set one camera once for the whole project. Look descriptors are web-researched per brand; engineering specs stay in the UI, out of the prompt.
+- **Camera brands** — pick a real camera body (ARRI Alexa 35, ARRI Alexa Mini LF, RED V-Raptor, Sony Venice 2, Blackmagic, Canon C300, DJI Ronin/Mavic drone, iPhone 15 Pro, GoPro) and its signature look folds into the prompt (`shot on ARRI Alexa 35, REVEAL filmic color, natural skin tones, gentle highlight rolloff`). Each frame can use a **different** camera, or flip a **global toggle** to set one camera once for the whole project. Look descriptors are web-researched per brand; engineering specs stay in the UI, out of the prompt.
 
   <img width="360" src="docs/assets/camera.png" alt="The camera-brand picker showing ARRI Alexa 35 and its Super 35 · REVEAL filmic look hint" />
 
@@ -61,7 +63,7 @@ The UI is in **Bahasa Indonesia**.
 
 ### Recent
 
-- **LTX Studio** joins the platform list (11 total) — flowing present-tense prose with an end-state camera sentence, per its prompt guide.
+- **LTX Studio** joins the platform list (10 total) — flowing present-tense prose with an end-state camera sentence, per its prompt guide.
 - **Camera brands** — per-frame or global camera body whose look is web-researched and folded into the prompt.
 - **Next.js 16 + React 19.2**, and an **installable PWA**.
 - A rebuilt **mobile editor**: one-row header, bottom dock, long-press frame + scene CRUD, pinch-zoom + pan.
@@ -78,9 +80,9 @@ flowchart TD
   E --> F[toNeutral]
   B -->|RawFrame library shape| F
   F --> G[NeutralShot - 3D geometry + one move]
-  H[Platform pick - 11 targets] --> I[encodeShot]
+  H[Platform pick - 10 targets] --> I[encodeShot]
   N[Camera brand pick] --> I
-  J[ShotOptions - 9 toggles] --> I
+  J[ShotOptions - 10 toggles] --> I
   G --> I
   I --> K[Per-platform skin - sentence luma bracket]
   K --> L[Copy paste-ready prompt]
@@ -105,7 +107,7 @@ The prompt engine (`src/lib/prompt/*`) is pure functions — **no React, no Thre
 - **`luma`** — a natural sentence *minus* the move, then a literal `camera <exact string>` appended. Luma is the only style where multiple moves can be **stacked**.
 - **`bracket`** — a natural sentence with up to 3 `[Token]` tokens appended.
 
-Nine `ShotOptions` toggles (default all-on, persisted to `localStorage` `cag.promptOpts`) each drop one clause when unchecked — unchecking **move** collapses every platform to one clean base sentence.
+Ten `ShotOptions` toggles (default all-on, persisted to `localStorage` `cag.promptOpts`) each drop one clause when unchecked — unchecking **move** collapses every platform to one clean base sentence.
 
 ### Target platforms
 
@@ -114,7 +116,6 @@ Nine `ShotOptions` toggles (default all-on, persisted to `localStorage` `cag.pro
 | Runway | sentence |
 | Kling | sentence |
 | Google Veo | sentence |
-| Sora | sentence |
 | Luma | luma (exact-string, stackable moves) |
 | Hailuo / MiniMax | bracket |
 | Pika | sentence |
@@ -208,7 +209,7 @@ src/
    └─ editor/*          # factory hooks (core, history, playback, rig, io, …)
 
 convex/                 # auth, projects, admin, schema, http, lib
-docs/                   # CAG-EDITOR-PLAN.md, PONYTAIL-AUDIT.md, assets/
+docs/                   # PONYTAIL-AUDIT.md, assets/ (screenshots)
 ```
 
 The Convex schema spreads `authTables` plus one app table, `projects { userId, name, doc, updatedAt }` indexed `by_user`, where `doc` is the serialized `EditorProject` JSON. Owner-scoped `save` / `listMine` / `get` / `remove` use bounded `.take()` reads.
@@ -217,6 +218,14 @@ The Convex schema spreads `authTables` plus one app table, `projects { userId, n
 
 Backend is **Convex Cloud**; the frontend deploys via **Dokploy** with **push-to-`main` → auto build**. The multi-stage Dockerfile (`node:22-alpine`, non-root `nextjs` user, standalone output, `CMD node server.js`) requires `--build-arg NEXT_PUBLIC_CONVEX_URL=…`. Set `ADMIN_EMAILS` on the Convex side to grant admin access.
 
+## Contributing
+
+Contributions are welcome — see **[CONTRIBUTING.md](./CONTRIBUTING.md)** for local setup, project layout, and the PR flow. In short: use [Conventional Commits](https://www.conventionalcommits.org/), run `npx tsc --noEmit` and `npm run build` locally before pushing (CI runs as a local pre-push hook, not on cloud Actions), and open an issue first for anything larger than a small fix. By participating you agree to the [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+## Changelog
+
+See **[CHANGELOG.md](./CHANGELOG.md)** for the release history.
+
 ## License
 
-No `LICENSE` file is present yet — the project is currently unlicensed. Add one before external reuse.
+Released under the **MIT License** — © 2026 Abdurrahman Fakhrul ([@rahmanef63](https://github.com/rahmanef63)). See [`LICENSE`](./LICENSE) for the full text.

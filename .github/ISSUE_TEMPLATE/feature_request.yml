@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest an idea or improvement for Camera Angle Guide Pro (framepilot)
+title: "feat: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! The more concrete the use case, the easier it is to evaluate.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do, and what's getting in the way? Is your request related to a frustration?
+      placeholder: When planning a shot for Veo, I can't preview the field of view because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen. Be as specific as you can (which route, which platform encoder, which editor control, etc.).
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches or workarounds you've tried or thought about.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Mockups, references, links to other tools, or anything else that helps.
+    validations:
+      required: false
