@@ -5,10 +5,11 @@
 // fixed ortho preset or a saved custom orbit, and to snapshot the current CAMERA
 // orbit as a new custom view. cam + iso cells keep the plain .vname label.
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import type { SlotId, OrthoId, ViewKind, SavedView } from "@/lib/editor/engineApi";
 import { Check, ChevronDown, Pencil, Plus, X } from "lucide-react";
 import { useT } from "@/i18n";
+import { useDismissablePopover } from "./useDismissablePopover";
 import "./CellViewMenu.css";
 
 const ORTHO_ORDER: OrthoId[] = ["top", "bottom", "left", "right", "front", "back", "iso"];
@@ -57,36 +58,9 @@ export function CellViewMenu({
   const rootRef = useRef<HTMLDivElement | null>(null);
   const popRef = useRef<HTMLDivElement | null>(null);
 
-  // Isolate the open popover from the cell's native pointer/wheel handlers so
-  // clicking/scrolling the menu never starts a drag or zooms the 3D view.
-  useEffect(() => {
-    const el = popRef.current;
-    if (!el || !open) return;
-    const stop = (e: Event) => e.stopPropagation();
-    el.addEventListener("pointerdown", stop);
-    el.addEventListener("wheel", stop, { passive: true });
-    return () => {
-      el.removeEventListener("pointerdown", stop);
-      el.removeEventListener("wheel", stop);
-    };
-  }, [open]);
-
-  // Close on outside click / Escape.
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) close();
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  // Isolate the open popover from the cell's native pointer/wheel handlers +
+  // close on outside click / Escape (see useDismissablePopover).
+  useDismissablePopover(open, rootRef, popRef, close);
 
   function close() {
     setOpen(false);

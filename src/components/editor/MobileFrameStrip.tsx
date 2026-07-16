@@ -46,26 +46,20 @@ export function MobileFrameStrip() {
       timer.current = null;
     }
   };
-  const onDown = (e: React.PointerEvent, frame: EditorFrame, index: number) => {
+  const armLongPress = (e: React.PointerEvent, onFire: (rect: DOMRect) => void) => {
     longPressed.current = false;
     start.current = { x: e.clientX, y: e.clientY };
     const rect = e.currentTarget.getBoundingClientRect();
     timer.current = window.setTimeout(() => {
       longPressed.current = true;
       navigator.vibrate?.(10);
-      setMenu({ frame, index, rect });
+      onFire(rect);
     }, LONG_PRESS_MS);
   };
-  const onSceneDown = (e: React.PointerEvent, scene: (typeof scenes)[number], index: number) => {
-    longPressed.current = false;
-    start.current = { x: e.clientX, y: e.clientY };
-    const rect = e.currentTarget.getBoundingClientRect();
-    timer.current = window.setTimeout(() => {
-      longPressed.current = true;
-      navigator.vibrate?.(10);
-      setSceneMenu({ scene, index, rect });
-    }, LONG_PRESS_MS);
-  };
+  const onDown = (e: React.PointerEvent, frame: EditorFrame, index: number) =>
+    armLongPress(e, (rect) => setMenu({ frame, index, rect }));
+  const onSceneDown = (e: React.PointerEvent, scene: (typeof scenes)[number], index: number) =>
+    armLongPress(e, (rect) => setSceneMenu({ scene, index, rect }));
   const onMove = (e: React.PointerEvent) => {
     if (timer.current && Math.hypot(e.clientX - start.current.x, e.clientY - start.current.y) > 10) cancelTimer();
   };

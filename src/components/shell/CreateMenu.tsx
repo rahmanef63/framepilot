@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { NavItem } from "@/components/ds/NavItem";
+import { IconChip } from "@/components/ds/IconChip";
+import { useDismiss } from "@/components/shell/useDismiss";
 import { useT } from "@/i18n";
 import { Plus, Camera, Image, LayoutTemplate } from "lucide-react";
 
@@ -36,21 +38,7 @@ export function CreateMenu({
     setOpen((v) => !v);
   };
 
-  React.useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  useDismiss(wrapRef, open, setOpen);
 
   const pick = (fn: () => void) => {
     setOpen(false);
@@ -153,22 +141,7 @@ function MenuOption({
         color: "var(--foreground)",
       }}
     >
-      <span
-        aria-hidden
-        style={{
-          width: "26px",
-          height: "26px",
-          flex: "none",
-          borderRadius: "7px",
-          border: "var(--border-width) solid var(--border)",
-          display: "grid",
-          placeItems: "center",
-          font: "600 11px var(--font-mono)",
-          color: "var(--subtle-foreground)",
-        }}
-      >
-        {icon}
-      </span>
+      <IconChip aria-hidden>{icon}</IconChip>
       <span style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
         <span style={{ font: "700 12.5px var(--font-sans)", color: "var(--foreground)" }}>{title}</span>
         <span style={{ font: "400 10.5px var(--font-mono)", color: "var(--muted-foreground)" }}>{desc}</span>

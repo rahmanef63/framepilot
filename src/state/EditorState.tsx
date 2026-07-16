@@ -12,7 +12,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef } from "re
 import { tr } from "@/i18n";
 import type { ViewId } from "@/lib/editor/engineApi";
 import { loadAutosave } from "@/lib/editorStorage";
-import type { EditorProject, SlotId } from "@/lib/editorModel";
+import type { EditorProject } from "@/lib/editorModel";
 
 import type { EditorContextValue } from "./editor/types";
 import { useEditorCore } from "./editor/core";
@@ -21,7 +21,7 @@ import { useBriefActions } from "./editor/brief";
 import { usePlaybackActions } from "./editor/playback";
 import { useRigActions } from "./editor/rig";
 import { useUiActions } from "./editor/ui";
-import { useViewActions } from "./editor/views";
+import { useViewActions, seedEngineViews } from "./editor/views";
 import { useFrameActions } from "./editor/frames";
 import { useSceneActions } from "./editor/scenes";
 import { useIoActions, swapProject } from "./editor/io";
@@ -158,7 +158,6 @@ export function EditorStateProvider({
     refreshSaved,
     importProjectObject,
     exportProjectObject,
-    importFromLibrary,
   } = useIoActions(core, { stopPlayback, commitHistory });
 
   // ---------- restore autosave on mount (concept: continue last session) ----------
@@ -263,10 +262,7 @@ export function EditorStateProvider({
           handle.setActiveTab(uiRef.current.mainTab);
           handle.updateHud();
           // reconfigurable quad (Goal B): re-seed custom views + slot assignments
-          handle.setSavedViews(projectRef.current.savedViews ?? []);
-          (["top", "left", "right"] as SlotId[]).forEach((s) =>
-            handle.setCellView(s, projectRef.current.quadSlots?.[s] ?? s)
-          );
+          seedEngineViews(handle, projectRef.current);
         }
       },
       keysHeld: keysHeldRef.current,
@@ -351,7 +347,6 @@ export function EditorStateProvider({
 
       importProjectObject,
       exportProjectObject,
-      importFromLibrary,
 
       undo,
       redo,

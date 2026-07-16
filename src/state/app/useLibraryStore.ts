@@ -24,7 +24,6 @@ export interface LibraryStore {
   persistEntry: (en: Entry) => string;
   del: (id: string) => void;
   openInStudio3d: (id: string) => void;
-  refreshLocal: () => void;
 }
 
 export function useLibraryStore(deps: { now: number; showToast: (m: string) => void }): LibraryStore {
@@ -42,8 +41,6 @@ export function useLibraryStore(deps: { now: number; showToast: (m: string) => v
   const cloudList = useQuery(api.projects.listMine, isAuthenticated ? {} : "skip");
   const [cloudDocs, setCloudDocs] = useState<Record<string, EditorProject>>({});
   const [localSaved, setLocalSaved] = useState<SavedEntry[]>([]);
-
-  const refreshLocal = useCallback(() => setLocalSaved(listProjects()), []);
 
   // anonymous store: re-read localStorage on mount / focus / save event
   useEffect(() => {
@@ -158,5 +155,5 @@ export function useLibraryStore(deps: { now: number; showToast: (m: string) => v
     [entries, localSaved, cloudDocs, router]
   );
 
-  return { entries, showingExamples, persistEntry, del, openInStudio3d, refreshLocal };
+  return { entries, showingExamples, persistEntry, del, openInStudio3d };
 }

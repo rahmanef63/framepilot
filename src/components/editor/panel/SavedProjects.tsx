@@ -83,7 +83,7 @@ export function SavedProjects() {
       return;
     }
     if (!confirm(t("panel.importLibraryConfirm"))) return;
-    ctx.importFromLibrary(libraryProject);
+    ctx.importProjectObject(libraryProject);
     showToast(t("panel.importedFromLibrary"));
   };
 

@@ -4,11 +4,11 @@
 // hero copy button. Resolves `text` (a string or a lazy () => string), copies it
 // via the shared clipboard helper, and flips to a "Tersalin" confirmation for
 // 1200ms. Style it "off" by passing the ghost Button variant.
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button, ButtonVariant, ButtonSize } from "@/components/ds/Button";
 import { useT } from "@/i18n";
-import { copyText } from "./panel/outline/clipboard";
+import { useCopyFlip } from "./useCopyFlip";
 
 export function CopyButton({
   text,
@@ -30,15 +30,11 @@ export function CopyButton({
   style?: CSSProperties;
 }) {
   const { t } = useT();
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyFlip();
   const doneLabel = copiedLabel ?? t("common.copied");
 
   const onClick = () => {
-    const t = typeof text === "function" ? text() : text;
-    if (!t) return;
-    copyText(t);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
+    copy(typeof text === "function" ? text() : text);
   };
 
   return (

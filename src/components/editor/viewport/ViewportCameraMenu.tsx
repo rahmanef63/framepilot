@@ -7,13 +7,14 @@
 // CellViewMenu.css (.cell-viewmenu/.cvm-*) + the appended .cvm-acc-* accordion rules,
 // with the same pointer/wheel isolation so interacting never drags/zooms the canvas.
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useEditor } from "@/state/EditorState";
 import { ARS } from "@/lib/dataPrompt";
 import { CAMERAS, cameraById } from "@/lib/cameras";
 import { ANGLE_PRESETS, SHOT_PRESETS } from "@/lib/editor/presets";
 import { Aperture, ChevronDown, Plus } from "lucide-react";
 import { useT } from "@/i18n";
+import { useDismissablePopover } from "./useDismissablePopover";
 import "./CellViewMenu.css";
 
 type SectionId = "ratio" | "angle" | "saved" | "shot" | "camera";
@@ -34,36 +35,9 @@ export function ViewportCameraMenu() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const popRef = useRef<HTMLDivElement | null>(null);
 
-  // Isolate the open popover from the cell's native pointer/wheel handlers so
-  // clicking/scrolling the menu never starts a canvas drag or zooms the 3D view.
-  useEffect(() => {
-    const el = popRef.current;
-    if (!el || !open) return;
-    const stop = (e: Event) => e.stopPropagation();
-    el.addEventListener("pointerdown", stop);
-    el.addEventListener("wheel", stop, { passive: true });
-    return () => {
-      el.removeEventListener("pointerdown", stop);
-      el.removeEventListener("wheel", stop);
-    };
-  }, [open]);
-
-  // Close on outside click / Escape.
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  // Isolate the open popover from the cell's native pointer/wheel handlers +
+  // close on outside click / Escape (see useDismissablePopover).
+  useDismissablePopover(open, rootRef, popRef, () => setOpen(false));
 
   const toggleSec = (id: SectionId) => setSec((s) => (s === id ? null : id));
 

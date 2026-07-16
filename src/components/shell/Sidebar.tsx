@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { NavUserMenu } from "@/components/shell/NavUserMenu";
 import { BrandMark } from "@/components/shell/BrandMark";
 import { NavItem } from "@/components/ds/NavItem";
@@ -63,12 +64,8 @@ export function Sidebar() {
             flex: "none",
           }}
         >
-          <a
+          <Link
             href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              router.push("/");
-            }}
             title={t("shell.brandLink.title")}
             style={{
               width: "38px",
@@ -83,7 +80,7 @@ export function Sidebar() {
             }}
           >
             <BrandMark size={24} />
-          </a>
+          </Link>
           {open ? (
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ font: "800 14px var(--font-sans)", color: "var(--foreground)", lineHeight: 1.05 }}>
@@ -161,16 +158,12 @@ export function Sidebar() {
           {open && !isStudio ? (
             <p style={{ font: "400 12px var(--font-sans)", color: "var(--muted-foreground)", lineHeight: 1.5, padding: "4px 6px" }}>
               {t("shell.sidebar.openPrefix")}{" "}
-              <a
+              <Link
                 href="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/");
-                }}
                 style={{ color: "var(--primary)", fontWeight: 600 }}
               >
                 {t("header.crumb.studio")}
-              </a>{" "}
+              </Link>{" "}
               {t("shell.sidebar.openSuffix")}
             </p>
           ) : null}

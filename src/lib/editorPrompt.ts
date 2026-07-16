@@ -12,7 +12,7 @@
 import { EditorFrame, EditorScene, EditorProject, defaultShotMeta, frameDuration, sceneDuration } from "./editorModel";
 import { focalLength } from "./editorMath";
 import { encodeScene, encodeProject } from "./prompt/cameraPrompt";
-import { viewLabel } from "./prompt/platforms";
+import { viewLabel, ANGLE_EN } from "./prompt/platforms";
 import { ALL_ON } from "./prompt/types";
 import type { PlatformId, ShotOptions } from "./prompt/types";
 
@@ -36,14 +36,6 @@ export function projectPrompt(project: EditorProject, platform: PlatformId = DEF
 // ============================================================
 // SECONDARY — bilingual production dump (concept ~2303-2357), kept as "Detail"
 // ============================================================
-const angleEN: Record<string, string> = {
-  "BIRD'S EYE": "bird's-eye view",
-  "HIGH ANGLE": "high angle",
-  "EYE LEVEL": "eye-level shot",
-  "LOW ANGLE": "low angle",
-  "WORM'S EYE": "worm's-eye view",
-};
-
 // view classification lives in ONE place now — ./prompt/platforms viewLabel
 // (same rel = norm180(az - subjRot) buckets, concept ~2311-2318). It appends a
 // side + off-axis degrees for the off-axis buckets.
@@ -65,7 +57,7 @@ function frameDetail(f: EditorFrame, i: number, settings: PromptSettings): strin
     m.movement && !m.movement.startsWith("Static")
       ? `, camera movement: ${m.movement.toLowerCase()}`
       : ", locked-off camera";
-  const en = `${(f.shot || "MEDIUM SHOT").toLowerCase()}, ${angleEN[baseAngle] || baseAngle.toLowerCase()}, ${view} of ${subj}, ~${f.lens || focalLength(s.fov)}mm full-frame lens, ${settings.aspectRatio} composition${dutch}${movement}${details ? ", " + details : ""}`;
+  const en = `${(f.shot || "MEDIUM SHOT").toLowerCase()}, ${ANGLE_EN[baseAngle] || baseAngle.toLowerCase()}, ${view} of ${subj}, ~${f.lens || focalLength(s.fov)}mm full-frame lens, ${settings.aspectRatio} composition${dutch}${movement}${details ? ", " + details : ""}`;
   const lines = [
     `SHOT ${i + 1} — ${f.name}`,
     `• Tujuan     : ${m.intent || "—"}`,

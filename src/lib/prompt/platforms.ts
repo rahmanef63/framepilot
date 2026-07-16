@@ -147,7 +147,7 @@ export const MOVE_FROM_LABEL: Record<string, NeutralMoveId> = {
   "crane / jib": "crane-up",
 };
 
-// Reused from editorPrompt.ts angleEN (kept in sync — same wording).
+// Angle label -> EN wording. Consumed by editorPrompt.ts frameDetail.
 export const ANGLE_EN: Record<string, string> = {
   "BIRD'S EYE": "bird's-eye view",
   "HIGH ANGLE": "high angle",

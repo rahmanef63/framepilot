@@ -9,10 +9,9 @@ import { tr } from "@/i18n";
 export function useLibraryIo(deps: {
   showToast: (m: string) => void;
   persistEntry: (en: Entry) => string;
-  refreshLocal: () => void;
   project: Project;
 }) {
-  const { showToast, persistEntry, refreshLocal, project } = deps;
+  const { showToast, persistEntry, project } = deps;
 
   const [importOpen, setImportOpen] = useState(false);
   const [schemaOpen, setSchemaOpen] = useState(false);
@@ -84,14 +83,13 @@ export function useLibraryIo(deps: {
       // Import persistence: write the SAME projects store the Studio 3D editor uses,
       // so the new prompt shows in /library and survives reload (SSOT).
       persistEntry(en);
-      refreshLocal();
       setIoMsg(tr("state.io.added", { s: scenes.length, f: fc }));
       setIoOk(true);
       setImportOpen(false);
       setPasteText("");
       showToast(tr("state.io.addedToast", { s: scenes.length, f: fc }));
     },
-    [showToast, persistEntry, refreshLocal]
+    [showToast, persistEntry]
   );
 
   const openImport = useCallback((tab?: string) => {

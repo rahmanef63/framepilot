@@ -3,7 +3,6 @@
 // the engine's aspect/HUD — see swapProject, the one place that block lives.
 
 import { useCallback } from "react";
-import type { Project as AppProject } from "@/lib/dataPrompt";
 import { tr } from "@/i18n";
 import {
   EditorProject,
@@ -12,7 +11,6 @@ import {
   deepCopy,
   toEditorProject,
 } from "@/lib/editorModel";
-import type { SlotId } from "@/lib/editorModel";
 import {
   saveProject,
   loadProject,
@@ -21,6 +19,7 @@ import {
   newProjectStorage,
 } from "@/lib/editorStorage";
 import { EditorCore, newHistoryState } from "./core";
+import { seedEngineViews } from "./views";
 
 // Swap the whole document: point projectRef at `project`, clear the current
 // frame + undo stack, re-seed the engine aspect/HUD, seed history, re-render.
@@ -38,10 +37,7 @@ export function swapProject(
   core.engineRef.current?.updateHud();
   // reconfigurable quad (Goal B): re-seed custom views + slot assignments so a
   // loaded/imported/new doc's quad renders its saved configuration.
-  core.engineRef.current?.setSavedViews(project.savedViews ?? []);
-  (["top", "left", "right"] as SlotId[]).forEach((s) =>
-    core.engineRef.current?.setCellView(s, project.quadSlots?.[s] ?? s)
-  );
+  seedEngineViews(core.engineRef.current, project);
   commitHistory(label);
   core.bump();
 }
@@ -54,7 +50,6 @@ export interface IoActions {
   refreshSaved: () => void;
   importProjectObject: (obj: unknown) => void;
   exportProjectObject: () => EditorProject;
-  importFromLibrary: (appProject: AppProject) => void;
 }
 
 export function useIoActions(
@@ -113,12 +108,6 @@ export function useIoActions(
   );
 
   const exportProjectObject = useCallback((): EditorProject => deepCopy(projectRef.current), [projectRef]);
-  const importFromLibrary = useCallback(
-    (appProject: AppProject) => {
-      importProjectObject(appProject);
-    },
-    [importProjectObject]
-  );
 
   return {
     saveCurrentProject,
@@ -128,6 +117,5 @@ export function useIoActions(
     refreshSaved,
     importProjectObject,
     exportProjectObject,
-    importFromLibrary,
   };
 }

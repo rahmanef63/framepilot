@@ -3,7 +3,6 @@
 // EditorPlayback types are re-exported from "@/state/EditorState" unchanged.
 
 import type { Meta } from "@/lib/dataPrompt";
-import type { Project as AppProject } from "@/lib/dataPrompt";
 import type { EditorProject, EditorFrame, RigState, SlotId, ViewKind } from "@/lib/editorModel";
 import type {
   EditorEngineHandle,
@@ -149,7 +148,6 @@ export interface EditorContextValue {
   // import / export / library interop
   importProjectObject: (obj: unknown) => void;
   exportProjectObject: () => EditorProject;
-  importFromLibrary: (appProject: AppProject) => void;
 
   // history
   undo: () => void;

@@ -17,6 +17,8 @@ import {
   norm360,
   norm180,
   smoothstep,
+  lerp,
+  lerpAngle,
   getOrbit as orbitFromCart,
   setOrbit as cartFromOrbit,
   focalLength,
@@ -1263,15 +1265,6 @@ export class EditorViewportEngine implements EditorEngineHandle {
       });
     }
   }
-}
-
-// --- local interpolation (playback) — mirrors editorMath, inlined to avoid a
-// per-frame import indirection in the hot path ---
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t;
-}
-function lerpAngle(a: number, b: number, t: number): number {
-  return a + norm180(b - a) * t;
 }
 
 export default EditorViewportEngine;

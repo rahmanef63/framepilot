@@ -7,6 +7,7 @@
 
 import React from "react";
 import { Button } from "@/components/ds/Button";
+import { IconChip } from "@/components/ds/IconChip";
 import { useT } from "@/i18n";
 import { forceFreshReload } from "@/lib/forceFreshReload";
 import { MoreHorizontal, Undo2, Redo2, Download, Sparkles, Plus, GraduationCap, RotateCw, Braces } from "lucide-react";
@@ -203,21 +204,7 @@ function MenuOption({
         color: "var(--foreground)",
       }}
     >
-      <span
-        style={{
-          width: "26px",
-          height: "26px",
-          flex: "none",
-          borderRadius: "7px",
-          border: "var(--border-width) solid var(--border)",
-          display: "grid",
-          placeItems: "center",
-          font: "600 11px var(--font-mono)",
-          color: "var(--subtle-foreground)",
-        }}
-      >
-        {icon}
-      </span>
+      <IconChip>{icon}</IconChip>
       <span style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
         <span style={{ font: "700 12.5px var(--font-sans)", color: "var(--foreground)" }}>{title}</span>
         <span style={{ font: "400 10.5px var(--font-mono)", color: "var(--muted-foreground)" }}>{desc}</span>

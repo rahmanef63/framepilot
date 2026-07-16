@@ -6,7 +6,8 @@
 import { useCallback } from "react";
 import { uid } from "@/lib/dataPrompt";
 import { tr } from "@/i18n";
-import type { SlotId, ViewKind, SavedView } from "@/lib/editorModel";
+import type { SlotId, ViewKind, SavedView, EditorProject } from "@/lib/editorModel";
+import type { EditorEngineHandle } from "@/lib/editor/engineApi";
 import type { EditorCore } from "./core";
 
 export interface ViewActions {
@@ -19,21 +20,21 @@ export interface ViewActions {
 const SLOT_DEFAULTS: Record<SlotId, ViewKind> = { top: "top", left: "left", right: "right" };
 const SLOTS: SlotId[] = ["top", "left", "right"];
 
+// Re-push both savedViews + per-slot assignments into the engine's render cache.
+// Shared by every "swap the whole doc" / engine-(re)registration path plus the
+// in-editor delete-view revert, so the seed block lives once; a missing slot
+// falls back to its same-named ortho preset.
+export function seedEngineViews(engine: EditorEngineHandle | null, project: EditorProject) {
+  engine?.setSavedViews(project.savedViews ?? []);
+  SLOTS.forEach((s) => engine?.setCellView(s, project.quadSlots?.[s] ?? s));
+}
+
 export function useViewActions(
   core: EditorCore,
   deps: { commitHistory: (label?: string) => void }
 ): ViewActions {
   const { projectRef, engineRef, bump, pushAutosave } = core;
   const { commitHistory } = deps;
-
-  // Re-push both savedViews + slot assignments into the engine (used after any
-  // change that can affect slot resolution, e.g. a delete that reverts a slot).
-  const syncEngineViews = useCallback(() => {
-    const p = projectRef.current;
-    engineRef.current?.setSavedViews(p.savedViews ?? []);
-    const slots = p.quadSlots ?? { ...SLOT_DEFAULTS };
-    SLOTS.forEach((s) => engineRef.current?.setCellView(s, slots[s] ?? SLOT_DEFAULTS[s]));
-  }, [projectRef, engineRef]);
 
   // Snapshot the CURRENT pov camera orbit (engine.getOrbit) as a named view.
   const addSavedView = useCallback(
@@ -83,12 +84,12 @@ export function useViewActions(
         if (slots[s] === (`custom:${id}` as ViewKind)) slots[s] = SLOT_DEFAULTS[s];
       });
       p.quadSlots = slots;
-      syncEngineViews();
+      seedEngineViews(engineRef.current, p);
       pushAutosave();
       commitHistory(tr("state.hist.deleteView"));
       bump();
     },
-    [projectRef, syncEngineViews, pushAutosave, commitHistory, bump]
+    [projectRef, engineRef, pushAutosave, commitHistory, bump]
   );
 
   const setCellView = useCallback(

@@ -5,6 +5,7 @@
 import React from "react";
 import { Globe, Check } from "lucide-react";
 import { useT, LOCALES, LOCALE_NAMES, type Locale } from "@/i18n";
+import { useDismiss } from "@/components/shell/useDismiss";
 
 export function LanguageSwitcher() {
   const { locale, setLocale, t } = useT();
@@ -22,19 +23,7 @@ export function LanguageSwitcher() {
     setOpen((v) => !v);
   };
 
-  React.useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  useDismiss(wrapRef, open, setOpen);
 
   const pick = (l: Locale) => {
     setLocale(l);

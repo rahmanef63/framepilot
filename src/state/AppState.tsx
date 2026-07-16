@@ -7,7 +7,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/i18n";
-import { Project, SRC_META, fmtWhen, seedProject } from "@/lib/dataPrompt";
+import { Project, RawFrame, SRC_META, fmtWhen, seedProject } from "@/lib/dataPrompt";
 import { STARTER_TEMPLATES, type StarterTemplate } from "@/app/(app)/template/templates";
 import { toEditorProject } from "@/lib/editorModel";
 import { AUTOKEY, saveProject } from "@/lib/editorStorage";
@@ -18,6 +18,27 @@ import type { AppContextValue, EntryView, LibraryView } from "./app/types";
 export type { EntryView, LibraryView } from "./app/types";
 
 const AppContext = createContext<AppContextValue | null>(null);
+
+// The per-card snapshot block shared by the preset + user library entry maps: scene/frame
+// counts, the first frame's camera fields, and the flattened frame list. Only the
+// id-prefix / source badge / onDelete differ between the two maps, so those stay per-map.
+function snapshotFields(scenes: { frames: RawFrame[] }[]) {
+  const frameCount = scenes.reduce((a, s) => a + s.frames.length, 0);
+  const f0 = scenes[0].frames[0];
+  return {
+    sceneCount: scenes.length,
+    frameCount,
+    pAz: f0.az,
+    pEl: f0.el,
+    pDist: f0.dist,
+    pRoll: f0.roll ?? 0,
+    pLens: f0.lens,
+    pSubj: f0.subj ?? "person",
+    frames: scenes
+      .flatMap((s) => s.frames)
+      .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll ?? 0, subj: f.subj ?? "person", name: f.name })),
+  };
+}
 
 export function useApp(): AppContextValue {
   const ctx = useContext(AppContext);
@@ -60,7 +81,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // ---- library store (SSOT) + I/O ----
   const store = useLibraryStore({ now, showToast });
-  const io = useLibraryIo({ showToast, persistEntry: store.persistEntry, refreshLocal: store.refreshLocal, project });
+  const io = useLibraryIo({ showToast, persistEntry: store.persistEntry, project });
 
   // ---- starter Template presets → read-only library entries (front of the grid) ----
   const router = useRouter();
@@ -83,34 +104,19 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   );
   const presetEntries = useMemo<EntryView[]>(
     () =>
-      STARTER_TEMPLATES.map((tpl) => {
-        const scenes = tpl.project.scenes;
-        const frameCount = scenes.reduce((a, s) => a + s.frames.length, 0);
-        const f0 = scenes[0].frames[0];
-        return {
-          id: "preset:" + tpl.id,
-          name: t(`template.${tpl.id}.title`),
-          when: tpl.aspectRatio,
-          sourceGlyph: "✦",
-          sourceLabel: t("state.src.preset"),
-          sourceTone: "new",
-          thumbCaption: t("state.src.preset").toLowerCase(),
-          sceneCount: scenes.length,
-          frameCount,
-          pAz: f0.az,
-          pEl: f0.el,
-          pDist: f0.dist,
-          pRoll: f0.roll ?? 0,
-          pLens: f0.lens,
-          pSubj: f0.subj ?? "person",
-          frames: scenes
-            .flatMap((s) => s.frames)
-            .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll ?? 0, subj: f.subj ?? "person", name: f.name })),
-          example: false,
-          preset: true,
-          onOpenStudio: () => useTemplate(tpl),
-        };
-      }),
+      STARTER_TEMPLATES.map((tpl) => ({
+        id: "preset:" + tpl.id,
+        name: t(`template.${tpl.id}.title`),
+        when: tpl.aspectRatio,
+        sourceGlyph: "✦",
+        sourceLabel: t("state.src.preset"),
+        sourceTone: "new",
+        thumbCaption: t("state.src.preset").toLowerCase(),
+        ...snapshotFields(tpl.project.scenes),
+        example: false,
+        preset: true,
+        onOpenStudio: () => useTemplate(tpl),
+      })),
     [useTemplate, t],
   );
 
@@ -118,13 +124,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const userEntries = useMemo<EntryView[]>(() => {
     return store.entries.map((en): EntryView => {
       const scenes = en.data.scenes;
-      const frameCount = scenes.reduce((a, sc) => a + sc.frames.length, 0);
       // Examples get a clear "Contoh" badge via the existing source-badge UI.
       const meta = SRC_META[en.source] || SRC_META.paste;
       const sm = store.showingExamples
         ? { glyph: "★", label: t("state.src.example"), tone: "outline" as const }
         : { glyph: meta.glyph, label: t(`state.src.${en.source}`), tone: meta.tone };
-      const f0 = scenes[0].frames[0];
       return {
         id: en.id,
         name: store.showingExamples ? t(`seed.${en.id}.name`) : en.name,
@@ -133,17 +137,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         sourceLabel: sm.label,
         sourceTone: sm.tone,
         thumbCaption: sm.label.toLowerCase(),
-        sceneCount: scenes.length,
-        frameCount,
-        pAz: f0.az,
-        pEl: f0.el,
-        pDist: f0.dist,
-        pRoll: f0.roll ?? 0,
-        pLens: f0.lens,
-        pSubj: f0.subj ?? "person",
-        frames: scenes
-          .flatMap((sc) => sc.frames)
-          .map((f) => ({ az: f.az, el: f.el, dist: f.dist, lens: f.lens, roll: f.roll ?? 0, subj: f.subj ?? "person", name: f.name })),
+        ...snapshotFields(scenes),
         example: store.showingExamples,
         onOpenStudio: () => store.openInStudio3d(en.id),
         onDelete: () => store.del(en.id),

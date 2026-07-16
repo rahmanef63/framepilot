@@ -1,6 +1,7 @@
 "use client";
 import React, { CSSProperties, ReactNode, useState } from "react";
 import { ChevronRight, Dot } from "lucide-react";
+import { IconChip } from "@/components/ds/IconChip";
 
 /**
  * NavItem — a single navigation entry. `horizontal` is a sidebar/menu row
@@ -61,22 +62,9 @@ export function NavItem({
           ...style,
         }}
       >
-        <span
-          aria-hidden
-          style={{
-            width: "24px",
-            height: "24px",
-            flex: "none",
-            borderRadius: "7px",
-            border: "var(--border-width) solid var(--border)",
-            display: "grid",
-            placeItems: "center",
-            font: "600 10px var(--font-mono)",
-            color: "var(--subtle-foreground)",
-          }}
-        >
+        <IconChip size={24} aria-hidden>
           {icon}
-        </span>
+        </IconChip>
         {label}
         {chevron ? (
           <span

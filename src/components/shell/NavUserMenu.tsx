@@ -3,6 +3,8 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useConvexAuth } from "convex/react";
 import { NavItem } from "@/components/ds/NavItem";
+import { IconChip } from "@/components/ds/IconChip";
+import { useDismiss } from "@/components/shell/useDismiss";
 import { ThemeModeToggle } from "@/components/shell/ThemeModeToggle";
 import { AccountModal } from "@/components/auth/AccountModal";
 import { useIsAdmin } from "@/components/admin/useIsAdmin";
@@ -42,21 +44,7 @@ export function NavUserMenu({ orientation }: { orientation: "horizontal" | "vert
     setOpen((v) => !v);
   };
 
-  React.useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  useDismiss(wrapRef, open, setOpen);
 
   const go = (href: string) => {
     setOpen(false);
@@ -208,22 +196,7 @@ function MenuLink({
         color: active ? "var(--primary)" : "var(--foreground)",
       }}
     >
-      <span
-        aria-hidden
-        style={{
-          width: 26,
-          height: 26,
-          flex: "none",
-          borderRadius: 7,
-          border: "var(--border-width) solid var(--border)",
-          display: "grid",
-          placeItems: "center",
-          font: "600 11px var(--font-mono)",
-          color: "var(--subtle-foreground)",
-        }}
-      >
-        {icon}
-      </span>
+      <IconChip aria-hidden>{icon}</IconChip>
       <span style={{ font: "700 12.5px var(--font-sans)" }}>{label}</span>
     </button>
   );

@@ -6,7 +6,7 @@
 // this component never mounts a second viewport. Presentational: all playback /
 // scene state comes from useEditor(); strings ported VERBATIM from the concept.
 
-import React, { useState } from "react";
+import React from "react";
 import { Check } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useT } from "@/i18n";
@@ -18,8 +18,8 @@ import { usePromptOptions } from "./usePromptOptions";
 import { PlatformSelect, PlatformHint } from "./PlatformPicker";
 import { PromptOptionsMenu } from "./PromptOptionsMenu";
 import { IconPrev, IconPlay, IconPause, IconNext, IconStop, IconLoop } from "./EditorIcons";
-import { copyText } from "./panel/outline/clipboard";
 import { CopyButton } from "./CopyButton";
+import { useCopyFlip } from "./useCopyFlip";
 
 export function PreviewPanel() {
   const ctx = useEditor();
@@ -27,7 +27,7 @@ export function PreviewPanel() {
   const { playback } = ctx;
   const [platform, setPlatform] = usePlatform();
   const [opts] = usePromptOptions();
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyFlip();
 
   // whole-project skinned camera prompt for the textarea (platform-tuned hero),
   // rebuilt live from the shared prompt-detail toggles
@@ -45,12 +45,6 @@ export function PreviewPanel() {
   // total shots across every scene — surfaced so the prompt panel says what it holds
   const totalShots = ctx.project.scenes.reduce((n, s) => n + s.frames.length, 0);
   const hasShots = totalShots > 0;
-
-  const copyPrompt = () => {
-    copyText(prompt);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
-  };
 
   return (
     <>
@@ -129,7 +123,7 @@ export function PreviewPanel() {
             size="md"
             style={{ flex: 1 }}
             disabled={!hasShots}
-            onClick={copyPrompt}
+            onClick={() => copy(prompt)}
           >
             {copied ? <>{t("common.copied")} <Check size={16} aria-hidden /></> : hasShots ? t("editor.copyPrompt") : t("editor.noShotsYet")}
           </Button>

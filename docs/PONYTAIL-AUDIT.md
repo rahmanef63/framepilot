@@ -7,13 +7,26 @@ here (it cited `project/`, `AppState.tsx` 763 LOC, `editorModel.ts` single file 
 all gone). Format: `tag: what. replacement. [path] ~lines`. Ranked biggest cut
 first.
 
-> **Applied 2026-07-16 (batch 1, ~-171 lines):** ✔ IMPLEMENTATION.md deleted ·
+> **Applied 2026-07-16 (batch 1, ~-166 lines):** ✔ IMPLEMENTATION.md deleted ·
 > ✔ MobileSceneMenu+MobileFrameMenu merged into `MobileItemMenu` · ✔ dead engine
 > seams `resize`/`stepReset`/`getCellView` removed · ✔ dead `thirdsOn`/`setThirds`
 > engine plumbing removed (React overlay untouched) · ✔ unused `getActiveLocale`/
-> `useLocale`/`uid` removed. tsc + build green, mobile long-press menu smoke-tested.
-> The Tier 2/4/5 refactors below (hooks, `next/Link`, `@auth/core`, tsconfig) are
-> still open — apply when wanted.
+> `useLocale`/`uid` removed.
+>
+> **Applied 2026-07-16 (batch 2, ~-143 lines):** ✔ shared `ErrorBoundaryCard`
+> (both route error.tsx thinned) · ✔ `useDismissablePopover` (2 viewport menus) ·
+> ✔ `IconChip` (4 sites) + `useDismiss` (3 dropdowns) · ✔ `importFromLibrary`
+> wrapper deleted + `seedEngineViews` helper (3 sites) · ✔ `armLongPress` ·
+> ✔ `snapshotFields` + `refreshLocal` seam deleted · ✔ `angleEN`→`ANGLE_EN` ·
+> ✔ engine `lerp`/`lerpAngle` de-duped · ✔ Sidebar anchors → `next/Link` ·
+> ✔ `useCopyFlip` (3 sites). tsc + build green; dropdown dismiss (Esc/outside),
+> mobile long-press menu, and zero-console-error render all smoke-tested.
+>
+> **Deliberately deferred (ponytail call):** `frameIndicator` (-2, a helper +
+> export + 2 imports to save 2 lines isn't worth the surface); `@auth/core` /
+> `tsconfig` exclude (package.json/tsconfig staging traps, -1 each); convex
+> `requireAdmin`/`isAdminUser` dedup (-4, needs a separate Convex Cloud deploy —
+> behavior-identical so no urgency).
 
 ---
 
