@@ -1,0 +1,144 @@
+/* Per-locale SEO landing. Uses the app's Rupa design tokens (globals.css, loaded by
+   the root layout) so it matches the product. Light-first, theme-aware via tokens. */
+
+.lp {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(32px, 6vw, 72px) 20px 48px;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.lp-hero {
+  text-align: center;
+}
+
+.lp-brand {
+  margin: 0 0 14px;
+  font: 700 12px var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.lp-h1 {
+  margin: 0 auto;
+  max-width: 16ch;
+  font: 800 clamp(30px, 6vw, 52px) / 1.08 var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.lp-sub {
+  margin: 18px auto 0;
+  max-width: 56ch;
+  font: 400 clamp(15px, 2.4vw, 18px) / 1.6 var(--font-sans);
+  color: var(--muted-foreground);
+}
+
+.lp-cta {
+  margin-top: 28px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  border-radius: var(--radius-md);
+  font: 600 15px var(--font-sans);
+  text-decoration: none;
+  border: var(--border-width) solid transparent;
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+.lp-btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.lp-btn-primary:hover {
+  filter: brightness(1.05);
+}
+.lp-btn-ghost {
+  background: transparent;
+  color: var(--foreground);
+  border-color: var(--border);
+}
+.lp-btn-ghost:hover {
+  background: var(--muted);
+}
+
+.lp-platforms {
+  margin: 34px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  justify-content: center;
+  font: 600 12px var(--font-mono);
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lp-features {
+  margin-top: clamp(40px, 7vw, 72px);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 720px) {
+  .lp-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lp-feature {
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border);
+  background: var(--card);
+}
+.lp-feature-title {
+  margin: 0 0 8px;
+  font: 700 16px var(--font-sans);
+  color: var(--foreground);
+}
+.lp-feature-desc {
+  margin: 0;
+  font: 400 14px / 1.6 var(--font-sans);
+  color: var(--muted-foreground);
+}
+
+.lp-footer {
+  margin-top: clamp(40px, 7vw, 64px);
+  padding-top: 22px;
+  border-top: var(--border-width) solid var(--border);
+  text-align: center;
+}
+.lp-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  justify-content: center;
+}
+.lp-lang {
+  font: 500 13px var(--font-sans);
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.lp-lang:hover {
+  color: var(--foreground);
+}
+.lp-lang-on {
+  color: var(--primary);
+  font-weight: 700;
+}
+.lp-tagline {
+  margin: 16px 0 0;
+  font: 500 12px var(--font-mono);
+  color: var(--muted-foreground);
+}
