@@ -256,7 +256,6 @@ export function EditorStateProvider({
         if (handle) {
           handle.setRig(rigRef.current);
           handle.setSubject(rigRef.current.subj);
-          handle.setThirds(uiRef.current.thirdsOn);
           handle.setFrustum(uiRef.current.frustumOn);
           handle.setDragMode(uiRef.current.dragToolMode);
           handle.setAspect(projectRef.current.settings.aspectRatio);

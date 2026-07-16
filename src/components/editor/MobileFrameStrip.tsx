@@ -17,8 +17,7 @@ import { useEditor } from "@/state/EditorState";
 import { useT } from "@/i18n";
 import { activeScene, type EditorFrame } from "@/lib/editorModel";
 import { IconPlay, IconPause } from "./EditorIcons";
-import { MobileFrameMenu } from "./MobileFrameMenu";
-import { MobileSceneMenu } from "./MobileSceneMenu";
+import { MobileItemMenu } from "./MobileItemMenu";
 
 const LONG_PRESS_MS = 450;
 
@@ -143,12 +142,20 @@ export function MobileFrameStrip() {
           ))}
         </div>
         {sceneMenu ? (
-          <MobileSceneMenu
-            scene={sceneMenu.scene}
+          <MobileItemMenu
+            name={sceneMenu.scene.name}
             index={sceneMenu.index}
             total={scenes.length}
             rect={sceneMenu.rect}
             onClose={() => setSceneMenu(null)}
+            head={<>{sceneMenu.scene.name} · {t("editor.frameCount", { n: sceneMenu.scene.frames.length })}</>}
+            menuAria={t("editor.sceneActionsAria", { name: sceneMenu.scene.name })}
+            nameAria={t("editor.sceneNameAria")}
+            clampBottom={260}
+            onRename={(nm) => ctx.renameScene(sceneMenu.scene.id, nm)}
+            onDup={() => ctx.dupScene(sceneMenu.scene.id)}
+            onMove={(d) => ctx.moveScene(sceneMenu.scene.id, d)}
+            onDelete={() => ctx.delScene(sceneMenu.scene.id)}
           />
         ) : null}
       </div>
@@ -204,12 +211,21 @@ export function MobileFrameStrip() {
         ))}
       </div>
       {menu ? (
-        <MobileFrameMenu
-          frame={menu.frame}
+        <MobileItemMenu
+          name={menu.frame.name}
           index={menu.index}
           total={inside.frames.length}
           rect={menu.rect}
           onClose={() => setMenu(null)}
+          head={<>#{menu.index + 1} · {menu.frame.name}</>}
+          menuAria={t("editor.frameActionsAria", { name: menu.frame.name })}
+          nameAria={t("editor.frameNameAria")}
+          clampBottom={288}
+          onUpdateCamera={() => ctx.updateFrameById(menu.frame.id)}
+          onRename={(nm) => ctx.renameFrame(menu.frame.id, nm)}
+          onDup={() => ctx.dupFrame(menu.frame.id)}
+          onMove={(d) => ctx.moveFrame(menu.frame.id, d)}
+          onDelete={() => ctx.delFrame(menu.frame.id)}
         />
       ) : null}
     </div>

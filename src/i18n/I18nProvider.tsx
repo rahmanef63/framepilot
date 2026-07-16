@@ -80,8 +80,3 @@ export function useT(): I18nValue {
   if (!ctx) throw new Error("useT must be used within I18nProvider");
   return ctx;
 }
-
-/** Convenience: just the current locale (e.g. for Intl date/number formatting). */
-export function useLocale(): Locale {
-  return useT().locale;
-}

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useConvex, useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { Entry, seed, uid } from "@/lib/dataPrompt";
+import { Entry, seed } from "@/lib/dataPrompt";
 import { tr } from "@/i18n";
 import {
   EditorProject,

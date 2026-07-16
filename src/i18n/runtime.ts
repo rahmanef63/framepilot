@@ -9,9 +9,6 @@ let active: Locale = "id";
 export function setActiveLocale(l: Locale): void {
   active = l;
 }
-export function getActiveLocale(): Locale {
-  return active;
-}
 
 /** Translate a key in the active locale, falling back to Indonesian, then the raw key. */
 export function tr(key: string, vars?: Record<string, string | number>): string {

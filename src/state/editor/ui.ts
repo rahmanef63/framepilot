@@ -68,10 +68,10 @@ export function useUiActions(
     [uiRef, engineRef, bump]
   );
   const toggleThirds = useCallback(() => {
+    // thirds overlay is React-driven (Hud reads ui.thirdsOn) — no engine seam.
     uiRef.current.thirdsOn = !uiRef.current.thirdsOn;
-    engineRef.current?.setThirds(uiRef.current.thirdsOn);
     bump();
-  }, [uiRef, engineRef, bump]);
+  }, [uiRef, bump]);
   const toggleFrustum = useCallback(() => {
     uiRef.current.frustumOn = !uiRef.current.frustumOn;
     engineRef.current?.setFrustum(uiRef.current.frustumOn);

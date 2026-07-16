@@ -56,7 +56,6 @@ export interface EditorEngineHandle {
   // --- lifecycle ---
   mount(canvas: HTMLCanvasElement, opts?: EngineMountOpts): void;
   dispose(): void;
-  resize(): void;
   startLoop(): void;
   stopLoop(): void;
 
@@ -76,13 +75,11 @@ export interface EditorEngineHandle {
   // Bind an extra pointer/wheel interaction surface for a view (concept binds the
   // Full-Preview stage as a second "cam" surface, line ~1506). Cleaned up on dispose.
   attachSurface(el: HTMLElement, viewId: ViewId): void;
-  setThirds(on: boolean): void;
   setFrustum(on: boolean): void;
   setAspect(aspect: string): void; // real POV aspect + letterbox
 
   // --- reconfigurable quad (Goal B) ---
   setCellView(slot: SlotId, kind: ViewKind): void; // reassign a slot's effective view
-  getCellView(slot: SlotId): ViewKind;
   setSavedViews(list: SavedView[]): void; // push persisted custom orbits into the render cache
 
   // --- HUD ---
@@ -94,5 +91,4 @@ export interface EditorEngineHandle {
 
   // --- playback (driven by the engine rAF loop) ---
   setPlayback(pb: Partial<EnginePlayback>): void;
-  stepReset(): void;
 }

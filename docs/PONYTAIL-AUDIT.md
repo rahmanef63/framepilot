@@ -5,7 +5,15 @@ finding grep-verified by a second adversarial pass — default REJECT if the
 symbol has any live caller). Supersedes the pre-refactor audit that used to live
 here (it cited `project/`, `AppState.tsx` 763 LOC, `editorModel.ts` single file —
 all gone). Format: `tag: what. replacement. [path] ~lines`. Ranked biggest cut
-first. **Lists only — nothing applied.**
+first.
+
+> **Applied 2026-07-16 (batch 1, ~-171 lines):** ✔ IMPLEMENTATION.md deleted ·
+> ✔ MobileSceneMenu+MobileFrameMenu merged into `MobileItemMenu` · ✔ dead engine
+> seams `resize`/`stepReset`/`getCellView` removed · ✔ dead `thirdsOn`/`setThirds`
+> engine plumbing removed (React overlay untouched) · ✔ unused `getActiveLocale`/
+> `useLocale`/`uid` removed. tsc + build green, mobile long-press menu smoke-tested.
+> The Tier 2/4/5 refactors below (hooks, `next/Link`, `@auth/core`, tsconfig) are
+> still open — apply when wanted.
 
 ---
 

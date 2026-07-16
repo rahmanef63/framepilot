@@ -119,7 +119,6 @@ export class EditorViewportEngine implements EditorEngineHandle {
   private activeTab: MainTab = "editor";
   private focusView: FocusView = null;
   private dragMode: DragMode = "nav";
-  private thirdsOn = true;
   private frustumOn = true;
   private aspect = "16:9";
   private fps = 24;
@@ -370,11 +369,6 @@ export class EditorViewportEngine implements EditorEngineHandle {
     this.ready = false;
   }
 
-  resize(): void {
-    this.lastW = -1;
-    this.updateFormatGuides();
-  }
-
   startLoop(): void {
     if (!this.ready || this.running || this.disposed) return;
     this.running = true;
@@ -483,10 +477,6 @@ export class EditorViewportEngine implements EditorEngineHandle {
     this.attachViewInteraction(el, viewId);
   }
 
-  setThirds(on: boolean): void {
-    this.thirdsOn = on; // visual overlay is React-driven; stored for parity
-  }
-
   setFrustum(on: boolean): void {
     this.frustumOn = on;
     if (this.camHelper) this.camHelper.visible = on;
@@ -502,10 +492,6 @@ export class EditorViewportEngine implements EditorEngineHandle {
   // interaction resolve each slot through slotView. No re-render needed. ---
   setCellView(slot: SlotId, kind: ViewKind): void {
     this.slotView[slot] = kind;
-  }
-
-  getCellView(slot: SlotId): ViewKind {
-    return this.slotView[slot];
   }
 
   setSavedViews(list: SavedView[]): void {
@@ -1063,15 +1049,6 @@ export class EditorViewportEngine implements EditorEngineHandle {
   // ============================================================
   setPlayback(pb: Partial<EnginePlayback>): void {
     Object.assign(this.pb, pb);
-  }
-
-  stepReset(): void {
-    this.pb.playing = false;
-    this.pb.t = 0;
-    this.pb.idx = 0;
-    if (this.pb.frames.length) {
-      this.applyState(this.pb.frames[0]);
-    }
   }
 
   private stepPlayback(dt: number): void {
