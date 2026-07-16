@@ -58,6 +58,23 @@ const THEME_MODE_BOOT = `(function(){try{var m=localStorage.getItem("framepilot:
 // (First-time detection happens in I18nProvider; this only honors an explicit choice.)
 const LANG_BOOT = `(function(){try{var l=localStorage.getItem("cag.lang");if(["id","en","es","zh","ar"].indexOf(l)<0)return;document.documentElement.lang=l;document.documentElement.dir=(l==="ar")?"rtl":"ltr";}catch(e){}})();`;
 
+// Structured data (schema.org SoftwareApplication) so search engines can render a
+// rich result for the app. Static; safe to inline (no user data).
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Camera Angle Guide Pro",
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Web browser",
+  url: "https://frame-pilot.rahmanef.com",
+  description:
+    "Compose camera angles in an interactive 3D studio, then export paste-ready camera prompts for AI video platforms.",
+  inLanguage: ["en", "id", "es", "zh", "ar"],
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  author: { "@type": "Person", name: "Abdurrahman Fakhrul", url: "https://github.com/rahmanef63" },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ConvexAuthNextjsServerProvider>
@@ -65,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <head>
           <script dangerouslySetInnerHTML={{ __html: THEME_MODE_BOOT }} />
           <script dangerouslySetInnerHTML={{ __html: LANG_BOOT }} />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
         </head>
         <body>
           <ConvexClientProvider>

@@ -71,6 +71,7 @@ export const DOCS: DocSection[] = [
         ],
       },
       { type: "p", text: "docs.platformCameraTag" },
+      { type: "p", text: "legal.trademarks" },
     ],
   },
   {

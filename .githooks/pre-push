@@ -54,6 +54,15 @@ ln -s "$REPO_ROOT/node_modules" "$WORKTREE/node_modules"
 
 if ( cd "$WORKTREE" && npx tsc --noEmit ); then
   echo "pre-push: committed tree typechecks clean. Pushing."
+  # Convex reminder: `git push` deploys the FRONTEND (Dokploy) but NOT the Convex
+  # backend. If this push touches convex/, the live backend stays on the old
+  # version until a manual deploy. Non-blocking — just a loud heads-up.
+  if git rev-parse --verify -q origin/main >/dev/null 2>&1 && ! git diff --quiet origin/main HEAD -- convex/; then
+    echo ""
+    echo "pre-push: NOTE — this push changes convex/ (backend)."
+    echo "          Dokploy does NOT deploy it. Run \`npx convex deploy --yes\` after"
+    echo "          pushing, or the live backend stays on the previous version."
+  fi
   exit 0
 else
   echo ""

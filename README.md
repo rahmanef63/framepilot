@@ -226,6 +226,10 @@ Contributions are welcome — see **[CONTRIBUTING.md](./CONTRIBUTING.md)** for l
 
 See **[CHANGELOG.md](./CHANGELOG.md)** for the release history.
 
+## Trademarks
+
+Product names, camera-body brands (ARRI, RED, Sony, Blackmagic, Canon, DJI, Apple/iPhone, GoPro) and AI-video platform names (Runway, Kling, Google Veo, Luma, Higgsfield, Wan, Seedance, Hailuo/MiniMax, Pika, LTX Studio) are trademarks of their respective owners. Their use here is **nominative** — to identify the target platform or the camera look a prompt describes — and implies no affiliation or endorsement. See [`NOTICE`](./NOTICE).
+
 ## License
 
 Released under the **MIT License** — © 2026 Abdurrahman Fakhrul ([@rahmanef63](https://github.com/rahmanef63)). See [`LICENSE`](./LICENSE) for the full text.
