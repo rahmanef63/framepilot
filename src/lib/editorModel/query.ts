@@ -11,6 +11,15 @@ export function activeScene(project: EditorProject): EditorScene {
   return s;
 }
 
+/** Playback transport label "cur/total · name" for a scene's frames ("—" when empty). */
+export function frameIndicator(frames: EditorFrame[], idx: number): string {
+  const total = frames.length;
+  if (!total) return "—";
+  const cur = Math.min(idx + 1, total);
+  const name = frames[Math.min(idx, total - 1)]?.name || "";
+  return `${cur}/${total} · ${name}`;
+}
+
 // Locate a frame by id across all scenes — shared by every scene-walk site
 // (brief.currentFrame + frames CRUD). Null when no scene holds the id.
 export function findFrame(

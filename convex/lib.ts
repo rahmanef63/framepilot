@@ -30,9 +30,7 @@ export async function isAdminUser(ctx: QueryCtx | MutationCtx): Promise<boolean>
 /** First line of every admin-only handler. Throws unless the caller is an admin. */
 export async function requireAdmin(ctx: QueryCtx | MutationCtx) {
   const userId = await requireUser(ctx);
-  const user = await ctx.db.get(userId);
-  const email = user?.email?.toLowerCase();
-  if (!email || !adminEmails().includes(email)) {
+  if (!(await isAdminUser(ctx))) {
     throw new ConvexError({ code: "NOT_AUTHORIZED", message: "Admin only" });
   }
   return userId;

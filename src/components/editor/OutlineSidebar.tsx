@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useEditor } from "@/state/EditorState";
 import { useT } from "@/i18n";
+import { frameIndicator } from "@/lib/editorModel";
 import { Button } from "@/components/ds/Button";
 import { OutlineTree } from "./panel/OutlineTree";
 import {
@@ -37,11 +38,7 @@ export function OutlineSidebar() {
   }, []);
 
   const scene = project.scenes.find((s) => s.id === project.activeSceneId) ?? project.scenes[0];
-  const frames = scene?.frames ?? [];
-  const total = frames.length;
-  const cur = total ? Math.min(playback.idx + 1, total) : 0;
-  const name = total ? frames[Math.min(playback.idx, total - 1)]?.name || "" : "";
-  const ind = total ? `${cur}/${total} · ${name}` : "—";
+  const ind = frameIndicator(scene?.frames ?? [], playback.idx);
 
   const current = ctx.currentFrame();
   const dirty = ctx.frameIsDirty(current);

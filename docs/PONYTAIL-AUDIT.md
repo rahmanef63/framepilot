@@ -22,11 +22,14 @@ first.
 > ✔ `useCopyFlip` (3 sites). tsc + build green; dropdown dismiss (Esc/outside),
 > mobile long-press menu, and zero-console-error render all smoke-tested.
 >
-> **Deliberately deferred (ponytail call):** `frameIndicator` (-2, a helper +
-> export + 2 imports to save 2 lines isn't worth the surface); `@auth/core` /
-> `tsconfig` exclude (package.json/tsconfig staging traps, -1 each); convex
-> `requireAdmin`/`isAdminUser` dedup (-4, needs a separate Convex Cloud deploy —
-> behavior-identical so no urgency).
+> **Applied 2026-07-16 (batch 3, the tail):** ✔ `frameIndicator` helper
+> (PreviewPanel + OutlineSidebar) · ✔ convex `requireAdmin` reuses `isAdminUser`
+> (deployed to prod calculating-dalmatian-236) · ✔ `@auth/core` dropped from
+> package.json + lockfile resynced (`npm ci` validated; stays installed
+> transitively via @convex-dev/auth) · ✔ dead `tsconfig` exclude `"project"`
+> removed. tsc + build green.
+>
+> **Audit fully applied.** Nothing left on the actionable cut-list.
 
 ---
 

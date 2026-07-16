@@ -11,7 +11,7 @@ import { Check } from "lucide-react";
 import { useEditor } from "@/state/EditorState";
 import { useT } from "@/i18n";
 import { Button } from "@/components/ds/Button";
-import { activeScene } from "@/lib/editorModel";
+import { activeScene, frameIndicator } from "@/lib/editorModel";
 import { projectPrompt, projectDetail } from "@/lib/editorPrompt";
 import { usePlatform } from "./usePlatform";
 import { usePromptOptions } from "./usePromptOptions";
@@ -38,9 +38,7 @@ export function PreviewPanel() {
   const sc = activeScene(ctx.project);
   const frames = sc.frames;
   const total = frames.length;
-  const cur = total ? Math.min(playback.idx + 1, total) : 0;
-  const name = total ? frames[Math.min(playback.idx, total - 1)].name || "" : "";
-  const ind = total ? `${cur}/${total} · ${name}` : "—";
+  const ind = frameIndicator(frames, playback.idx);
 
   // total shots across every scene — surfaced so the prompt panel says what it holds
   const totalShots = ctx.project.scenes.reduce((n, s) => n + s.frames.length, 0);
