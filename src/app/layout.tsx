@@ -3,6 +3,7 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/convex-provider";
 import { RegisterSW } from "@/components/RegisterSW";
 import { UpdateToast } from "@/components/UpdateToast";
+import { Beacon } from "@/components/Beacon";
 import { I18nProvider } from "@/i18n";
 import "./globals.css";
 
@@ -67,7 +68,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </head>
         <body>
           <ConvexClientProvider>
-            <I18nProvider>{children}</I18nProvider>
+            <I18nProvider>
+              {children}
+              <Beacon />
+            </I18nProvider>
           </ConvexClientProvider>
           <RegisterSW />
           <UpdateToast />

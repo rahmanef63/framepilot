@@ -1,0 +1,48 @@
+# INTENTIONALLY `on: workflow_dispatch` ONLY — do not add push/PR triggers.
+#
+# This project runs ZERO cloud GitHub Actions on push, by design: the maintainer's
+# account is off the GitHub Actions cloud (cost model). CI runs LOCALLY via the
+# .githooks/pre-push hook, and deploys happen on Dokploy via a git-push webhook.
+# A push- or pull_request-triggered workflow here would burn paid Actions minutes
+# on every push — so this file is manual-run only (Actions tab → "Run workflow").
+#
+# TO FLIP IT ON once a self-hosted runner is registered (free minutes):
+#   1. change the trigger below to:   on: [pull_request]
+#   2. change `runs-on: ubuntu-latest` to `runs-on: self-hosted`
+# Until then, keep it workflow_dispatch and rely on the pre-push hook + local CI.
+
+name: CI
+
+on: workflow_dispatch
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (standalone)
+        env:
+          NEXT_PUBLIC_CONVEX_URL: https://ci.convex.cloud
+          NEXT_PUBLIC_ANALYTICS_DISABLED: "1"
+        run: npm run build
+
+      - name: Smoke test
+        run: npm run test:smoke

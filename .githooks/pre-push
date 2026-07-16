@@ -1,0 +1,64 @@
+#!/bin/sh
+# framepilot pre-push hook — the "committed tree doesn't build" safety-net.
+#
+# Activate once with:  npm run hooks:install   (sets core.hooksPath .githooks)
+# It also auto-activates via the `prepare` script on `npm install`.
+#
+# THE INCIDENT THIS PREVENTS
+# --------------------------
+# A forgotten `git add` once shipped a broken origin/main: the DIRTY working tree
+# still compiled, so the local `tsc` was green and the push went out — but the
+# COMMITTED tree (what everyone else, Dokploy, and CI actually build) was broken.
+#
+# THE FIX
+# -------
+# Typecheck the *committed* state, never the working tree. We check out HEAD into
+# a throwaway detached worktree, symlink node_modules in (so tsc resolves deps
+# without a reinstall), and run `tsc --noEmit` THERE. If it fails, the push is
+# blocked. An EXIT trap removes the worktree no matter how we exit.
+
+set -eu
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+# Robust if deps aren't installed — skip rather than hard-fail (fresh clone, etc.)
+if [ ! -d "$REPO_ROOT/node_modules" ]; then
+  echo "pre-push: node_modules missing — skipping committed-tree typecheck."
+  echo "          run \`npm ci\` to enable it."
+  exit 0
+fi
+
+WORKTREE=$(mktemp -d "${TMPDIR:-/tmp}/framepilot-prepush.XXXXXX")
+
+cleanup() {
+  # Always remove the throwaway worktree, even on failure / interrupt.
+  git worktree remove --force "$WORKTREE" >/dev/null 2>&1 || true
+  rm -rf "$WORKTREE" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT INT TERM
+
+echo "pre-push: typechecking the COMMITTED tree at HEAD (not your working tree)..."
+
+# Materialize exactly what HEAD points at — the state the push would publish.
+git worktree add --detach --force "$WORKTREE" HEAD >/dev/null
+
+# Reuse the installed deps instead of a fresh install (fast + offline).
+ln -s "$REPO_ROOT/node_modules" "$WORKTREE/node_modules"
+
+# next-env.d.ts is gitignored (auto-generated, deterministic) yet listed in
+# tsconfig `include`, so it's absent from the fresh HEAD checkout. Copy it in
+# from the main tree so tsc resolves Next's global types — otherwise the hook
+# would false-fail and block legitimate pushes.
+[ -f "$REPO_ROOT/next-env.d.ts" ] && cp "$REPO_ROOT/next-env.d.ts" "$WORKTREE/next-env.d.ts"
+
+if ( cd "$WORKTREE" && npx tsc --noEmit ); then
+  echo "pre-push: committed tree typechecks clean. Pushing."
+  exit 0
+else
+  echo ""
+  echo "pre-push: BLOCKED — the COMMITTED tree fails \`tsc --noEmit\`."
+  echo "          Your working tree may still build; the difference is usually a"
+  echo "          forgotten \`git add\`. Stage the missing file(s) and re-commit."
+  exit 1
+fi

@@ -15,4 +15,27 @@ export default defineSchema({
     doc: v.string(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
+
+  // First-party, privacy-clean analytics. No PII, no IP — just an anonymous random
+  // sessionId (localStorage) plus coarse device/locale. Public unauth writes are
+  // truncated defensively in the mutation so a caller can't store huge payloads.
+  pageviews: defineTable({
+    path: v.string(),
+    referrer: v.optional(v.string()),
+    locale: v.string(),
+    lang: v.optional(v.string()),
+    device: v.string(),
+    sessionId: v.string(),
+    ts: v.number(),
+  }).index("by_ts", ["ts"]),
+
+  // Client-side error reports. Admin-read only (see analytics.recentErrors).
+  clientErrors: defineTable({
+    message: v.string(),
+    stack: v.optional(v.string()),
+    path: v.string(),
+    ua: v.optional(v.string()),
+    sessionId: v.string(),
+    ts: v.number(),
+  }).index("by_ts", ["ts"]),
 });

@@ -159,3 +159,35 @@ Use the issue forms:
 Security issues follow a different, private path — see [SECURITY.md](./SECURITY.md).
 
 Thanks for contributing! — Abdurrahman Fakhrul ([@rahmanef63](https://github.com/rahmanef63))
+
+## Testing
+
+There's a committed Playwright smoke suite (`tests/smoke.spec.ts`) that boots the
+**standalone production build** and checks every core route (`/`, `/library`,
+`/docs`, `/panduan`) renders without uncaught page or console errors, including a
+mobile viewport with a no-horizontal-overflow check.
+
+```sh
+npx playwright install chromium   # first run only — grabs the browser binary
+npm run build                     # smoke serves an EXISTING build, so build first
+npm run test:smoke                # boots serve:standalone and runs the suite
+```
+
+`npm run build` must precede `npm run test:smoke` — `serve:standalone` only serves
+what `next build` already produced; it does not compile.
+
+## Git hooks
+
+Run this once per clone:
+
+```sh
+npm run hooks:install
+```
+
+(It also auto-installs via the `prepare` script on `npm install`.) This points
+`core.hooksPath` at `.githooks/`, activating the **pre-push** hook. The hook
+typechecks the *exact commit you're pushing* — it checks out `HEAD` into a throwaway
+worktree and runs `tsc --noEmit` there, **not** against your dirty working tree.
+That's what catches a forgotten `git add`: a build that's green locally because an
+uncommitted file is present, but broken on `origin/main` where that file never
+shipped. If the committed tree fails to typecheck, the push is blocked.
